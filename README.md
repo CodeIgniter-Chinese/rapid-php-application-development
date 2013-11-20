@@ -1,13 +1,12 @@
-图书：《CodeIgniter for Rapid PHP Application Development》翻译项目
+《CodeIgniter for Rapid PHP Application Development》中文版
 =================================
 
+简介
+---------------------------------
 原书名：《CodeIgniter for Rapid PHP Application Development》
-
 中文名：《PHP 敏捷开发框架 CodeIgniter - 快速 Web 应用开发详解》
 
 ![image](images/CodeIgniter_cover.jpg)
-
-经过社区很多朋友的共同努力，终于在春节前推出了这本大家期待已久的书，希望大家多多找出书里的错误，包括语法、翻译、错别字等各个方面，建议一经采纳，将会记录在制作者名单中。
 
 我们要特别感谢 李嵩波(原新浪CTO) 先生在百忙之中为本书作序，也要感谢 chenz1117 对于翻译工作所作出的巨大贡献，还包括沧蓝等朋友对翻译技术上的问题所给予的巨大帮助，还包括许多为本书做过贡献的朋友，在这里就不一一列举了，书中有详细的制作者名单，让我们再次对他们表示衷心的感谢！
 
@@ -28,3 +27,12 @@
 最后，感谢社区所有朋友的大力支持与关心！
 
 相关链接: http://codeigniter.org.cn/forums/thread-1464-1-1.html
+
+编译方法
+---------------------------------
+目前只支持 Windows 平台的编译。
+
+需要用到的工具：
+* HTML Help Workshop 下载: http://www.microsoft.com/en-us/download/details.aspx?id=21138
+
+把 hhc.exe 加入到 PATH 环境变量中，然后执行 build.bat，即可生成 CodeIgniter.chm 文件
