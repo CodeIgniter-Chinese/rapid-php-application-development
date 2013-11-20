@@ -3,8 +3,6 @@
 
 简介
 ---------------------------------
-**原书名**：《CodeIgniter for Rapid PHP Application Development》
-
 **中文名**：《PHP 敏捷开发框架 CodeIgniter - 快速 Web 应用开发详解》
 
 ![image](images/CodeIgniter_cover.jpg)
