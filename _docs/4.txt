@@ -1,0 +1,792 @@
+第四章 使用CI简化数据库开发
+
+
+
+你学习CI是因为你想要使编程更容易和更有生产力。这一章讲述CI的Active Record类。 如果CI只提供一个Active Record类，它还是物超所值的。当然，CI是免费的，只不过我要强调Active Record（以下简称AR）类的价值是非常高的，它是你提高生产力的主要工具。
+
+AR使你以最小的代价获得最大的回报。它简单，易于使用和维护。
+
+这一章描述CI如何连接到一个数据库，你如何使用AR操纵数据库。你将会见到：
+
+	AR类与传统PHP/MySQL接口的比较
+
+	如何读取数据库并显示结果
+
+	如何创建,更新, 删除查询
+
+CI保留让你用传统的方法编写数据库查询，但是我不会详细介绍这部分内容。它的知识完全被在线手册覆盖。使用AR类后，你可能不会再用传统的方式来做数据库查询了。
+
+配置config文件
+
+你或许已经注意到在这本书的大多数的章节会谈到system/application/config 文件夹和里面的config文件。这些文件对控制CI按要求工作相当必要。而且你可以让大部分的配置参数等于系统的默认值。数据库config文件在正常使用数据库之前需要进行设置。
+
+基本上，你仅仅必须告诉它你的数据库在哪里、它是什么类型。文件的默认值为：
+
+$active_group="default";
+
+$db['default']['hostname']="";
+
+$db['default']['username']="";
+
+$db['default']['password']="";
+
+$db['default']['database']="";
+
+$db['default']['dbdriver']="";
+
+（注：到CI1.6.1时又多了如下一些项目）
+
+$db['default']['db_debug'] = TRUE;
+
+$db['default']['cache_on'] = FALSE;
+
+$db['default']['cachedir'] = "";
+
+$db['default']['char_set'] = "utf8";
+
+$db['default']['dbcollat'] = "utf8_general_ci";
+
+
+
+其他的选项可以保留为默认值。 必选项是:
+
+hostname: 你的数据库的位置, 举例来说, 'localhost' 或 IP 地址
+
+username和password: 使用者名称和密码必须有充分的权限，允许你的网站存取数据库中的数据。
+
+database: 你的数据库的名字, 举例来说, 'websits'
+
+dbdriver: 你正在使用的数据库的类型 - CI可受的有选项有MySQL、MySQLi、 Postgre SQL、ODBC和MS SQL
+
+以我的经验来看, 最困难的事情之一就是把新的CI网站连接到数据库。你可能需要查询你的ISP。有时他们的数据库运行在与他们的web server IP地址不同的地方。如果你正在使用 MySQL，他们可能提供 phpMyAdmin，通常告诉你hostname-这可能是 'localhost' 或者它可能是一个 IP 地址。
+
+你可能注意到 config 文件的内容实际上是一个多维数组。在 $db数组里包含一个叫做default的数组，你所做的设置就是往里增加键/值对，例如 hostname = 127.0.0.1 。你还可以增加其他的数据库设置, 通过改变$active_group的设置可以容易地更改数据据库。
+
+这为网站连接到数个数据库提供了可能性-举例来说, 一个测试数据库和一个产品数据库。你可以很容易地在他们之间切换。 或者你可以在二个数据库之间交换数据。
+
+为我们的网站设计数据库
+
+我想表达的是 CI 能用来开发正式的网站。 我现在正在维护客户的一些网站，而且我想要监控他们,用我设计的方法测试它们, 用数据库保存我想要的数据, 而且可以得到这些网站的分析报告。 因此让我们试着创建它。 先让我们确定一些目标。 它们是:
+
+1. 用最少的人工干预管理一个或更多的远程网站
+
+2. 对远程网站进行定期的测试
+
+3. 生成符合要求的分析报告, 提供网站的细节和测试结果
+
+因此, 第一件事情是我们将会需要一个网站的数据库。 建立一个名为websites的MySQL数据库，你也可以使用别的数据库产品。
+
+现在，我们需要增加一些表来保存各种数据。让我们为网站增加一张表，字段有URL，他们的名字和密码/用户名, 和他们的类型。 我们也将会为每个网站建立一个ID字段。而且在 MySQL数据库中，至少需要为实体生成一个唯一标识符，可以使用自动增量类型来达到这一目的。
+
+每个网站必须有一个不同的主机，我们需要另一表来保存主机信息。一般有一个域名与主机相关联，所以我们需要一个域名表来保存有关域名的信息，还需要一个人员表来记录这些人的姓名，密码，邮件地址，备用邮件地址，手机号码，曾至宠物的名字，可能还有其它的一些什么。
+
+因此我们的网站表需要包括这样一些字段：domain ID, host ID, 两个people ID，一个存放网站站长的ID一个存放网站管理人的ID（管理人为网站提供技术支持，保证网站正常运行。）
+
+你能见到，这是一个完整的关系型数据库，让我们来建立它! 
+
+完整的建表文档，SQL文件格式：
+
+websites.sql:
+
+DROP TABLE IF EXISTS `ci_sessions`;
+
+CREATE TABLE IF NOT EXISTS `ci_sessions` (
+
+  `session_id` varchar(40) NOT NULL DEFAULT '0',
+
+  `peopleid` int(11) NOT NULL,
+
+  `ip_address` varchar(16) NOT NULL DEFAULT '0',
+
+  `user_agent` varchar(50) NOT NULL,
+
+  `last_activity` int(10) UNSIGNED NOT NULL DEFAULT '0',
+
+  `left` int(11) NOT NULL,
+
+  `name` varchar(25) NOT NULL,
+
+  `status` tinyint(4) NOT NULL DEFAULT '0'
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+
+DROP TABLE IF EXISTS `domains`;
+
+CREATE TABLE IF NOT EXISTS `domains` (
+
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+
+  `url` varchar(100) NOT NULL,
+
+  `name` varchar(100) NOT NULL,
+
+  `registrar` varchar(100) NOT NULL,
+
+  `dateregd` int(11) NOT NULL DEFAULT '0',
+
+  `cost` float NOT NULL DEFAULT '0',
+
+  `regdfor` int(11) NOT NULL DEFAULT '0',
+
+  `notes` blob NOT NULL,
+
+  `pw` varchar(25) NOT NULL,
+
+  `un` varchar(25) NOT NULL,
+
+  `lastupdate` int(11) NOT NULL DEFAULT '0',
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+
+
+DROP TABLE IF EXISTS `events`;
+
+CREATE TABLE IF NOT EXISTS `events` (
+
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+
+  `name` varchar(50) NOT NULL DEFAULT 'not set',
+
+  `type` enum('test','alert','report') NOT NULL,
+
+  `testid` int(10) NOT NULL,
+
+  `siteid` int(10) NOT NULL,
+
+  `userid` int(10) NOT NULL,
+
+  `reported` int(11) NOT NULL,
+
+  `result` blob NOT NULL,
+
+  `time` int(11) NOT NULL,
+
+  `timetaken` float NOT NULL,
+
+  `isalert` varchar(2) NOT NULL,
+
+  `emailid` int(11) NOT NULL,
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=69 ;
+
+
+
+DROP TABLE IF EXISTS `frequencies`;
+
+CREATE TABLE IF NOT EXISTS `frequencies` (
+
+  `id` int(10) NOT NULL,
+
+  `name` varchar(16) NOT NULL,
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+
+DROP TABLE IF EXISTS `hosts`;
+
+CREATE TABLE IF NOT EXISTS `hosts` (
+
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+
+  `cost` float NOT NULL,
+
+  `name` varchar(100) NOT NULL,
+
+  `hosturl` varchar(100) NOT NULL,
+
+  `un` varchar(50) NOT NULL,
+
+  `pw` varchar(50) NOT NULL,
+
+  `ns1url` varchar(36) NOT NULL,
+
+  `ns1ip` varchar(36) NOT NULL,
+
+  `ns2url` varchar(36) NOT NULL,
+
+  `ns2ip` varchar(36) NOT NULL,
+
+  `ftpurl` varchar(100) NOT NULL,
+
+  `ftpserverip` varchar(36) NOT NULL,
+
+  `ftpun` varchar(50) NOT NULL,
+
+  `ftppw` varchar(50) NOT NULL,
+
+  `cpurl` varchar(36) NOT NULL,
+
+  `cpun` varchar(36) NOT NULL,
+
+  `cppw` varchar(36) NOT NULL,
+
+  `pop3server` varchar(36) NOT NULL,
+
+  `servicetel` varchar(50) NOT NULL,
+
+  `servicetel2` varchar(50) NOT NULL,
+
+  `serviceemail` varchar(100) NOT NULL,
+
+  `webroot` varchar(48) NOT NULL,
+
+  `absoluteroot` varchar(48) NOT NULL,
+
+  `cgiroot` varchar(48) NOT NULL,
+
+  `booked` int(11) NOT NULL,
+
+  `duration` int(11) NOT NULL,
+
+  `lastupdate` int(11) NOT NULL DEFAULT '0',
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+
+
+
+
+
+DROP TABLE IF EXISTS `people`;
+
+CREATE TABLE IF NOT EXISTS `people` (
+
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+
+  `uname` varchar(25) NOT NULL,
+
+  `pw` varchar(25) NOT NULL,
+
+  `status` smallint(3) NOT NULL DEFAULT '1',
+
+  `name` varchar(50) NOT NULL,
+
+  `firstname` varchar(50) NOT NULL,
+
+  `surname` varchar(50) NOT NULL,
+
+  `email` varchar(120) NOT NULL,
+
+  `lastupdate` int(11) NOT NULL DEFAULT '0',
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+
+
+DROP TABLE IF EXISTS `sites`;
+
+CREATE TABLE IF NOT EXISTS `sites` (
+
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+
+  `name` varchar(100) NOT NULL,
+
+  `url` varchar(100) NOT NULL,
+
+  `un` varchar(50) NOT NULL,
+
+  `pw` varchar(50) NOT NULL,
+
+  `client1` int(10) NOT NULL DEFAULT '0',
+
+  `client2` int(10) NOT NULL DEFAULT '0',
+
+  `admin1` int(10) NOT NULL DEFAULT '0',
+
+  `admin2` int(10) NOT NULL DEFAULT '0',
+
+  `domainid` int(10) NOT NULL DEFAULT '0',
+
+  `hostid` int(10) NOT NULL DEFAULT '0',
+
+  `webroot` varchar(50) NOT NULL,
+
+  `files` text NOT NULL,
+
+  `filesdate` int(11) NOT NULL DEFAULT '0',
+
+  `lastupdate` int(11) NOT NULL DEFAULT '0',
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+
+
+
+DROP TABLE IF EXISTS `tests`;
+
+CREATE TABLE IF NOT EXISTS `tests` (
+
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+
+  `siteid` int(11) NOT NULL DEFAULT '0',
+
+  `name` varchar(250) NOT NULL,
+
+  `type` varchar(25) NOT NULL,
+
+  `url` varchar(120) NOT NULL,
+
+  `regex` varchar(250) NOT NULL,
+
+  `p1` varchar(250) NOT NULL,
+
+  `p2` varchar(250) NOT NULL,
+
+  `p3` varchar(250) NOT NULL,
+
+  `p4` varchar(250) NOT NULL,
+
+  `p5` varchar(250) NOT NULL,
+
+  `p6` varchar(250) NOT NULL,
+
+  `frequency` int(10) NOT NULL DEFAULT '0',
+
+  `lastdone` int(10) NOT NULL DEFAULT '0',
+
+  `isalert` varchar(2) NOT NULL,
+
+  `setup` int(10) NOT NULL DEFAULT '0',
+
+  `lastupdate` int(10) NOT NULL DEFAULT '0',
+
+  `notes` varchar(250) NOT NULL,
+
+  `submit` varchar(25) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+
+
+
+DROP TABLE IF EXISTS `types`;
+
+CREATE TABLE IF NOT EXISTS `types` (
+
+  `id` varchar(7) NOT NULL,
+
+  `name` varchar(50) NOT NULL,
+
+  PRIMARY KEY  (`id`)
+
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+
+我们现在要用一个更简单容易的方法来实现这一切。 所以，让我们看看CI框架为我们提供了什么功能，我们要重点介绍AR类。
+
+
+
+Active Record
+
+AR是一个“设计模式”。另一方面又是一个高度抽象的东西，就象 MVC。 它本身不是代码， 只是一个模式。对于代码，有一些不同的解释。它的核心是把你的数据库和PHP对象建立一个对应关系。每次当你执行一个QUERY语句。每一张数据库里的表是一个类，每一行是一个对象。所有你需要做的只是创建它，修改它或者删除它。例如，“方法”，是从类继承而来。Ruby on Rails是使用AR模式的，CI也是，尽管这两种框架实现AR的方式有一点不同。
+
+理论的东西够多了-但是这是什么意思呢？好吧, 用代码简单和清楚地描述一下吧。
+
+使用AR类的优点
+
+AR节约你的时间，自动运作，使SQL语句方便易懂。
+
+节约时间
+
+当你在PHP编程时，每写一个数据库查询的时候，你每次一定要与数据库建立连接。 对CI来说，第一次连接数据库时，你在每个控制器或模型的构造函数里放入这样一行语名：
+
+代码如下：
+
+	$this->load->database();
+
+一旦你这样做了，你不需要重复连接, 在那个控制器或模型就可以做任意多次的查询。
+
+你已经在 config文件中设置了关于数据库的参数，就象我们在这一章开始时看到的一样。再一次，这使更新你的网站比较容易，如果你想要改变数据库名字、密码或位置的话。
+
+自动机制
+
+你一旦已经连接到数据库，CI的AR生成隐含的代码。举例来说，如果你进行下列的插入操作:
+
+代码如下：
+
+	$data = array(
+
+          'title'=> $title,
+
+          'name' => $name,
+
+          'date' => $date
+
+          );
+
+$this->db->insert('mytable',$data);
+
+你正在插入的数据据已经被在幕后转换成这样一行代码:
+
+代码如下：
+
+	function escapte($str) {
+
+  switch (gettype($str)) {
+
+  case 'string':
+
+    $str="'".$this->escape_str($str)."'";
+
+    break;
+
+  case 'boolean':
+
+    $str=?($str=== FALSE) 0: 1;
+
+    break;
+
+  default  :  
+
+    $str=?($str=== NULL) 'NULL': $str;
+
+    break;
+
+  }        
+
+return $str;
+
+}
+
+换句话说， CI框架使你的代码变得更强健。 现在，让我们看看它是如何工作的。
+
+第一，	连接数据库非常简单。在传统的PHP编程时，你可能是这样做的：
+
+代码如下：
+
+	$connection = mysql_connect;(" localhost" ， " fred","12345")
+
+  mysql_select_db("websites",$connection);
+
+  $result = mysql_query;("select * from sites", $connection);
+
+  while ($row = mysql_fetch_array($result,MYSQL_NUM)) {
+
+    foreach($row as $attribute) {
+
+      print "{$attribute[1]}";
+
+    }
+
+  }
+
+换句话说，你必须重复地输入host、username和password，建立一个连接，然后选择一个连接的数据库。你必须每次都这样做，然后再开始一个查询。CI以一条命令替换连接工作：
+
+$this->load->database();
+
+在每个控制器、模型或者其它类的构造函数里放入这条命令。之后，你就可以直接开始查询了。连接数据被保存在你的数据库config文件中，CI每次都会去那里查询它。
+
+因此, 在每个CI函数中，你可以直接进行数据库查询。上面的query在CI中被转换成：
+
+代码如下：
+
+	$query = $this->db->get('sites');
+
+  foreach($query->result() as $row) {
+
+    print $row->url
+
+  }
+
+很简单, 不是吗？
+
+
+
+这一个章的余下部分给出不同query的用法。
+
+读取查询
+
+常用的查询是取回来自数据库的数据。等同于select的查询是：
+
+$query =$this->db->get('sites');
+
+这是一个“select *”查询，目标是site表。换句话说，它取回所有的行。如果你偏爱分开来写，你能这样做：
+
+$this->db->from('sites');
+
+$query = $this->db->get();
+
+
+
+如果你想要得到特定的列，而不是全部列，这样做：
+
+$this->db->select('url','name','clientid');
+
+$query = $this->db->get('sites');
+
+
+
+你可能要对结果排序，你可以在get语句前插入：
+
+ $this->db->orderby("name","desc");
+
+desc是降序的意思。你也能选择asc（升序） 或rand（random随机）。
+
+
+
+你也可能想要限制返回的行数，比如你想要最初五个结果。你可以在get语句前插入：
+
+$this->db->limit(5);
+
+    
+
+    当然，在大多数的查询，你不可能在表中返回所有记录。数据库的具有按给定条件过滤返回结果的能力。这通常使用where子句来实现，CI这样表达：
+
+     $this->db->where('clientid','1');
+
+    这条语句会查找客户号是 1 的客户相连的所有的网站。 但是这对我们并不是很有帮助，我们并不会记住人员表的ＩＤ号。对人来说，用姓名是比较合理的办法，因此我们需要连接到people表：
+
+
+
+$this->db->from('sites');
+
+$this->db->join('people','sites.peopleid=people.id');
+
+有ＳＱＬ知识的人都知道，这相当于：
+
+SELECT sites.* FROM sites,people WHERE sites.peopleid=people.id
+
+
+
+注意SQL的约定，如果一个列名在二张表中是重复的，你需要在列名前加上表名和一个“."号。因此sites.peopleid在位置桌子中意谓peopleid所在的表是sites。在进行ＳＱＬ多表查询时，最好把列名进行唯一性的标识，这样可以避免产生岐义，也可以让你自己明了。
+
+你可以增加更多的where子句的操作符。举例来说，增加否定操作符：
+
+$this->db->where('url!=','www.mysite.com');
+
+或比较操作符：
+
+$this->db->where('id >','3');
+
+    或联合陈述：（“where …and…”）：
+
+     $this->db->where('url!=',' www.mysite.com');
+
+$this->db->where('id >','3');
+
+
+
+    或使用$this->db->orwhere();来表示：（“where…or”）：
+
+$this->db->where('url!=',' www.mysite.com');
+
+$this->db->orwhere('url!=',' www.anothersite.com');
+
+
+
+现在让我们建立一个完整的查询：
+
+代码如下：
+
+	$this->db->select('url','name','clientid','people.surname as client');
+
+$this->db->where('clientid','3');
+
+$this->db->limit(5);
+
+$this->db->from('sites');
+
+$this->db->join('people','sites.clientid=people.id');
+
+$this->db->orderby("name"," desc");
+
+$query = $this->db->get();
+
+这应该给我们前五个（用姓名排序）网站，这些网站属于3号客户，而且还显示客户的姓和他或她的身份证数字！
+
+使用AR的潜在好处是已经进行了自动的转义，因此，你不必关心转义的问题。这适用于这样的函数象$this->db->where()，以及在下一个段中被描述的数据插入和修改语句。（安全警告：这不同于阻止交叉脚本攻击-对付这个你需要CI的xss_clean()函数。它也不相同于验证你的数据-对付这个你需要 CI 的验证类，见第 5 章。）
+
+显示查询结果
+
+在CI显示查询结果相当简单。假定我们定义了上述的查询语句, 最后一句是：
+
+$query =$this->db->get();
+
+    然后，如果有多个结果，他们被保存在$row对象中，你可以用一个 foreach 循环:
+
+代码如下：
+
+	foreach($query->result() as $row) {
+
+  print $row->url;
+
+  print $row->name;
+
+  print $row->client;
+
+}
+
+或如果我们只想要一个结果，它可以作为一个对象被返回, 或在这里当做一个$row数组：
+
+代码如下：
+
+	if ($query->num_rows()>0) {
+
+  $row =$query->row_array(); 
+
+  print $row['url'];
+
+  print $row['name'];
+
+  print $row['client'];
+
+}
+
+我比较喜欢对象语法胜过数组-更简洁！
+
+如果你遵守 MVC 模式，你将会在模型中保存你的查询和数据库交互, 然后通过视图显示数据。
+
+生成和更新查询
+
+ＡＲ有三个函数帮助你在数据库内生成新的实体，它们是$this->db->insert(),$this->db->update,$this->db->set().
+
+“create”和“update”的不同之处是“create”是向表中插入一条全新的记录，而“update”是修改表中已经存在的记录。因此对“update”，你必须首先定位需要修改的记录。
+
+CI 用数组来保存数据，或是使用$this->db->set();你可以任选一种。
+
+因此, 如果要在websites数据库中加入一行。首先，确保在我们的控制器中的构造函数加入：
+
+$this->load->database();
+
+我们想要增加一个新的网站，包含有一个网址，一个名字，一个类型和一个客户ID。如果用数组的方式，这可能是：
+
+代码如下：
+
+	$data = array(
+
+          'url'    => 'www.mynewclient.com',
+
+          'name'    => 'BigCo Inc',
+
+          'clientid'  => '33',
+
+          'type'    => 'dynamic'
+
+          );
+
+把这些信息增加到sites表，我们使用：
+
+$this->db->insert('sites', $data);
+
+    我们更可以使用$this->db->set()：
+
+代码如下：
+
+	$this->db->set('url','www.mynewclinet.com');
+
+$this->db->set('name','BigCo Inc');
+
+$this->db->set('clientid', '33');
+
+$this->db->set('type','dynamic');
+
+$this->db->insert('sites');
+
+如果我们正在更新一笔现有的记录，我们也可以创建一个数组或使用$this->db->set()，但是现在有二个不同。
+
+第一，我们必须定位我们想要更新的记录；其次，我们需要使用$this->db->set()，如果我想要在sites中更新一笔记录（针对'id'列的值1的那行记录），使用数组的方式是这样处理的：
+
+$this->db->where('id','1');
+
+$this->db->update('sites', $data);
+
+你也可以使用$this->db->set()方式，就象前面做过的那样。
+
+CI 提供几个函数检查数据库是否成功执行了相关操作。 最有用的：
+
+$this->db->affected_rows();
+
+    在执行insert或update后应该返回 '1'-但是如果我正在update一批记录的话，可能返回更大的一个整数。
+
+你已经注意到当我insert一笔新的记录时，我没有设定ID这一列。这是因为ID这列被设定为自动插入类型。但是当我update一笔现有的记录时候，我必须引用ID属性，否则数据库不知道该改变哪一笔记录。
+
+如果我正在insert一笔新的记录, 在实际产生它之前，我们并不知道ID具体的值。如果我需要引用新的记录的ID, 使用下列语句：
+
+$new_id_number = $this->db->insert_id();
+
+     (这一行代码必须跟在insert语句之后，否则可能得到错误的结果.)
+
+还有一点需要知道，CI的AR操作，包括$this->db->insert_id()和$this->db->update_id()会自己转义。
+
+从 1.5 版，CI也包含了对事务的支持，即指定的一批SQL操作要么全成功，要么全失败，换句话说，要么提交，要么回滚。这在复式记帐应用和许多商业应用中是很重要的。举例来说，说你正在卖电影票。你需要接受付款，同时分配座位。如果你的系统收费成功但分配座位失败，这个客户肯定是要光火的。
+
+CI 现在也让事务处理变得很简单，即要么“提交”，要么回滚。你可以参考用户手册以得到更多关于事务的信息。
+
+
+
+删除操作
+
+删除操作也许是最简单的。你只要定位好需要删除记录，比如我们要删除ID为2的记录:
+
+$this->db->where('id','2');
+
+$this->db->delete('sites');
+
+要小心使用删除操作，因为如果你不注意where中的条件，可能会误操作，甚至最坏的结果是删除整张表。
+
+
+
+AR和传统SQL编程的结合
+
+CI不要求你只能使用AR，你也能用CI直接发送SQL查询。比如：假定你已在构造函数里已连接了数据库，你可以在需要的地方直接使用类似的SQL查询：
+
+$this->db->query("select id, name, url from sites where 'type'='dynamic'");
+
+我个人觉得AR更容易使用。借助数组为AR准备数据更直观，更容易理解，虽然可能需要更多的代码。AR还能自动转义，对不熟悉SQL语法的程序员会更有吸引力。
+
+还有需要介绍的一个使用AR的技巧是关于where函数的，当我们需要在where中放入这样一个比较复要的语句时：
+
+client='3' and (type = 'dynamic' or type = 'static')
+
+由于使用了左右括号，因此不能直接放入where函数，你可以把这分成两行：
+
+ $condition = "client ='3' AND (type ='dynamic' OR type='static')"; 
+
+$this->db->where($condition);
+
+在一些复杂的情况下，你可能需要直接使用SQL语法建立查询而不是使用AR，比如要使用复杂的表连接，子查询，左连接等等。不管怎样，CI框架确保你能做到传统PHP能做到的一切，而带来更多的好处。
+
+需要指出的是，如果你试着混合使用AR和直接的SQL查询，你可能会有麻烦。
+
+
+
+摘要
+
+我们已经介绍了CI的Active Record类，而且见到，它是多么容易使用：
+
+	建立和一或较多的数据库的连接
+
+	使用AR从数据库读取数据或插入，更新，删除信息
+
+	或直接使用SQL的标准语法执行查询
+
+CI的AR功能是概念清晰又容易使用，而且使代码非常易读。它自动化数据库连接，并把连接数据保存至一个config文件。
+

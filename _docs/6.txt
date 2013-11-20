@@ -1,0 +1,384 @@
+简化使用 Session 和安全
+
+理论说得够多了! 现在让我们开始写我们自己的应用。 在这一章里，我们将会大致描述一下我们要建立的一个应用系统，而且我们分析一些会影响到网站系统的的基本问题也就是会话管理和安全。
+
+在这一章，我们将会见到:
+
+。如何使你的网页安全
+
+。如何使用 CI 的会话类
+
+开始用 CI 设计一个实际的网站
+
+我们已经看过 CI 安装时生成的welcome页以及它内部动作中控制器文件和视图文件的动作流程。 实际上这就是CI的'Hello, World!'。
+
+从前，业余者写的发烧友网站都使用开放源代码系统，而且总是被一些所谓的大公司看成是低档的玩艺儿。
+
+不过现在，套用一句老话，时代不同了。很多大公司开始使用开放源代码技术。 举例来说，美国太空总署和美联社使用MySQL 、美国审计处和雅虎正在使用 PHP 的应用。而且我相信规模适中，具有高度灵活性的动态网站正在迅速增长。当大公司了解到那些他们一直使用的商业技术无法新的需求后，他们引进规模适中，具有高度灵活性的运用代替原来的系统
+
+CI 无疑是设计开发适度规模，具有高度灵活性的利器。它手把手地教你规划网站并做出一致而可靠的运用。
+
+为了示范 CI 的灵活性,让我们开始建立一个应用。
+
+重新说一下我的需求，我要让这个网站为我解决我的问题。 我正维护着一些网站, 有些是我自己的，有些是我的客户的。我需要对这些网站进行日常维护,测试它们, 确保它们运转良好。大部分的工作内容是重复性的，我可以雇人来做这件事，但是写一个网站会是比较合理的方案，它能自动化的完成工作，不管白天还是黑夜。
+
+因此我的需求是:
+
+1. 不需要人工干预，管理一个或更多的远程网站
+
+2. 定期检测远程网站
+
+3. 生成报表, 提供网站的细节和测试结果
+
+如果ISP允许的话，我想设定网站能运行Cron（注：linux下的计划任务软件），如果不允许, 我会自己一天两次或者1小时1次地运行, 让它运行一个预设的测试方案。
+
+我不想要知道细节，除非什么东西出现故障(然后我想要让它发送一封电子邮件告诉我出院什么事，在哪个环节出的事)，然后我想要能够打印出管理报告让我的客户意识到我一直做定期的检查, 并正常地运行他们的网站。
+
+为了避免使代码太长和过于重复，因此在这本书里的代码并不足够安全, 因此请记住不用在实际应用环境中使用这些代码。 这一章涉及了针对未认证用户的确保网站安全的一般概念其他的PHP安全问题，本书没有涉及。
+
+在现阶段，我们可以看到CI实现方式与一般动态网站的方式相似，因此让我们先放下设计这个主题，从一些非常基本概念谈起。
+
+关于网站
+
+任何的网站是一个各类应用的集合，而且它们彼此之间应该能够交互。我们在第 3 章看到， CI 使用URL进行链接。典型的URL如下表:
+
+基本url              http://www.mysite.com. 这是最基本的URL，用户用它定
+                    位你的网站。用户不需要知道URL的其余部分，网站会在需要时自动加上其它部分
+
+index 文件           第一部分: index.php
+                    这是CI的的网站主文件
+
+class               第二部分：start
+(或称为controller)   如果没有设置控制器，CI会从config文件中寻找默认控制器
+
+method              第三部分：assessme
+(或称为函数)          如果没有设定函数，CI会使用本控制器中的默认函数，找不到就
+                    重定向到404页
+
+增加的任何的叁数       第四部分：fred
+                    传递给函数的参数
+                    第五部分: 12345, 第六部分: Hello, 等等。
+
+
+
+因此, 在start控制器中调用accessme函数，并传入fred,12345两个叁数,你的网址将会是:
+
+http://www.mysite.com.index.php/start/assessme/fred/12345
+
+
+系统会查找start.php, 其中有一个Start类，它的内部有一个accessme方法，需要传入两个参数，现在传给这两个参数的值分别是fred和12345。一个这样的URL可以调用你网站上任何一个控制器中的任何功能。
+
+为了体会它如何工作,让我们建立我们网站的第一个页面。我们将会建立叫做Start的控制器，而且把它设定为默认控制器。
+
+好吧, 首先, 因为安装CI时, 它指定welcome为默认控制器，因此我需要改变这个设置。
+
+CI默认的路由存放在下列路径
+
+/system/application/config/routes
+
+当前设置为：
+
+$route['default_controller']="welcome";
+
+我们把它改成：:
+
+$route['default_controller']="start";
+
+(记住, 如果你的默认控制器中没有一个index方法，如果使用基本URL，系统会显示404错误)
+
+现在我需要编写我的start控制器。 记得基本的格式:
+
+&lt;?php
+class Start extends Controller {
+     function start() {
+         parent::Controller();
+     }
+     
+     function assessme($name, $password) {
+         if ($name =='fred' && $password == '12345') {
+
+             $this-&gt;mainpage();
+     }   
+     }
+   
+}
+?&gt;
+
+把这个文件保存为/system/application/controllers/start.php。
+
+第二行告诉你这是一个控制器。 然后构造函数装载父控制器构造方法。 assessme函数需要二个变量 $name和 $password。 CI(从 1.5 版开始) 自动分配URL的相关部分作为叁数, 因此 fred 和 12345 将会变成那 $name和 $password。
+
+因此, 如果我们键入上面的网址，如果用户存在，密码无误，我会被重定向到mainpage()函数。 我们会在start控制器中增加这个函数。(如果用户检测不能通过，系统运行结束.)
+
+对于那些过去一直使用过程式编程而不是OO编程的人来说，请注意一个类中的方法必须被表示成 $this-&gt;xxxx。 因此, 如果我调用start控制器里的mainpage()函数，我必须这样表示$this-&gt;mainpage(). 否则，CI会找不到它。
+
+当然, 一般用户不会这样定位一个网站：
+
+http://www.mysite.com.index.php/start/assessme/fred/12345.
+
+他们仅仅输入：
+
+http://www.mysite.com
+
+而且希望网站给出导航条。 因此让我们让这里开始。
+
+通常, 你在网站上看到的第一个页面是登录页面。 因此让我们来做一个。 首先，我把一个新的函数加入start控制器。我想要网站默认调用这个函数，因此，我将它命名为index().
+
+    function() {
+
+      $data['mytitle']    = "My site";
+          $data['base']       = $this-&gt;config-&gt;item('base_url');
+          $data['css']          = $this-&gt;config-&gt;item('css');
+          $data['mytitle']    = "A website to monitor other websites";
+          $data['text']       = "Please log in here!";
+                 
+          $this-&gt;load-&gt;view('entrypage',$data);
+    }
+
+它调用视图：entrypage。 视图中包含一个表格，这个表格让用不着户输入用户名和密码。 HTML 表格需要指定一个处理$_POST的函数，我们已经把它放在start控制器中,就是 assessme() 。用HTML代码表示，在我们的视图上的表格应该是:
+
+&lt;form method="post" action=" http:/ www.mysite.com/index.php/start/assessme"/&gt;
+
+我已经稍稍解释了 assessme函数，它接受一个用户/密码组合，我需要在一个数据库中查询它。为了要使代码更结构化, 我们要引入一个函数叫做checkme()。
+
+所以，你会见到， assessme() 调用 checkme()，Checkme()在数据库里检查用户是否存在，密码是否有效，然后把'是' 或 '不' 返回给assessme()。如果返回是, assessme() 调用另外一个函数，mainpage(),返回一个视图。
+
+注意代码模块好的好处。 每个函数扮演一个角色。 如果我需要改变系统检查密码的方式，我只需要改变 checkme() 函数。如果我需要修改页面，我只要修改 mainpage() 函数。
+
+让我们看看代码结构以及各部分如何交互。 (注意为了要使例子简洁，我们不校验用户的输入。 当然，这不会造成问题， CI 的表格类自动为输入数据“消毒”。
+
+/*receives the username and password fromthe POST array*/
+   function assessme() {
+       $username = $_POST['username'];
+       $password = $_POST['password'];
+
+       /*calls the checkme function to see if the inputs are OK*/
+       if ($this-&gt;checkme($username,$password)=='yes') {
+           /*if the inputs are OK, calls the mainpage function */
+           $this-&gt;mainpage;()
+       }
+       /*if they are not OK, goes back to the index function, which re-presents the log-in screen */
+       else
+       {
+           $this-&gt;index();
+       }
+   }
+   /*called with a u/n and p/w, this checks them against some list. For the moment, there's just one option. Returns 'yes' or 'no' */
+
+   function checkme($username='', $password='') {
+      if ($username == 'fred' && $password =='12345') {
+          return 'yes';
+      } else {
+          return('no';
+      }
+
+   }
+
+在第 5 行-6 上, assessme() 接收来自表格的$_POST数组，包含以下一些数据:
+
+[username] =&gt; fred
+[password] =&gt; 12345
+
+assessme() 函数把这二个变量传递给另一个函数checkme()。该函数检测具有密码12345的用户fred是否是合法的用户, 如果他们是, 它返回 'yes'. 显然地，在一个真正的网站上，这会更复杂。你或许会为有效的用户名/密码做数据库查询。把它定义成一个单独的函数意味着我可以测试我的代码的其它部分, 并在稍后改进 checkme()函数。
+
+如果使用者名称和密码是一个有效的组合， assessme()函数调用另一个函数 mainpage(),让用户进入网站。否则，它返回到index()函数-即，再次显示登录窗口。
+
+下一个问题是如何处理状态。换句话说,当进入到另一页面时如何识别这是一个已登录的用户。
+
+安全/会话: 使用另一个 CI 类
+
+如果我想要建立一个会话机制确保未授权用户无法存取我的文件, 需要多少代码?
+
+英特网通过一系列请求工作。 你的浏览器给我的服务器发请求，要求某一特定页。 我的浏览器把该页处理后返回你的服务器。服务器处理后向浏览器发出另一页面，你再按下一个超链接,对我的服务器提出新的页面请求。如此而已。
+
+英特网是'没有状态的'-就是, 你的浏览器对我的服务器做的每个请求都被当做一个单独事件，HTTP协议没有办法把你的请求和任何其他的请求联系起来。
+
+如果你想要你的网站页面与页面之间建立联系，你必须管理“状态”，要服务器记得哪些请求来自你的浏览器, 需要做一些特别的处理。
+
+PHP 提供管理状态的二种办法: 使用cookie、或使用会话。PHP的session自动地检查你的浏览器是否接受cookie. 如果不接受，它会使用会话ID的方法，这个ID直接通过URL进行传递。
+
+cookie是小块的数据由服务器发送到你的浏览器。浏览器自动地保存它。一旦保存了cookie，当浏览器尝试访问网站的时候，网站就会检查是否存在cookie。如果它找到正确的cookie，它能读取它里面的数据适当地配置它本身。可能关闭特定页面，或显示你的个人数据。
+
+
+因为一些人设定他们的浏览器不接受cookie, PHP 提供其它变通的方法。 每次当浏览器请求访问时，网站产生 '会话ID', 把它发送到浏览器端，当浏览器发送下个请求时把这个ID加入URL，所以网站能够识别浏览器。
+
+CI 有一个会话类来处理会话相关工作。 事实上，它大大减少了编码量。我们在上一章学习到 CI 有各种各样的library，大大简化了PHP的编程。 这些就是框架的核心: 集成大量代码,为你提供各种强大的功能。你要做的只是使用它们，而不必关心他们是如何运作的。作为结果，你的应用使用了最专门的代码，而你却不需要自己去编写它们!
+
+如果你想要在你的控制器内或模型中使用某个类内的函数，你一定记得首先要装载这个类，(有些类, 比如 config 总是自动地被装载，这是为什么我们不需要在代码中装载它的原因。)
+
+你可以这样很简单地装载library:
+
+$this-&gt;load-&gt;library('newclass');
+
+通常，把这一行放入你的控制器或模型的构造函数中。
+
+如果你认为你会在每个控制器中使用某个library，你能象config类一样自动地装载它。找到/system/application/config/autoload文件, 增加你想自动装载的类名:
+
+$autoload['libraries'] = array();
+
+因此它看起来像这一样:
+
+$autoload['libraries'] = array('newclass',' oldclass');
+
+在这里，我们首先要用到session类，这帮助你维持状态, 而且可以识别用户。 做到这一点相当简单。下面列出增强的assessme()函数:
+
+   function assessme() {
+
+      $this-&gt;load-&gt;library('session');
+
+      $username = $_POST['username'];
+      $password = $_POST['password'];
+   
+   if ($this-&gt;checkme($username, $password) == 'yes') {
+       $this-&gt;mainpage;()
+   } else {
+       $this-&gt;index();
+   }   
+}
+
+(你可以看到，在函数一开始就装载session library，但是通常，我们将会在控制器的构造函数中装载它，因此，在这一个类中的其它函数都可以使用这个类。)
+
+当这个类装入后，立即通过它本身强大的功能为你提供对会话的读取，创建，修改等功能。
+
+好吧, 坦白地讲, 不仅仅就一行代码那么简单。 你必须首先修改 config 文件, 告诉会话类你想要它做的。
+
+检查你的system/application/config/config.php 文件，你会找到像这样的一个部分:
+--------------------------------------------------------------------------
+| Session Variables
+|--------------------------------------------------------------------------
+|
+| 'session_cookie_name' = the name you want for the cookie
+| 'encrypt_sess_cookie' = TRUE/FALSE (boolean).  Whether to encrypt the cookie
+| 'session_expiration'  = the number of SECONDS you want the session to last.
+|  by default sessions last 7200 seconds (two hours).  Set to zero for no expiration.
+|
+*/
+$config['sess_cookie_name']          = 'ci_session';
+$config['sess_expiration']           = 7200;
+$config['sess_encrypt_cookie']       = FALSE;
+$config['sess_use_database']         = FALSE;
+$config['sess_table_name']           = 'ci_sessions';
+$config['sess_match_ip']             = FALSE;
+$config['sess_match_useragent']      = FALSE;
+
+现在，确定 [sess_use_database] 被设定成FALSE。
+
+保存设置，现在，每次当你的客户登入网站，网站会在你的机器上保存一个cookie,包含下列的数据:
+
+。CI生成的一个唯一的SESSION ID，这是CI为这个会话生成的任意组合的字符串。
+
+。使用者的 IP 地址
+
+。使用者的用户代理数据 (浏览器数据的最初 50个字符)
+
+。最大有效时间
+
+如果你设定 sess_encrypt_cookie 为FALSE, 你能在你的浏览器上看到cookie的内容：(它部分被编码了，但是你能辨认出来):
+
+ip_address%22%3Bs%39%3%22127.0.0.1%22%3Bs%310%3A22
+
+包括使用者的URL, 本例为127.0.0.1). 如果你设定 sess_encrypt_cookie 为TRUE, cookie被加密, 只是一行无意义的代码。 浏览器不能识别它，当然使用者也无法修改它。
+
+当使用者发出另一个页面请求时, 网站会检查会话ID是否已经以cookie的形式保存在用户的机器里，如果有，这会作为一个已经存在的会话的一部分，如果没有，就会建立一个新的会话。记得在所有的其它控制器上加载会话类。CI将作同样的检查。我必须做的只是告诉每个控制器当没有cookie时该如何运作。
+
+使会话更安全
+
+这本来不会造成安全问题。任何访问网站的用户都会开始一个会话。代码只是判断他们是否是一个新用户。避免未认证的用户访问某些页面的一个方法是如果他们已经登录，就在cookie中加入一些信息，因此我们可以对此进行验证。一旦用户输入正确的用户名和密码一次，就会在cookie中被记录，当发出新的请求時，会话机制会检查cookie，如果是已登录的用户，就返回用户请求的页面，如是不是，就返回登录画面。
+
+把信息加入cookie很容易。 在我的 assessme() 控制器中，如果密码和使用者名称验证通过，加上如下代码:
+
+if($this-&gt;checkme($username, $password)=='yes') {
+   $newdata = array(
+                    'status' =&gt; 'OK',
+                    );
+   $this-&gt;session-&gt;set_userdata($newdata);
+   $this-&gt;mainpage();
+}
+
+这样会把$newdata数组中内容-上例中只有一个变量-加入到cookie中。现在，每当密码/用户名组合是可接受的， assessme() 将会把 'OK' 加入cookie，而且我们可以把这些代码加到每个控制器中:
+
+   /*remember to load the library!*/
+   $this-&gt;load-&gt;library('session');
+
+   /*look for a 'status' variable in the contents of the session cookie*/
+   $status = $this-&gt;session-&gt;userdata('status');
+
+   /*if it's not there, make the user log in*/
+   if(!isset($status) || $status != 'OK')
+       { /*function to present a login page again…*/}
+
+       /*otherwise, go ahead with the code*/
+
+这样，你在你的网站周围构建起安全的地基。 你可以很容易地使它变得更精细。 举例来说，如果你的部分用户有更高级的权限, 你可以在cookie中保存了个存取级别码，而不是只放进一个“OK”，你能用这个进行更细致的权限调控。
+
+在一个cookie中存放明码数据会比较糟糕，因为用户可以打开cookie并看到它的内容,当然也可以很容易地修改它。因此使用CI加密cookie会是一个很好的办法。还有，你可以在数据库中建立一个用户表，在用户登录以后修改用户表的登录状态，在用户表中维护一些权限属性，每次访问时，从数据库的用户表中读取权限信息，也是一个比较好的做法，如果结合缓存技术，就会解决系统的性能问题。
+
+在你的数据库中保存会话数据非常简单。 首先，创建数据库表。 如果你正在使用 MySQL, 使用这一 SQL 语句:
+
+CREATE TABLE IF NOT EXISTS  `ci_sessions` (
+session_id varchar(40) DEFAULT '0' NOT NULL,
+ip_address varchar(16) DEFAULT '0' NOT NULL,
+user_agent varchar(50) NOT NULL,
+last_activity int(10) unsigned DEFAULT 0 NOT NULL,
+status varchar(5) DEFAULT 'no',
+PRIMARY KEY (session_id)
+);
+
+然后，修改在system/application/config/database.php 文件中的连接叁数告诉 CI 数据库在哪里。详细介绍参见第 4 章
+
+如果工作正常的话, 当你登录或退出时，在你的数据库表中增加了相关的数据。如果你在一张数据库表中储存会话, 当用户登录到你的网站，网站会查找cookie, 如果它找到了，就会读取会话ID，并用这个ID去匹配数据库表中保存的ID。
+
+你现在拥有一个强健的会话机制。 而这一切只需要一行代码！
+
+一点声明，PHP本身的会话类在用户关闭cookie功能时能够应付。（取代生成cookie，它把会话数据加入URL) CI 类不会这样做，如果使用CI，一旦用户禁止cookie，他就不能登录到你的网站。这方面需要增强功能。 希望Rich将会很快升级CI。
+
+安全
+
+注意到：会话类会自动地保存关于访问者的 IP 地址和使用者的资料。你可以使用一些增强的安全措施。
+
+通过修改config文件的二处设置可增加安全性:
+
+。 sess_match_ip: 如果你设定这个参数为TRUE, 当它读取会话数据时，CI 将会尝试相配使用者的 IP 地址。这将预防使用者使用'抢'来的cookie信息。但是，有些服务器 (ISP和大公司服务器) 可能存在不同 IP 地址上的相同使用者登录的请求。如果你设定这个参数为TRUE，可能会给他们造成麻烦。
+
+。 sess_match_useragent: 如果你设定这为TRUE, 当读取会话数据的时候， CI将会试着匹配使用者代理。这意谓试着“抢夺”会话的人还需要匹配真正用户的user agent设置。 它使“抢夺”变得稍稍有些困难。
+
+CI 也有一个 user_agent 类, 你可以这样装载:
+
+$this-&gt;load-&gt;library('user_agent');
+
+一旦装载, 你能要求它返回访问你网站的浏览器和操作系统的各种信息, 而不管它是一个浏览器,手机或机器人。 比如，如果你想列出叁观你的网站的机器人，你可以这样做：
+
+$fred = $this-&gt;agent-&gt;is_robot();
+if ($fred == TRUE)
+    {$agent = $this-&gt;agent-&gt;agent_string();
+/*add code here to store or analyse the name the user agent is returning*/
+}
+
+类通过装入后开始工作, 与用代理，浏览器，机器人和其它的类型的数组作比较，这个数组存放在system/application/config/user_agents。
+
+如果你愿，你可以容易开发出使你的网站锁定特定机器人，特定浏览器类型的功能。不过，记得一个攻击者很容易写出一个代理类型，并返回他想要扔给你的那种类型。因此，他们能容易地伪装成通常的浏览器。 许多机器人,包括象CI 的 user_agents 数组已列出的 Googlebot,是'品行端正的'。 这意味着如果你设定你的 robots.txt 文件排除他们，他们将不会强行攻击。没有容易的方法去阻击一个不知名的的机械手，除非你预先知道他们的名字!
+
+在 CI框架中 ，会话机制保存那发出请求的 IP 地址，因此你可以使用这个功能维护一个网站的黑名单。可以用如下代码取回来自会话的 IP:
+
+/*remember to load the library!*/
+   $this-&gt;load-&gt;library('session');
+/*look for an 'ip_address' variable in the contents of the session cookie*/
+$ip = $this-&gt;session-&gt;userdata('ip_address');
+
+因此你能针对黑名单作相应的安全处理，比如拒绝登录。
+
+你也可以用CI 的会话机制限制来自重复请求的损害-像是一个机器人通过重复地请求网页来使你的网站超载。 你也可以使用这一个机制处理 '字典'攻击，即一个机器人不断重复尝试数百或者数以千计的密码/用户名组合直到它找到正确的一组。
+
+因为 CI 的会话类保存每个会话的last_activity ，所以你能做到这一点。 每次，当网页被请求时, 你能检查多久以前这个IP地址的用户发出一请求，两次请求的间隔如果不正常，你可以终止会话，或放慢响应的速度。
+
+摘要
+
+我们已经概略介绍了我们想要建立的一个应用, 和几乎所有应用都需要解决的问题：会话管理和安全保证。
+
+为了做到这一点，我们已经学习了CI会话类的一引起细节，而且见到它如何生成会话记录和在访客的浏览器中生成cookie。
+
+当后续的请求发生时，你可以读取cookie对响应进行控制。
+
+下一章介绍
+
+CodeIgniter 和对象

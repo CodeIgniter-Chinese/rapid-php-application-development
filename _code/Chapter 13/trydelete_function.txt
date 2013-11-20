@@ -1,0 +1,19 @@
+/*TRYDELETE FUNCION: interrupts deletes with an 'are you sure? screen'*/
+   function trydelete($controller, $idno, $submit = 'no')
+          {
+          if($state == 'yes')
+                 {$this->delete($controller, $idno, 'yes');}
+          else{
+                 $result .= "<table><tr><td>Are you sure you want to delete this entry?</td></tr>";
+                 $result .= form_open("$controller/delete");	   
+                 $result .= form_hidden('id', $idno);
+                 $result .= "<tr><td>";
+                 $result .= form_submit('submit', 'yes');	
+                 $result .= "</td></tr>";
+                 $result .= form_close();
+                 $result .= "</table>";
+                 $result .=   anchor("$controller/showall","No, don't delete");
+                 $data['text'] = $result;
+                 $this->display->mainpage($data);
+                 }  
+           }

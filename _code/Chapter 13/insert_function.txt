@@ -1,0 +1,266 @@
+/*the most complex function. This creates an HTML form, based on the description of the fields in the form array. This is sent to our display model, which sets up a view and shows it to the user. 
+The view then sends a POST array back to the controller. The form can't call this model directly, so it has to call the controller, which refers it back to the model.
+Note the function parameters:
+1. The controller parameter is whichever controller/ table has called the model - eg the 'sites' controller, or the 'domains' controller. The controller has the same name as the table it manipulates.
+2. The optional id parameter is the id of an individual entry in that table.
+3. The optional 'test' parameter is so you can set the form up to make usable responses to self-test functions.
+*/
+
+    function insert($controller='', $id=0, $test='no')
+          {
+          $myform = ''; 
+          $myid = 0;
+          $currentvalue = array();
+ 
+/*test if the table exists*/
+          if(!$this->db->table_exists($controller))
+                 {
+                   $place =  __FILE__.__LINE__;
+                   $outcome = "exception: $place:looking for table $controller: it doesn't exist'";
+                  if($test =='yes')
+                       {  
+                        return $outcome;
+                       }
+                 else{
+                  $this->failure($outcome, $controller);
+                        }
+                  } 
+           else
+          {
+                            if($test =='yes')
+                              {  
+                              return 'OK';
+                              }  
+          }
+/*end test block*/
+
+/*first check if there is an id number. If there is, we need to get the values to populate the table fields*/
+          if(isset($id) && $id > 0)
+                {$myid = $id;
+                  $this->db->where('id', $id);
+                $query = $this->db->get($controller);
+                if ($query->num_rows() > 0)
+                       {
+   	                    $row = $query->row();
+//--------------work out the values we want!
+                       foreach($row as $key =>$value)
+/*
+first of all work out what value you want to show as the existing value in each line of the form. In priority order these are:
+1. the last value the user entered, from the post array 
+2. the value from the database
+3. nothing, if neither of these is set.
+if we got here, the id does exist and is returning values, so get the existing values into a value array. Or, if there is something in the validation array, use that instead*/
+                       {
+                       $_POST[$key] = $this->validation->$key;
+                       if(isset($_POST[$key]))
+                              {$currentvalue[$key] = $_POST[$key];}
+                       else
+                              {$currentvalue[$key] = $value;}
+                       }
+                       
+/*test block: there was an id number, so has the programme gone for an update? if this is not a test, of course, just do the update*/
+   	                    if($test == 'yes')
+                              {
+                              $place =  __FILE__.__LINE__;  
+                              $outcome = "exception: $place: id of $id returned results from $controller table so have gone for update";
+                              return $outcome;  
+                              }
+          
+/*end test block*/
+   	                    $myform .= "<tr><td colspan='2'>Update existing entry number $id</td></tr>";
+                       }
+/*now catch situation where this id number isn't returning results. In this instance this is an error, since it shdn't have got here with a false ID'.*/
+                else{
+                              $place =  __FILE__.__LINE__;  
+                              $outcome = "exception: $place: despite id of $id cant get any results from $controller table";
+    
+                       if($test == 'yes')
+/*test block: there was and ID but there were no results*/
+                              {
+                              return $outcome;  
+                              }
+/*end test block*/
+                        else    
+                              {$this->failure($outcome, $controller);}
+                      
+                        }    
+                 }      
+    
+/*there was no ID number, so this is a new entry*/
+          else{
+/*If the user has filled in values, and has returned here because some of them didn't validate, we still need to repopulate the form with what he entered, so he only has to alter the one that didn't validate. Get these from the post array*/
+
+                if(isset($_POST))
+                       {
+                       foreach($_POST as $key => $value)
+                              {
+                               if(isset($_POST[$key]))
+                                    {$currentvalue[$key] = $_POST[$key];}     
+                               }  
+                         
+                       }                    
+                 $myform .= "<tr><td colspan='2'>New entry</td></tr>";
+                 
+/*test block: there was no ID, so this is a new entry*/
+                       if($test == 'yes')
+                              {
+                              $place =  __FILE__.__LINE__;  
+                              $outcome = "exception: $place: id of $id treated as no id, so going for new entry";
+                              return $outcome;  
+                              }
+/*end test block*/
+                 }      
+
+
+/*the table exists, whether this is an update or new entry, so start to build the form*/
+          $myform      .=     "<table class='table'>";
+          $myform .= form_open("$controller/interim");
+          $myform .= '<p>This entry could not be made because...</P>';
+          $myform .= $this->validation->error_string;
+          
+
+/*the rest of this function is common to inserts or update. 
+Look up in the form array which form field type you want to display, and then build up the html for each different type, as well as inserting the values you want it to echo.*/
+
+                 
+                 
+                 foreach($this->form[$controller] as $key => $value)
+                 {
+
+/*This switch statement develops several types of HTML form field based on information in the form array.
+It doesn't yet cover checkboxes or radio or password fields. It adds a 'readonly' type, which is a field that only displays a value and doesn't let the user modify it*/			
+
+                 $fieldtype = $value[1];
+                 $val_string = $this->validation->$key;
+                 switch($value[1])
+                        {
+/*a simple input line*/
+                       case 'input':
+                       $data = array(
+                 'name'        => $key,
+                 'id'          => $key,
+              	'value'       => $currentvalue[$key],
+              	'maxlength'   => '100',
+              	'size'        => '50',
+              	'style'       => 'width:50%',
+            );
+                       $myform .= "<tr><td>$value[0]</td><td>";
+                       $myform .= form_input($data);
+                       $myform .= "</td></tr>";
+                       if($test == 'second')
+                              {
+                              return 'input';  
+                              }
+                       break;
+                       
+                      case 'textarea':
+/*a text area field.*/
+                       $data = array(
+                 'name'        => $key,
+                 'id'          => $key,
+                 'value'       => $currentvalue[$key],
+                 'rows'   	  => '6',
+                 'cols'        => '70',
+                 'style'       => 'width:50%',
+            );                       
+                       $myform .= "<tr><td valign='top'>$value[0]</td><td>";
+                       $myform .= form_textarea($data);
+                       $myform .= "</td></tr>";
+                       break;
+
+                       case 'dropdown':
+/*a drop down box. Values are dynamically generated from whichever table was specified in the forms array. This table must have an id field (which is now entered in the form) and a name field (which is displayed in the drop-down box).*/
+                       $dropbox = array();
+                       if(isset($value[3]))
+                              {
+                              $temptable = $value[3];  
+                              $this->db->select('id, name');
+                              $query = $this->db->get($temptable);
+                              if ($query->num_rows() > 0)
+                                    {
+   	                                foreach ($query->result() as $row)
+   	                                 {
+                                     $dropbox[$row->id] = $row->name;
+   	                                 }
+                                    }
+                             }
+                       $myform .= "<tr><td valign='top'>$value[0]</td><td>";
+                       $myform .= form_dropdown($key, $dropbox, $currentvalue[$key]);
+                       $myform .= "</td></tr>";
+                       break;
+
+                       case 'submit':
+/*a submit field*/                         
+                       $myform .= "<tr><td>$value[0]</td><td>";
+                       $time	=  time();
+                       $data = array(
+              'name'        => 'submit',
+              'id'          => 'submit',
+            );	
+                       $myform .= form_submit($data);
+                       $myform .= "</td></tr>";
+       
+                       break;
+                       
+                       case 'hidden':
+/*generates a hidden field*/
+                       $myform .= form_hidden($key, $currentvalue[$key]);
+                       break;   
+
+                       case 'readonly':
+/*generates a field the user can see, but not alter.*/
+                  
+                       $myform .= "<tr><td>$value[0]</td><td>$currentvalue[$key]";
+               
+                       $myform .= form_hidden($key, $currentvalue[$key]);
+                       $myform .= "</td></tr>";
+                       
+                       break;   
+
+                       case 'timestamp':
+/*generates a timestamp the first time it's set*/	
+//                     $myform .= "<tr><td>$value[0]</td><td>now()";
+                       $timenow = time();
+
+    if($currentvalue[$key]==''||$currentvalue[$key]==0) 
+                               {$time = $timenow;}
+                       else{$time = $currentvalue[$key];}
+     
+                       $myform .= form_hidden($key, $time);
+                       $myform .= "</td></tr>";
+                       
+                       break;   
+
+                       case 'updatestamp':
+/*generates a timestamp each time it's altered or viewed*/
+//                     $myform .= "<tr><td>$value[0]</td><td>now()";
+                       $timenow = time();
+                       $myform .= form_hidden($key, $timenow);
+                       $myform .= "</td></tr>";
+                       
+                       break;   
+                         
+                       default:
+                       $place =  __FILE__.__LINE__;  
+                       $outcome = "exception: $place: switch can't handle $fieldtype";
+/*test block: what if the switch doesn't recognise the form type?'*/
+                        if($test == 'second')
+                              {
+                              return $outcome;  
+                             }
+/*test block ends*/
+                       else { 
+                         
+                       $this->failure($outcome, $controller);  
+                              }
+                       }
+/*end the foreach loop which generates the form*/
+          }
+          $myform .= form_hidden('submit',$time);	
+          $myform .= form_close();
+          $myform .= "</table>";
+      
+/*Finally we've built our form and populated it! Now, stuff the form in an array variable and send it to the model which builds up the rest of the view.*/
+          $data['text'] = $myform;
+          $this->display->mainpage($data);
+}

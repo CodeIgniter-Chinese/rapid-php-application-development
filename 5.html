@@ -1,0 +1,661 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+<title>第五章　简化 HTML 页面和表单设计</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+<div id="container"><a name="top"></a>
+  <div id="header">
+    <div class="title"><a href="4.html">上一页</a> | <a href="6.html">下一页</a> | <a href="table_of_contents.html">目录</a> | <a href="#bottom">转到页尾</a></div>
+  </div>
+  <div id="content">
+    <div class="main">
+      <h1>第五章　简化 HTML 页面和表单的设计</h1>
+      <p>本章介绍了另一种节约你的时间，并使你的代码更具安全性和逻辑性的方法。</p>
+      <p>首先，我们将会介绍创建视图的各种不同方法-与你的控制器和模型协同并用来显示结果的页面。</p>
+      <p>然后，你将会学到如何很快地创建 HTML 表单，与实现内建的保护；而且你也将会看到该如何校验你的表单。</p>
+      <p>我假定这本书的读者熟悉 HTML 和 CSS。下列的例子非常简单，因此，我们能把重点放在 CI 代码上。而且我已经假定我们已经写一个 CSS 文件并已把它保存在网站的某个目录中。</p>
+      <a name="C_5_1"></a>
+      <h2>5.1　编写视图</h2>
+      <p>视图是用户能看到你的网站的所有。他们使用一个统一的接口，而且可以根据需要进行修改。MVC的好处之一是你分开了表示层和逻辑层，一切都显得很干净。</p>
+      <p>到现在为止, 我们已经完成了那非常简单的“welcome”页面，（记得第三章吗？）现在让我们看看该如何使它变得更精细。</p>
+      <p>视图实际上是一组包含有你的内容的HTML结构。结构中有各种元素，如颜色，字体，文字布局等；不过视图不关心这些，它要做的只是取来内容，显示出来。</p>
+      <p>创建视图，首先你需要创建一个HTML网页的骨架，并保存为.php后缀。让我们称它为 basic_view.php 。保存在application/views目录中。（CI的loader会在这个目录寻找视图文件。）</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/html.html"><span style="color: #000099;">&lt;html&gt;</span></a></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/head.html"><span style="color: #000099;">&lt;head&gt;</span></a></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/head&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/body.html"><span style="color: #000099;">&lt;body&gt;</span></a></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/p.html"><span style="color: #000099;">&lt;p&gt;</span></a></span>Hello world!<span style="color: #009900;"><span style="color: #000099;">&lt;/p&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/body&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/html&gt;</span></span></pre>
+      </div>
+      <p>然后当你想要从一个控制器装载它时, 使用在某个函数中调用$this-&gt;load-&gt;view():</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">function</span> index<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'basic_view'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>注意，如果这是一个model或者一个helper，你将会首先装载它，然后根据需要使用它。 通过视图，调用它只需要一行代码。</p>
+      <p>当然，那是一个空的视图。为了要使它有用，我们需要内容。因此我们要增加名称和一些文本。首先我们在控制器中定义他们：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">function</span> index<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+   <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytitle'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #ff0000;">&quot;A website monitoring tool&quot;</span>;
+   <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span>  = <span style="color: #ff0000;">&quot;This website helps you to keep track of the other websites you control.&quot;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>注意我们并没有把它们定义为单独的变量，而是作为数组$data的元素。对于第一个元素， 键名是 'mytitle'，值是 &quot;A website monitoring tool&quot;。</p>
+      <p>然后，我们调用装载函数：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">function</span> index<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytitle'</span><span style="color: #66cc66;">&#93;</span>     = <span style="color: #ff0000;">&quot;A website monitoring tool&quot;</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span>      = <span style="color: #ff0000;">&quot;This website helps you to keep track of the other websites you control.&quot;</span>;
+    <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'basic_view'</span>, <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>我们把$data数组作为$this-&gt;load-&gt;view()的第二个参数，在视图名称之后。视图接收到$data数组后，使用PHP函数extract()把数组中的每个元素转换成内存变量，数组的键名即为变量名，值为变量内所包含的值。这些变量的值能直接被视图引用：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/html.html"><span style="color: #000099;">&lt;html&gt;</span></a></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/head.html"><span style="color: #000099;">&lt;head&gt;</span></a></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/head&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/body.html"><span style="color: #000099;">&lt;body&gt;</span></a></span>
+  <span style="color: #009900;"><a href="http://december.com/html/4/element/h1.html"><span style="color: #000099;">&lt;h1</span></a> <span style="color: #000066;">class</span>=<span style="color: #ff0000;">&quot;test&quot;</span><span style="color: #000099;">&gt;</span></span><span style="color: #000000;"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mytitle</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span></span> <span style="color: #009900;"><span style="color: #000099;">&lt;/h1&gt;</span></span>
+  <span style="color: #009900;"><a href="http://december.com/html/4/element/p.html"><span style="color: #000099;">&lt;p</span></a> <span style="color: #000066;">class</span>=<span style="color: #ff0000;">&quot;test&quot;</span><span style="color: #000099;">&gt;</span></span><span style="color: #000000;"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mytext</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span></span> <span style="color: #009900;"><span style="color: #000099;">&lt;/p&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/body&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/html&gt;</span></span></pre>
+      </div>
+      <p>虽然你只能传送一个变量到视图, 但是通过建立数组，你能把大量变量整洁地传入视图。它似乎复杂, 但是实际上是一种紧凑和优秀的信息传输方式。</p>
+      <a name="C_5_2"></a>
+      <h2>5.2　PHP 语法的长格式和短格式</h2>
+      <p>在我们继续之前, 先了解一下PHP标记的两种不同格式。</p>
+      <p>常用的方式是：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$somevariable</span> <span style="color: #000000; font-weight: bold;">?&gt;</span></pre>
+      </div>
+      <p>然而，如果你不喜欢这种， CI 也支持一个较短的版本:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">&lt;?</span>=<span style="color: #0000ff;">$somevariable</span><span style="color: #000000; font-weight: bold;">?&gt;</span></pre>
+      </div>
+      <p>&lt;?php ?&gt;被&lt;? ?&gt;取代，而且 echo 由“=”代替，你也能用短格式来使用if, for, foreach, 和while循环。完整的介绍请参考在线用户手册。</p>
+      <p>我个人偏好标准格式，因为我已习惯使用它。如果你使用短格式,注意有些服务器不能正确地解释短格式。 如果你仍然想要使用短标签, 可以打开 config 文件, 改变下列设置:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$config</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'rewrite_short_tags'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #000000; font-weight: bold;">FALSE</span>;</pre>
+      </div>
+      <p>如设置为TRUE，CI在把它们送到服务器之前，将把短格式改成标准格式。不过这样做会对调试造成困难。因此，建议使用标准格式。</p>
+      <p>CI 也有一个 '模板语法分析器' 类，允许你把变量放入HTML代码而不需要任何的PHP代码。本文不涉及这个内容。如果在与可能被 PHP 代码弄糊涂的 HTML 设计者合作，它相当有用，细节请参见用户手册。</p>
+      <a name="C_5_3"></a>
+      <h2>5.3　嵌套视图</h2>
+      <p>为了最大程度地重用代码，我们可以提取HTML页面的公共部分，例如，header和footer，然后在显示实际视图时把它们组合起来。</p>
+      <p>让我们创建一个视图的header部分，这是一个符合W3C标准的header、包含HTML声明和meta数据。</p>
+      <p>首先，我们列出header部分的代码：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #00bbdd;">&lt;!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'http://www.</span><span style="color: #00bbdd;">w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'&gt;
+</span><span style="color: #009900;"><a href="http://december.com/html/4/element/html.html"><span style="color: #000099;">&lt;html</span></a> xmlns=<span style="color: #ff0000;">&quot;http://www.w3.org/1999/xhtml&quot;</span><span style="color: #000099;">&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/title.html"><span style="color: #000099;">&lt;title&gt;</span></a></span><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mywebtitle</span> <span style="color: #000000; font-weight: bold;">?&gt;</span><span style="color: #009900;"><span style="color: #000099;">&lt;/title&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/base.html"><span style="color: #000099;">&lt;base</span></a> <span style="color: #000066;">href</span>=<span style="color: #ff0000;">&quot;<span style="color: #000000;"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #ff0000;">&quot;$base&quot;</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span></span>&quot;</span> /<span style="color: #000099;">&gt;</span></span>
+<span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$myrobots</span> <span style="color: #000000; font-weight: bold;">?&gt;</span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/link.html"><span style="color: #000099;">&lt;link</span></a> <span style="color: #000066;">rel</span>=<span style="color: #ff0000;">&quot;stylesheet&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;text/css&quot;</span> <span style="color: #000066;">href</span>=<span style="color: #ff0000;">&quot;<span style="color: #000000;"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #ff0000;">&quot;$base/$css&quot;</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span></span>&quot;</span> /<span style="color: #000099;">&gt;</span></span></pre>
+      </div>
+      <p>把这保存为views/header_view。下面介绍它包含的变量：</p>
+      <ul>
+        <li>$mywebtitle，是标题（meta标签；这将不在屏幕上出现，但是搜索引擎将会读取,每个页面的meta有可能有变化，因此，我把它设为一个变量。）</li>
+        <li>$myrobots, 这个变量用来告诉机器人当前页面不需要被编入索引。</li>
+        <li>$base和$css，描述基本网址的字符串。$css包含css文件的路径信息，这些信息会从CI的config文件读取（也可以用CI config 变量 site_url代替。）</li>
+      </ul>
+      <p>现在我们需要知道:</p>
+      <ul>
+        <li>我们如何调用嵌套视图？</li>
+        <li>我们如何获取变量的值？</li>
+      </ul>
+      <p>有两个方法可选择。第一，在主调用视图中读入其它视图，因此我们的主视图，也就是basic_view，应该加上一行：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/html.html"><span style="color: #000099;">&lt;html&gt;</span></a><a href="http://december.com/html/4/element/head.html"><span style="color: #000099;">&lt;head&gt;</span></a></span>
+<span style="color: #000000; font-weight: bold;">&lt;?php</span> <span style="color: #0000ff;"><strong>$this</strong></span><strong>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span></strong><span style="color: #66cc66;"><strong>&#40;</strong></span><span style="color: #ff0000;"><strong>'header_view'</strong></span><span style="color: #66cc66;"><strong>&#41;</strong></span><strong>; <span style="color: #000000;">?&gt;</span></strong>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/head&gt;</span><a href="http://december.com/html/4/element/body.html"><span style="color: #000099;">&lt;body&gt;</span></a></span>
+<span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mytitle</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span>
+<span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mytext</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/body&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/html&gt;</span></span></pre>
+      </div>
+      <p>变量可以在控制器中加上两行:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">function</span> index<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytitle'</span><span style="color: #66cc66;">&#93;</span>    = <span style="color: #ff0000;">&quot;A website monitoring tool&quot;</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span>     = <span style="color: #ff0000;">&quot;This website helps you to keep track of the other websites you control.&quot;</span>;
+    <span style="color: #0000ff;"><strong>$data</strong></span><span style="color: #66cc66;"><strong>&#91;</strong></span><span style="color: #ff0000;"><strong>'myrobots'</strong></span><span style="color: #66cc66;"><strong>&#93;</strong></span><strong>   = <span style="color: #ff0000;">'&lt;meta name=&quot;robots&quot; content=&quot;noindex,nofollow&quot;&gt;'</span>;
+    <span style="color: #0000ff;">$data</span></strong><span style="color: #66cc66;"><strong>&#91;</strong></span><span style="color: #ff0000;"><strong>'mywebtitle'</strong></span><span style="color: #66cc66;"><strong>&#93;</strong></span><strong> = <span style="color: #ff0000;">'Web monitoring tool'</span>;
+    <span style="color: #0000ff;">$data</span></strong><span style="color: #66cc66;"><strong>&#91;</strong></span><span style="color: #ff0000;"><strong>'base'</strong></span><span style="color: #66cc66;"><strong>&#93;</strong></span><strong>       = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span></strong><span style="color: #66cc66;"><strong>&#40;</strong></span><span style="color: #ff0000;"><strong>'base_url'</strong></span><span style="color: #66cc66;"><strong>&#41;</strong></span><strong>;
+    <span style="color: #0000ff;">$data</span></strong><span style="color: #66cc66;"><strong>&#91;</strong></span><span style="color: #ff0000;"><strong>'css'</strong></span><span style="color: #66cc66;"><strong>&#93;</strong></span><strong>        = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span></strong><span style="color: #66cc66;"><strong>&#40;</strong></span><span style="color: #ff0000;"><strong>'css'</strong></span><span style="color: #66cc66;"><strong>&#41;</strong></span><strong>;</strong>
+    <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'basic_view'</span>, <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>在这里新的变量$myrobots，$css，$base，$mywebtitle被创建为数组$data的新元素，当header_view被basic_view调用时，CI使用extract()解开他们，在视图中显示出来（在两个视图中不要出现同名的变量，否则会引起冲突）。</p>
+      <p>第二个方法将把视图加入控制器里面，给它分配一个变量：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">function</span> index<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytitle'</span><span style="color: #66cc66;">&#93;</span>    = <span style="color: #ff0000;">&quot;A website monitoring tool&quot;</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span>     = <span style="color: #ff0000;">&quot;This website helps you to keep track of the other websites you control.&quot;</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'myrobots'</span><span style="color: #66cc66;">&#93;</span>   = <span style="color: #ff0000;">'&lt;meta name=&quot;robots&quot; content=&quot;noindex,nofollow&quot;&gt;'</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mywebtitle'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #ff0000;">'Web monitoring tool'</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'base'</span><span style="color: #66cc66;">&#93;</span>       = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'base_url'</span><span style="color: #66cc66;">&#41;</span>;
+    <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'css'</span><span style="color: #66cc66;">&#93;</span>        = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'css'</span><span style="color: #66cc66;">&#41;</span>;
+    <span style="color: #0000ff;"><strong>$data</strong></span><span style="color: #66cc66;"><strong>&#91;</strong></span><span style="color: #ff0000;"><strong>'header'</strong></span><span style="color: #66cc66;"><strong>&#93;</strong></span><strong>     = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span></strong><span style="color: #66cc66;"><strong>&#40;</strong></span><span style="color: #ff0000;"><strong>'header_view'</strong></span><strong>, <span style="color: #ff0000;">''</span>, <span style="color: #000000;">TRUE</span></strong><span style="color: #66cc66;"><strong>&#41;</strong></span><strong>;</strong>
+    <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'basic_view'</span>, <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>从严格的 MVC 设计原则来看，这样做似乎更正确。</p>
+      <a name="I_parameters"></a>
+      <p>实际上有三个参数可传给 load-&gt;view 函数。</p>
+      <ul>
+        <li>第一个，header_view，是要装载的视图的名字。这是必选。</li>
+        <li>第二个，是可选项，是装入视图的数据。</li>
+        <li>第三个是布尔值。如果你不指定它，默认是FALSE，将视图送到浏览器。然而，在嵌套视图这种情况下，你需要将header_view送到主视图basic_view中，因此需要将第三项参数设置为TRUE。</li>
+      </ul>
+      <p>现在我们已经建立了与stylesheet的关联，我们能够用定义好的css中的类来更新视图中的显示部分：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/html.html"><span style="color: #000099;">&lt;html&gt;</span></a></span><span style="color: #009900;"><a href="http://december.com/html/4/element/head.html"><span style="color: #000099;">&lt;head&gt;</span></a></span>
+<span style="color: #000000; font-weight: bold;">&lt;?php</span> <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'header_view'</span><span style="color: #66cc66;">&#41;</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/head&gt;</span></span><span style="color: #009900;"><a href="http://december.com/html/4/element/body.html"><span style="color: #000099;">&lt;body&gt;</span></a></span>
+  <span style="color: #009900;"><a href="http://december.com/html/4/element/h1.html"><span style="color: #000099;">&lt;h1</span></a> <span style="color: #000066;">class</span>=<span style="color: #ff0000;">&quot;test&quot;</span><span style="color: #000099;">&gt;</span></span><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mytitle</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span> <span style="color: #009900;"><span style="color: #000099;">&lt;/h1&gt;</span></span>
+  <span style="color: #009900;"><a href="http://december.com/html/4/element/p.html"><span style="color: #000099;">&lt;p</span></a> <span style="color: #000066;">class</span>=<span style="color: #ff0000;">&quot;test&quot;</span><span style="color: #000099;">&gt;</span></span><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$mytext</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span> <span style="color: #009900;"><span style="color: #000099;">&lt;/p&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/body&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/html&gt;</span></span></pre>
+      </div>
+      <p>请注意CI的 MVC 系统能让你分离显示的内容。 视图只为内容提供结构, 结构的风格则由css stylesheet控制。</p>
+      <p>视图不关心什么 $mytext的内容是什么，它只是按照正确的格式在正确的位置上显示它。 定义$mytext的控制器甚至不知道（也不关心）它产生的数据如何被显示。</p>
+      <p>因此，如果我们需要改变我们网页的外观，或在一个不同的系统（如WAP）上显示他们，那么我们只需要改变视图和CSS stylesheet。我们不需要修改控制器。</p>
+      <p>而且如果我们想要改变在网页上的信息，我们不需要去改动视图，而是只需要改变控制器里的变量值。</p>
+      <p>记得“松耦合”原则吗？这里再一次体会到了这个原则，这使设计、升级和维持你的网站比较容易。</p>
+      <a name="C_5_4"></a>
+      <h2>5.4　网站架构的现实问题</h2>
+      <p>请稍等片刻，我们在 header_view 中动态生成了 CSS 样式表的地址：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/link.html"><span style="color: #000099;">&lt;link</span></a> <span style="color: #000066;">rel</span>=<span style="color: #ff0000;">&quot;stylesheet&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;text/css&quot;</span> <span style="color: #000066;">href</span>=<span style="color: #ff0000;">&quot;<span style="color: #000000;"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #ff0000;">&quot;$base/$css&quot;</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span></span>&quot;</span> /<span style="color: #000099;">&gt;</span></span></pre>
+      </div>
+      <p>这意味着控制器必须生成变量的值,这些值与数据如何被显示有关, 但是我们在上面说过控制器不应该知道或者关心它们具体的值是什么。这样不就符合了我们刚才提及的所谓'松耦合'原则？动态地产生这些数据需要这样一些操作：首先，控制器必须在 config 文件中读取它们，然后控制器必须在$data数组中装入它们而且传送它们到视图，然后视图必须解开成为内存变量$base和$css, 真正使用这两个变量的是HTML协议。</p>
+      <p>似乎这样做太绕圈子了，为什么不直接在视图中静止地插入数据？</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/link.html"><span style="color: #000099;">&lt;link</span></a> <span style="color: #000066;">rel</span>=<span style="color: #ff0000;">&quot;stylesheet&quot;</span> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;text/css&quot;</span> <span style="color: #000066;">href</span>=<span style="color: #ff0000;">&quot;http://www.mysite.com/mystylesheet.css&quot;</span> /<span style="color: #000099;">&gt;</span></span></pre>
+      </div>
+      <p>用变量方式做这件事情的好处是：如果你迁移网站, 或移动你的 CSS 文件，你只需要在 config 文件中改变设置，而且每个控制器和视图将会立刻反映变化。而如果把CSS位置硬编码到每个视图的后果是一旦需要变化，你必须到每个视图中去修改它们，明白这样做的好处了吧？</p>
+      <p>没有一个正确的答案。这取决于你的优先级。关键是要合理运用 MVC 设计原则，让它作为一种工具，而不是束缚。为此，CI 给了你很大自由。</p>
+      <p>第三种方法，也是我使用的方法，创建一个特殊的“Display”模型。这个模型用于构建标准的页面。把页面头部和 CSS 文件引用等内容放进模型中，并且模型会接受一个存放某些信息的参数。我将在本章其它章节讲解这个模型。</p>
+      <a name="C_5_5"></a>
+      <h2>5.5　CI 的表单辅助函数：输入数据</h2>
+      <p>让我们把目光转向你如何使用你的 HTML 页。任何动态的网站最重要部份之一是和用户互动，而且这通常意味着使用 HTML 表单。 编写表单是重复和无聊的。</p>
+      <p>CI 的表单辅助函数是非常有用的代码片断。它有一个稍稍不同的定义，使表单创建起来比较容易。让我们建立一个表单，这个表单允许我们在浏览器中录入数据。在websites数据库的sites表中，我们想要录入网站的名字、类型和网址，和更新的日期。</p>
+      <p>你能用简单的 HTML 代码建立表单，或者你能在一个控制器内建立它，把它赋给一个变量，然后调用视图，而且传送该变量到视图。我正在按第二种方式做。</p>
+      <p>第一，我们必须装载表单辅助函数到我们需要使用它的控制器内。然后，我们把下列的代码放入控制器的构造函数：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">helper</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'form'</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>然后，我们必须开始编写表单。</p>
+      <p>现在, 为了生成表单的输入项, 我们不用这样写:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$variable</span> .= <span style="color: #ff0000;">'&lt;input type=&quot;text&quot; name=&quot;name&quot; value=&quot;&quot;&gt;'</span>;</pre>
+      </div>
+      <p>CI 允许你这样做：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$variable</span> .= form_input<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'name'</span>, <span style="color: #ff0000;">''</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>（记得'name'是输入项的名称，'value'是你想输入的内容。在这里可以设定value的初始值，或你能动态地从表单中获取。）</p>
+      <p>嗯，你可能会说，48 个字符变成 33 个字符，没少几个字符，特别是我必须先装载这个辅助函数（另外的 28 个字符）。何必呢？理由是：</p>
+      <a name="C_5_5_1"></a>
+      <h2>5.5.1　使用表单辅助函数的好处之一：清楚</h2>
+      <p>使用 CI 表单辅助函数的第一个好处是你的代码绝对的清楚。如果你想要一个比较精细的输入框，如果用HTML是这样的：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$variable</span> = <span style="color: #ff0000;">'&lt;input type=&quot;text&quot; name=&quot;url&quot; id=&quot;url&quot; value=&quot;www.mysite.com&quot; maxlength=&quot;100&quot; size=&quot;50&quot; style=&quot;yellow&quot; /&gt;'</span>;</pre>
+      </div>
+      <p>（记住，type 是输入框的类型：text、hidden 等等。</p>
+      <p>name是将在$_POST数组中取得的变量名称。id是在网页上定位这个输入框的标识符，如果你使用JavaScript的话。</p>
+      <p>value是输入框里显示的值，它一开始是一个默认值，用户也可以在输入一个新的值。</p>
+      <p>maxlength和size是明显的；style一组HTML格式或者在css stylesheet 中定义。）</p>
+      <p>CI 用一个数组代替上述的HTML代码：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$data</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span>
+               <span style="color: #ff0000;">'name'</span>             =&gt;   <span style="color: #ff0000;">'url'</span>,
+               <span style="color: #ff0000;">'id'</span>               =&gt;   <span style="color: #ff0000;">'url'</span>,
+               <span style="color: #ff0000;">'value'</span>            =&gt;   <span style="color: #ff0000;">'www.mysite.com'</span>,
+               <span style="color: #ff0000;">'maxlength'</span>        =&gt;   <span style="color: #ff0000;">'100'</span>,
+               <span style="color: #ff0000;">'size'</span>             =&gt;   <span style="color: #ff0000;">'50'</span>,
+               <span style="color: #ff0000;">'style'</span>            =&gt;   <span style="color: #ff0000;">'yellow'</span>
+            <span style="color: #66cc66;">&#41;</span>;
+
+<span style="color: #0000ff;">$variable</span> = form_input<span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>它看上去蛮长的，实际上并不比HTML代码长，而且，它非常清楚，容易理解和维护。而且是动态的。</p>
+      <p>隐藏的表单输入框非常简单。如果我们想要自动地记录我们的数据库被更新的日期。我们把日期放入一个$date变量，然后：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php">form_hidden<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'updated'</span>, <span style="color: #0000ff;">$date</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p> 如果你想要一个'文本'输入框, 给你的使用者提供一个可以输入超过一行的地方，可以使用CI的form_textarea()函数，下面的代码使用默认的长度，在网页上显示一个文件输入框：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$data</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span>
+               <span style="color: #ff0000;">'name'</span>             =&gt; <span style="color: #ff0000;">'url'</span>,
+               <span style="color: #ff0000;">'id'</span>               =&gt; <span style="color: #ff0000;">'url'</span>,
+               <span style="color: #ff0000;">'value'</span>            =&gt; <span style="color: #ff0000;">'www.mysite.com'</span>
+            <span style="color: #66cc66;">&#41;</span>;
+
+<span style="color: #0000ff;">$variable</span> = form_textarea<span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>CI的表单辅助函数在你编写下拉框，多选框和单选框时特别有用，如果我们要改变我们的URL输入框为一个下拉框，允许用户从下拉列表中选取一个URL。首先，把下拉列表的选项存入一个数组，然后调用form_dropdown()函数：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$urlarray</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span>
+                   <span style="color: #ff0000;">'1'</span>         =&gt; <span style="color: #ff0000;">'www.this.com'</span>,
+                   <span style="color: #ff0000;">'2'</span>         =&gt; <span style="color: #ff0000;">'www.that.com'</span>,
+                   <span style="color: #ff0000;">'3'</span>         =&gt; <span style="color: #ff0000;">'www.theother.com'</span>
+                <span style="color: #66cc66;">&#41;</span>;
+
+<span style="color: #0000ff;">$variable</span> = form_dropdown<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'url'</span>, <span style="color: #0000ff;">$urlarray</span>, <span style="color: #ff0000;">'1'</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>被传给表单中url下拉框的第一个参数是输入框的名字；第二个是包含下拉列表的数组，第三个默认选项。换句话说，如果使用者接受默认值，你的$_POST数组将会包含值 'url=&gt;1' ，但是你的用户将会见到选项 'www.this.com'。</p>
+      <p>如果使用HTML代码编写：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/select.html"><span style="color: #000099;">&lt;select</span></a> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;type&quot;</span><span style="color: #000099;">&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/option.html"><span style="color: #000099;">&lt;option</span></a> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;1&quot;</span> <span style="color: #000066;">selected</span>=<span style="color: #ff0000;">&quot;selected&quot;</span><span style="color: #000099;">&gt;</span></span>www.this.com<span style="color: #009900;"><span style="color: #000099;">&lt;/option&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/option.html"><span style="color: #000099;">&lt;option</span></a> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;2&quot;</span><span style="color: #000099;">&gt;</span></span>www.that.com<span style="color: #009900;"><span style="color: #000099;">&lt;/option&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/option.html"><span style="color: #000099;">&lt;option</span></a> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;3&quot;</span> <span style="color: #000099;">&gt;</span></span>www.theother.com<span style="color: #009900;"><span style="color: #000099;">&lt;/option&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/select&gt;</span></span></pre>
+      </div>
+      <p>CI实现的代码实际上比较短, 很容易学会。</p>
+      <p>如果你在一个数据库表('urls')中储存你的可能选择的网址的目录，那么生成一个动态下拉框很容易。首先把数据从表中读出放到一个数组中：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$urlarray</span>    =      <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id, url'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'urls'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+  <span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">result</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$row</span><span style="color: #66cc66;">&#41;</span>
+  <span style="color: #66cc66;">&#123;</span>
+      <span style="color: #0000ff;">$urlarray</span><span style="color: #66cc66;">&#91;</span><span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">id</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">url</span>;
+  <span style="color: #66cc66;">&#125;</span>
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>然后重复我们以前用过的CI form_dropdown()功能：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> form_dropdown<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'type'</span>, <span style="color: #0000ff;">$urlarray</span>, <span style="color: #ff0000;">'1'</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>只有$urlarray的内容会发生变化；代码总是一样的。</p>
+      <p>如果你正在更新一个表中的记录而不是插入，你不想为你的用户显示默认值。你想要为那一个记录显示已经存在的值。你应该已经知道你想要的修改的记录的id值，因此，你需要先读取数据库中'site' 表中相关记录。确定把查询结果赋给一个变量，使用第二个变量取出第一个变量的中的相关记录，再调用CI的form_dropdown函数，把第二个变量和对应的列名作为参数传入：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id, url, name'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id'</span>,<span style="color: #ff0000;">'$id'</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #0000ff;">$sitequery</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'sites'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$siterow</span> = <span style="color: #0000ff;">$sitequery</span>-&gt;<span style="color: #006600;">row</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>然后你的 CI 下拉框函数会从中读取相关信息：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> form_dropdown<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'url'</span>, <span style="color: #0000ff;">$urlarray</span>, <span style="color: #0000ff;">$siterow</span>-&gt;<span style="color: #006600;">url</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>本书没有太多的篇幅讨论所有的表单辅助函数。它还能编写单选框，隐藏文件框，多选框和一些其它的输入框，完整的资料请参考CI用户手册。</p>
+      <a name="C_5_5_2"></a>
+      <h2>5.5.2　使用表单辅助函数的好处之二：自动化</h2>
+      <p>使用表单辅助函数的第二个好处是可以自动化实现一些功能，不然的话，你只能自己编写相关的脚本了。</p>
+      <p>首先, 它拦截HTML的一些字符，比如用户输入的引号，并且转义它们以免破坏表单。</p>
+      <p>其次，它自动链接。当你打开一个表单时，你必须声明目标页，它将会接受表单的数据并且处理它。（在CI中，这是一个控制器里面的一个功能而不是一个静态页。比如它指向控制器的更新函数。）因此，如果你用纯 HTML 代码，你将会这样写：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/form.html"><span style="color: #000099;">&lt;form</span></a> <span style="color: #000066;">method</span>=<span style="color: #ff0000;">&quot;post&quot;</span> <span style="color: #000066;">action</span>=<span style="color: #ff0000;">&quot;http:/www.mysite.com/index.php/websites/update&quot;</span> /<span style="color: #000099;">&gt;</span></span></pre>
+      </div>
+      <p>如果你用 CI 打开你的表单，你只需要这样做：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php">form_open<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'websites/update'</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>CI自动地在你的config文件中取出基本URL并定位到对应的控制器函数。再次强调，如果你迁移你的网站，你只需要修改config文件，而不是去一个一个地修改代码文件。</p>
+      <p>顺便提一下，CI假定你的表单将会总是以POST的方式提交数据而不是GET方式。CI普遍使用URL本身，因此，不要搞错。</p>
+      <a name="C_5_6"></a>
+      <h2>5.6　我的“Display<span class="songti">”</span>模型</h2>
+      <p>作为示范（稍微简化了一下），这里是我的 Display 模型：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">&lt;?php</span>
+<span style="color: #000000; font-weight: bold;">class</span> Display <span style="color: #000000; font-weight: bold;">extends</span> Model <span style="color: #66cc66;">&#123;</span>
+
+<span style="color: #808080; font-style: italic;">/*create the array to pass to the views*/</span>
+    <span style="color: #000000; font-weight: bold;">var</span> <span style="color: #0000ff;">$data</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #808080; font-style: italic;">/*two other class variables*/</span>
+    <span style="color: #000000; font-weight: bold;">var</span> <span style="color: #0000ff;">$base</span>;
+    <span style="color: #000000; font-weight: bold;">var</span> <span style="color: #0000ff;">$status</span> = <span style="color: #ff0000;">''</span>;
+<span style="color: #808080; font-style: italic;">/*the constructor function: this calls the 'model' parent class, loads
+other CI libraries and helpers it requires, and dynamically sets
+variables*/</span>
+    <span style="color: #000000; font-weight: bold;">function</span> Display<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>
+    <span style="color: #66cc66;">&#123;</span>
+        parent::<span style="color: #006600;">Model</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">helper</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'form'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'user_agent'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'errors'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'menu'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'session'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #808080; font-style: italic;">/*now set the standard parts of the array*/</span>
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'css'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'css'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'base'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'base_url'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">base</span>         = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">config</span>-&gt;<span style="color: #006600;">item</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'base_url'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'myrobots'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #ff0000;">'&lt;meta name=&quot;robots&quot; content=&quot;noindex,nofollow&quot; /&gt;'</span>;
+<span style="color: #808080; font-style: italic;">/*note that CI's session stuff doesn't automatically recall the extra
+variables you have added, so you have to look up the user's status in
+the ci_sessions table*/</span>
+        <span style="color: #0000ff;">$sessionid</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">session</span>-&gt;<span style="color: #006600;">userdata</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'session_id'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'status'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'session_id'</span>, <span style="color: #0000ff;">$sessionid</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'ci_sessions'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+        <span style="color: #66cc66;">&#123;</span>
+            <span style="color: #0000ff;">$row</span> = <span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">row</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+            <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">status</span> = <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">status</span>;
+        <span style="color: #66cc66;">&#125;</span>
+    <span style="color: #66cc66;">&#125;</span>
+<span style="color: #808080; font-style: italic;">/*function to assemble a standard page. Any controller can call this.
+Just supply as $mydata an array, of key/value pairs for the contents
+you want the view to display. Available variables in this view are:
+mytitle. menu, mytext, diagnostic
+*/</span>
+    <span style="color: #000000; font-weight: bold;">function</span> mainpage<span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$mydata</span><span style="color: #66cc66;">&#41;</span>
+    <span style="color: #66cc66;">&#123;</span>
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytitle'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #ff0000;">'Monitoring website'</span>;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'diagnostic'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$diagnostic</span>;
+        <span style="color: #b1b100;">foreach</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$mydata</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$key</span> =&gt; <span style="color: #0000ff;">$variable</span><span style="color: #66cc66;">&#41;</span>
+        <span style="color: #66cc66;">&#123;</span>
+            <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #0000ff;">$key</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$variable</span>;
+        <span style="color: #66cc66;">&#125;</span>
+<span style="color: #808080; font-style: italic;">/*here's the menu class we looked at in Chapter 3*/</span>
+        <span style="color: #0000ff;">$fred</span> = <span style="color: #000000; font-weight: bold;">new</span> menu;
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'session'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #0000ff;">$mysess</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">session</span>-&gt;<span style="color: #006600;">userdata</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'session_id'</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span><a href="http://www.php.net/isset"><span style="color: #000066;">isset</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">status</span><span style="color: #66cc66;">&#41;</span> &amp;&amp; <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">status</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+        <span style="color: #66cc66;">&#123;</span>
+            <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'menu'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$fred</span>-&gt;<span style="color: #006600;">show_menu</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">status</span><span style="color: #66cc66;">&#41;</span>;
+        <span style="color: #66cc66;">&#125;</span>
+        <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'basic_view'</span>, <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">data</span><span style="color: #66cc66;">&#41;</span>;
+    <span style="color: #66cc66;">&#125;</span>
+<span style="color: #66cc66;">&#125;</span>
+<span style="color: #000000; font-weight: bold;">?&gt;</span></pre>
+      </div>
+      <p>我能用下面的代码在任何的控制器中调用这个主页:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">model</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'display'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">display</span>-&gt;<span style="color: #006600;">mainpage</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>并且我也知道我的视图正在被动态地装配，完全符合我的需要。</p>
+      <a name="C_5_7"></a>
+      <h2>5.7　CI 的验证类：方便地检验数据</h2>
+      <p>在你编写HTML表单时一个重要的工作是检查输入。我们都知道我们应该这样做，但是…直到现在为止，我们已经编写过一种简单的表单，将会信任地接受任何用户输入的任何数据。 你应该意识到可能有一些用户是不怀好意的，而且所有的其余都是不负责任的。（别直接告诉他们。）如果他们有可能犯一个简单的错误，他们就会犯。确保你始终检查用户输入的数据，并使它们符合你的要求。</p>
+      <p>你能在客户端用javascript做到这一点，但是这样做作用有限，使用者能容易地绕过它。 而在服务器端的校验需要一个额外的信息来回，这点额外的开销是值得的。</p>
+      <p>编写校验代码也相当复杂，但是，你一定猜到了。CI提供了一个验证类可以使这项工作变得非常容易。</p>
+      <p>让我们改变我们自己的表单处理过程来实现校验。你需要在表单里作一些调整，还要在它指向的函数里作一些调整。</p>
+      <p>如果你的表单由 form_open('sites/update') 开始, 你需要修改的函数是'sites'控制器里的'update'函数。如果你没有使用CI 的表单辅助函数，HTML等价代码是：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/form.html"><span style="color: #000099;">&lt;form</span></a> <span style="color: #000066;">method</span>=<span style="color: #ff0000;">&quot;post&quot;</span> <span style="color: #000066;">action</span>=<span style="color: #ff0000;">&quot;http:/www.mysite.com/index.php/sites/update&quot;</span> /<span style="color: #000099;">&gt;</span></span></pre>
+      </div>
+      <p>你需要做三件事情:</p>
+      <ol>
+        <li>设置校验</li>
+        <li>设置控制器</li>
+        <li>设置表单</li>
+      </ol>
+      <a name="C_5_7_1"></a>
+      <h2>5.7.1　设置验证规则</h2>
+      <p>在你的表单指定的那个函数中装载验证类并声明你的校验规则：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'validation'</span><span style="color: #66cc66;">&#41;</span>;
+
+<span style="color: #0000ff;">$rules</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'url'</span><span style="color: #66cc66;">&#93;</span>    = <span style="color: #ff0000;">&quot;required&quot;</span>;
+<span style="color: #0000ff;">$rules</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'name'</span><span style="color: #66cc66;">&#93;</span>   = <span style="color: #ff0000;">&quot;required&quot;</span>;
+
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">set_rules</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$rules</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>'url'和 'name'输入框一定要有输入内容。CI提供了各种操作，确保一些操作一定要进行，用户手册全面地解释了这些内容。他们的含义非常明了：min_length[6] 显然意味着输入的信息长度一定要大于等于六个字符。numeric意味着只能输入数字，等等。你还能组合规则，用“|”把它们连接起来：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$rules</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'name'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #ff0000;">&quot;required|alpha|max_length[12]&quot;</span>;</pre>
+      </div>
+      <p>意味着不能为空，字母，长度至少12个字符。你甚至能编写你自己的规则。</p>
+      <a name="C_5_7_2"></a>
+      <h2>5.7.2　设置控制器</h2>
+      <p>仍然在相同的函数中，创建一个 'if/else'语句：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">run</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> == <span style="color: #000000; font-weight: bold;">FALSE</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'myform'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span>
+<span style="color: #b1b100;">else</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">view</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'success'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>你进行确认测试，而且如果输入内容不能通过测试的话，就再返回到输入页面。(如果你在一个控制器内的一个函数中生成你的视图, 则使用$this-&gt;myfunction代替$this-&gt;load-&gt;view('myform')。</p>
+      <p>如果校验成功,就生成view(&quot;success&quot;),告诉用户输入的信息已被接受, 然后给出一个链接让他进到下一步。</p>
+      <a name="C_5_7_3"></a>
+      <h2>5.7.3　设置表单</h2>
+      <p>录入信息的表单也要做相应的调整。每次校验没有通过的话，你不但要让系统返回到录入界面，而且必须说明哪一项出错，以及为什么出错。因此你必须在表单的某处给出一个附加信息：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">error_string</span>;</pre>
+      </div>
+      <p>这行代码显示适当的信息, 避免用户在那里犯嘀咕。</p>
+      <p>你也需要自动地填写用户已正确输入的那些内容，否则，用户必须再次录入上一次他们已经正确录入的信息。</p>
+      <p>首先，你需要在控制器里增加更多的代码。而且是立刻加在校验规则之后，加入一个数组来存放给用户的提示信息。 数组的键名是你表单中的输入框名，值是给出的错误提示信息：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$fields</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'url'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #ff0000;">'The URL of your site'</span>;</pre>
+      </div>
+      <p>然后，增加一行代码：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">set_fields</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$fields</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>现在你已经在控制器里声明了一个存有信息的数组，你只需要在表单内加入显示它们的代码。对于HTML代码，这会是：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">HTML 代码</div>
+        </div>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/input.html"><span style="color: #000099;">&lt;input</span></a> <span style="color: #000066;">type</span>=<span style="color: #ff0000;">&quot;text&quot;</span> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;url&quot;</span> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;<span style="color: #000000;"><span style="color: #000000; font-weight: bold;">&lt;?php</span> <a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">url</span>; <span style="color: #000000; font-weight: bold;">?&gt;</span></span>&quot;</span> /<span style="color: #000099;">&gt;</span></span></pre>
+      </div>
+      <p>或者，如果你正在使用 CI 的表单辅助函数：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$variable</span> .= form_input<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'url'</span>, <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">url</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>如果使用这个表单插入一个新的记录到数据库的表中，上面的代码已经够用了。如果你正在使用表单更新一个已经输入过的记录，当表单第一次显示时，应该在输入框中显示数据库表中的实际信息，这个时候，它的值应该是从数据库里读回来的（记得前面调用 $siterow-&gt;url 的例子吗？）</p>
+      <p>如果你在更新一个现有的记录时，上一次的录入内容由于一个输入框内容没有录入而无法通过校验，在重新回到表单之前，你需要在通过校验的输入框中填写用户刚录入的信息，而在校验出错的输入框里再次放入从数据库表中读入的信息，否则，你就需要再次录入已经校验通过的信息了。</p>
+      <p>还好，这可以通过一个简单的“if/else”语句来实现：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><a href="http://www.php.net/isset"><span style="color: #000066;">isset</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$_POST</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'url'</span><span style="color: #66cc66;">&#93;</span><span style="color: #66cc66;">&#41;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$myvalue</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">validation</span>-&gt;<span style="color: #006600;">url</span>;
+<span style="color: #66cc66;">&#125;</span>
+<span style="color: #b1b100;">else</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #0000ff;">$myvalue</span> = <span style="color: #0000ff;">$siterow</span>-&gt;<span style="color: #006600;">url</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>第一次表单显示的时候，在$_POST数组中将会没有内容；因此你从数据库的相关表中读取信息。但当你提交一次以后，$_POST数组中有数据存在，所以你选择validation函数中返回的值。</p>
+      <p>查阅CI用户手册，了解表单校验的其它内容，你还可以做到：</p>
+      <ul>
+        <li>自动地准备你的数据, 举例来说, 通过它消除可能产生的跨站脚本攻击</li>
+        <li>编写你自己的复杂校验标准，举例来说，用户录入的值不能已经存在于数据库中</li>
+        <li>编写你自己的错误信息</li>
+      </ul>
+      <p>CI的验证类非常有用而又功能强大，值得花时间好好研读并掌握。</p>
+      <a name="C_5_8"></a>
+      <h2>5.8　总结</h2>
+      <p>我们已经学习了 CI 中生成视图的方法，以及它如何让你创建“迷你-视图”，你能把视图嵌套到其它视图中去。这意谓着你能建立共用的 HTML 头部和 HTML 尾部，实现视图的重用。</p>
+      <p>我们也已经见到 CI 如何帮助你编写 HTML 录入表单，通过表单辅助函数简化 HTML 表单的编写工作。</p>
+      <p>最后，我们学习了 CI 的验证类，这是检查用户录入信息的有用工具。没有什么是完美的，但是这个工具的确能阻击你的用户录入垃圾，或企图进行攻击。它也使你的网站看起来更加专业，能够有效地捕捉用户造成的各种输入错误，而不是一味地接受无意义的输入。</p>
+      <p>在整个学习过程中，我们也再次玩味了 MVC 的原则，而且有时稍稍地做一些变通会让生活变得更容易。CI 有一种非常有柔性的哲学：如果要有效率地解决问题，就要学会灵活地使用工具。</p>
+    </div>
+  </div>
+  <a name="bottom"></a>
+  <div id="footer">
+    <div class="title"><a href="4.html">上一页</a> | <a href="6.html">下一页</a> | <a href="table_of_contents.html">目录</a> | <a href="#top">转到页首</a></div>
+    <div style="clear:none">第五章　简化 HTML 页面和表单设计</div>
+  </div>
+</div>
+</body>
+</html>

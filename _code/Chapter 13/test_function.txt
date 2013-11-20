@@ -1,0 +1,19 @@
+/*now a suite of self-test functions.*/
+
+/*first function just calls all the others and supplies any formatting you want. Also it builds/ destroys temporary data table before/ after tests on the database.*/
+    function test()
+          {
+          $return = "<h3>Test results</h3>";  
+          $this->extendarray();
+          $return .= $this->testarray();
+          $this->reducearray();
+          $return .= $this->testarray();
+          $this->testbuild();  
+          $return .= $this->testdelete();
+          $this->testdestroy();
+          $return .= $this->testinsert();
+          $return .= $this->testinsert2();
+          $return .= $this->testshowall();
+          $data['text'] = $return;
+          $this->display->mainpage($data);
+          }

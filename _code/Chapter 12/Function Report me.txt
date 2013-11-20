@@ -1,0 +1,32 @@
+function reportme($file, $line, $message)
+   {
+   $obj =& get_instance();  
+   if(isset($_POST))
+          {$bert = print_r($_POST, TRUE);}
+   else {$bert = 'no post array';}
+   if(isset($_SESSION))
+        {$sid = print_r($_SESSION, TRUE);}
+   else{$sid = 'no session array';}
+
+    $time = Gmdate("H:i j-M-Y");
+/*full report*/
+	$errorstring =  "$time - $file - $line: $message: POST array: $bert SESSION array: $sid\n";
+
+/*short report*/
+   $shortstring =  "$file - $line: $message";
+
+/*set $setting to 'test' if you want to write to the screen*/
+   $setting = 'test';
+   if($setting == 'test')
+          {echo $errorstring;}
+
+/*set $action to 'log' if you want to log errors*/
+   $action = 'log';
+   if($action == 'log')
+          {	
+          $filename = $obj->config->item('errorfile');
+          $fp = fopen("$filename", "a+")or die("cant open file");
+          fwrite($fp, $errorstring);
+          fclose($fp);
+          }        
+     }                                          

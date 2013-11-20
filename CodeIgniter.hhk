@@ -1,0 +1,1116 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="FrameName" value="right">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Active Record 类">
+		<param name="See Also" value="Active Record 类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="4.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="优点">
+			<param name="Local" value="4.html#C_4_3_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="自动机制">
+			<param name="Local" value="4.html#C_4_3_1_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="查询，创建">
+			<param name="Local" value="4.html#C_4_3_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="查询，删除">
+			<param name="Local" value="4.html#C_4_3_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="查询，读取">
+			<param name="Local" value="4.html#C_4_3_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="查询，更新">
+			<param name="Local" value="4.html#C_4_3_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="查询结果，显示">
+			<param name="Local" value="4.html#C_4_3_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="时间，节省">
+			<param name="Local" value="4.html#C_4_3_1_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="默认查询风格">
+			<param name="Local" value="4.html#C_4_3_6">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="数组">
+		<param name="See Also" value="数组">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="13.html#C_13_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="参数">
+			<param name="Local" value="13.html#I_array_parameters">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="基准测试类">
+		<param name="Local" value="14.html#I_benchmarking_class">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="图表类库">
+		<param name="See Also" value="图表类库">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="15.html#C_15_2_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="比较">
+			<param name="Local" value="15.html#C_15_2_5">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="类，CodeIgniter">
+		<param name="See Also" value="类，CodeIgniter">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="修改">
+			<param name="Local" value="12.html#C_12_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="日期辅助函数">
+			<param name="Local" value="10.html#C_10_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Inflector 辅助函数">
+			<param name="Local" value="10.html#C_10_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="语言类">
+			<param name="Local" value="10.html#C_10_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文本辅助函数">
+			<param name="Local" value="10.html#C_10_2">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="代码，测试">
+		<param name="See Also" value="代码，测试">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="端到端测试">
+			<param name="Local" value="8.html#I_end_to_end_tests">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="需要">
+			<param name="Local" value="8.html#C_8_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="单元测试">
+			<param name="Local" value="8.html#I_unit_testing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="用途">
+			<param name="Local" value="8.html#I_uses_of_CodeIgniter">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="CodeIgniter">
+		<param name="See Also" value="CodeIgniter">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="1.html#C_1_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="优点">
+			<param name="Local" value="1.html#C_1_1_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="config 文件，使用">
+			<param name="Local" value="2.html#C_2_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="配置文件">
+			<param name="Local" value="2.html#C_2_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="配置设置">
+			<param name="Local" value="4.html#C_4_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="缺点">
+			<param name="Local" value="1.html#C_1_5">
+			<param name="Local" value="14.html#C_14_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="下载">
+			<param name="Local" value="2.html#C_2_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文件结构">
+			<param name="Local" value="2.html#C_2_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文件类型">
+			<param name="Local" value="2.html#C_2_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="通讯">
+			<param name="Local" value="9.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="框架">
+			<param name="Local" value="1.html#C_1_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="安装">
+			<param name="Local" value="2.html#C_2_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="接口问题">
+			<param name="Local" value="12.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="许可协议">
+			<param name="Local" value="1.html#C_1_6">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="开源商业模式">
+			<param name="Local" value="1.html#C_1_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="准备知识">
+			<param name="Local" value="2.html#C_2_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="要求">
+			<param name="Local" value="2.html#I_requirements">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="建立">
+			<param name="Local" value="2.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="语法规则">
+			<param name="Local" value="3.html#C_3_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="测试">
+			<param name="Local" value="2.html#C_2_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="URL 辅助函数">
+			<param name="Local" value="3.html#C_3_8_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="用途">
+			<param name="Local" value="1.html#C_1_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="版本更改">
+			<param name="Local" value="12.html#C_12_3">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="CodeIgniter 站点">
+		<param name="See Also" value="CodeIgniter 站点">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="架构问题">
+			<param name="Local" value="5.html#C_5_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="类的类型">
+			<param name="Local" value="3.html#C_3_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="设计">
+			<param name="Local" value="6.html#C_6_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文件类型">
+			<param name="Local" value="3.html#C_3_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="浏览">
+			<param name="Local" value="6.html#C_6_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文件夹结构">
+			<param name="Local" value="3.html#C_3_5">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="配置设置，CodeIgniter">
+		<param name="See Also" value="配置设置，CodeIgniter">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="配置文件">
+			<param name="Local" value="4.html#C_4_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="database">
+			<param name="Local" value="4.html#I_database">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="dbdriver">
+			<param name="Local" value="4.html#I_dbdriver">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="hostname">
+			<param name="Local" value="4.html#I_hostname">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="password">
+			<param name="Local" value="4.html#I_password">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="username">
+			<param name="Local" value="4.html#I_username">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="控制器">
+		<param name="See Also" value="控制器">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="默认控制器">
+			<param name="Local" value="3.html#C_3_2_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="设计">
+			<param name="Local" value="3.html#C_3_7">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="参数，传给函数">
+			<param name="Local" value="3.html#C_3_7_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="语法规则">
+			<param name="Local" value="3.html#C_3_3_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Welcome 控制器">
+			<param name="Local" value="3.html#C_3_2_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="引用复制">
+		<param name="Local" value="7.html#C_7_1_2">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="CRUD">
+		<param name="See Also" value="CRUD">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="13.html">
+			<param name="Local" value="15.html#C_15_2_6">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数组">
+			<param name="Local" value="13.html#C_13_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="概念">
+			<param name="Local" value="13.html#C_13_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数据，读取">
+			<param name="Local" value="13.html#C_13_5_1_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="定义">
+			<param name="Local" value="13.html#C_13_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="函数">
+			<param name="Local" value="13.html#C_13_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="insert">
+			<param name="Local" value="13.html#C_13_5_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="insert2">
+			<param name="Local" value="13.html#C_13_5_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="参数">
+			<param name="Local" value="13.html#I_array_parameters">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="showall">
+			<param name="Local" value="13.html#C_13_5_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="测试套件">
+			<param name="Local" value="13.html#C_13_5_4">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="数据库">
+		<param name="See Also" value="数据库">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="设计">
+			<param name="Local" value="4.html#C_4_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="建立网站">
+			<param name="Local" value="4.html#C_4_5">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="数据库表">
+		<param name="See Also" value="数据库表">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="13.html#C_13_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="规则">
+			<param name="Local" value="13.html#C_13_3">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="日期辅助函数">
+		<param name="See Also" value="日期辅助函数">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="10.html#C_10_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="日期格式">
+			<param name="Local" value="10.html#C_10_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="日期格式，转换">
+			<param name="Local" value="10.html#I_date_formats_converting">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="时区，生成">
+			<param name="Local" value="10.html#I_time_zones_generating">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="诊断工具">
+		<param name="Local" value="12.html#C_12_2_1">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Display 模型">
+		<param name="Local" value="5.html#C_5_6">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="dotest 模型">
+		<param name="See Also" value="dotest 模型">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="14.html#C_14_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数据库，读取从">
+			<param name="Local" value="14.html#I_database_reading_from">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数据库，写入到">
+			<param name="Local" value="14.html#I_database_writing_to">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="参数，switch 语句">
+			<param name="Local" value="14.html#I_parameters_switch_statement">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="报告">
+			<param name="Local" value="14.html#I_report">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="表信息，从数据库查询生成">
+			<param name="Local" value="14.html#I_table_information_generating_from_database_query">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="测试循环">
+			<param name="Local" value="14.html#I_test_loop">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="测试报告，打印">
+			<param name="Local" value="14.html#I_test_report_printing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="测试类型">
+			<param name="Local" value="14.html#I_test_types">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="下载辅助函数">
+		<param name="See Also" value="下载辅助函数">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="11.html#C_11_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数据库，下载为文本文件">
+			<param name="Local" value="11.html#C_11_2">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Email 类">
+		<param name="See Also" value="Email 类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="使用">
+			<param name="Local" value="9.html#C_9_3">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="错误处理类">
+		<param name="Local" value="8.html#C_8_2">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="文件辅助函数">
+		<param name="See Also" value="文件辅助函数">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="11.html#C_11_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数组，比较">
+			<param name="Local" value="11.html#I_arrays_comparing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文件，写入">
+			<param name="Local" value="11.html#I_file_writing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="装载">
+			<param name="Local" value="11.html#C_11_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="文件上传类">
+		<param name="See Also" value="文件上传类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="11.html#C_11_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="装载">
+			<param name="Local" value="11.html#I_loading">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="使用">
+			<param name="Local" value="11.html#I_working_of">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="表单辅助函数">
+		<param name="See Also" value="表单辅助函数">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="5.html#C_5_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="优点">
+			<param name="Local" value="5.html#C_5_5_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="论坛">
+		<param name="See Also" value="论坛">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CodeIgniter 论坛">
+			<param name="Local" value="15.html#C_15_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CodeIgniter Wiki">
+			<param name="Local" value="15.html#I_CodeIgniter_wiki">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="框架">
+		<param name="See Also" value="框架">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="1.html#C_1_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PHP 框架">
+			<param name="Local" value="1.html#I_PHP_frameworks">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Rails">
+			<param name="Local" value="1.html#I_Rails">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Ruby on Rails">
+			<param name="Local" value="1.html#I_Ruby_on_Rails">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="FTP 类">
+		<param name="See Also" value="FTP 类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="远程文件，测试">
+			<param name="Local" value="9.html#C_9_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="图像类">
+		<param name="See Also" value="图像类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="11.html#C_11_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="裁剪，功能">
+			<param name="Local" value="11.html#I_crop_fucntions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="功能">
+			<param name="Local" value="11.html#I_fucntions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="缩放，功能">
+			<param name="Local" value="11.html#I_resize_fucntions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="缩放">
+			<param name="Local" value="11.html#I_resizing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="旋转，功能">
+			<param name="Local" value="11.html#I_rotate_fucntions">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="水印，功能">
+			<param name="Local" value="11.html#I_watermark_fucntions">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Inflector 辅助函数">
+		<param name="Local" value="10.html#C_10_2">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="insert">
+		<param name="Local" value="13.html#C_13_5_2">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="insert2">
+		<param name="Local" value="13.html#C_13_5_3">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="接口问题">
+		<param name="See Also" value="接口问题">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="12.html#C_12_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CodeIgniter 版本更改">
+			<param name="Local" value="12.html#C_12_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="config 文件">
+			<param name="Local" value="12.html#C_12_1_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数据库">
+			<param name="Local" value="12.html#C_12_1_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="诊断工具">
+			<param name="Local" value="12.html#C_12_2_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OS 差异">
+			<param name="Local" value="12.html#C_12_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PHP 版本差异">
+			<param name="Local" value="12.html#C_12_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="URL">
+			<param name="Local" value="12.html#C_12_1_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="语言类">
+		<param name="See Also" value="语言类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="10.html#C_10_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="网页，翻译">
+			<param name="Local" value="10.html#C_10_3">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="类库">
+		<param name="See Also" value="类库">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="安全">
+			<param name="Local" value="6.html#C_6_3">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="菜单">
+		<param name="See Also" value="菜单">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="创建">
+			<param name="Local" value="3.html#C_3_8_6">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="嵌套视图">
+		<param name="See Also" value="嵌套视图">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="5.html#C_5_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="header 视图，创建">
+			<param name="Local" value="5.html#C_5_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="参数">
+			<param name="Local" value="5.html#I_parameters">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="对象">
+		<param name="See Also" value="对象">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="7.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="超级对象">
+			<param name="Local" value="7.html#C_7_1_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="OOP">
+		<param name="See Also" value="OOP">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="7.html#C_7_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="对象">
+			<param name="Local" value="7.html#C_7_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="PHP 语法">
+		<param name="See Also" value="PHP 语法">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="长语法">
+			<param name="Local" value="5.html#C_5_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="短语法">
+			<param name="Local" value="5.html#C_5_2">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="插件和类库">
+		<param name="See Also" value="插件和类库">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AJAX 包">
+			<param name="Local" value="15.html#C_15_2_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="身份验证包">
+			<param name="Local" value="15.html#C_15_2_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="图表类库">
+			<param name="Local" value="15.html#C_15_2_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CRUD">
+			<param name="Local" value="15.html#C_15_2_6">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="外部网站">
+			<param name="Local" value="15.html#C_15_2_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="JavaScript 包">
+			<param name="Local" value="15.html#C_15_2_2">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="评测器类">
+		<param name="Local" value="8.html#C_8_5">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="查询，Active Record">
+		<param name="See Also" value="查询，Active Record">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="创建">
+			<param name="Local" value="4.html#C_4_3_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="删除">
+			<param name="Local" value="4.html#C_4_3_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="读取">
+			<param name="Local" value="4.html#C_4_3_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="结果，显示">
+			<param name="Local" value="4.html#C_4_3_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="更新">
+			<param name="Local" value="4.html#C_4_3_4">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="远程文件">
+		<param name="See Also" value="远程文件">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="测试，使用 FTP 类">
+			<param name="Local" value="9.html#C_9_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="资源">
+		<param name="See Also" value="资源">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CodeIgniter 论坛">
+			<param name="Local" value="15.html#C_15_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CodeIgniter Wiki">
+			<param name="Local" value="15.html#I_CodeIgniter_wiki">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MySQL">
+			<param name="Local" value="15.html#C_15_2_7">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PHP">
+			<param name="Local" value="15.html#C_15_2_7">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="视频教程">
+			<param name="Local" value="15.html#C_15_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="XAMPPLite">
+			<param name="Local" value="15.html#C_15_2_7">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Ruby on Rails">
+		<param name="Local" value="1.html#I_Ruby_on_Rails">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="安全/Session">
+		<param name="See Also" value="安全/Session">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="类库">
+			<param name="Local" value="6.html#C_6_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Session，安全">
+			<param name="Local" value="6.html#C_6_3_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Session 类">
+		<param name="Local" value="6.html#C_6_3">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="showall">
+		<param name="Local" value="13.html#C_13_5_1">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="标准控制器">
+		<param name="Local" value="13.html#C_13_2">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="超级对象">
+		<param name="See Also" value="超级对象">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="代码，添加">
+			<param name="Local" value="7.html#C_7_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="缺点">
+			<param name="Local" value="7.html#C_7_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="日志，跟踪">
+			<param name="Local" value="7.html#I_log_tracing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="工作原理">
+			<param name="Local" value="7.html#C_7_1_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="表格类">
+		<param name="See Also" value="表格类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="10.html#C_10_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="HTML 表格，编写">
+			<param name="Local" value="10.html#C_10_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="页面，缓存">
+			<param name="Local" value="10.html#C_10_5">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="文本辅助函数">
+		<param name="See Also" value="文本辅助函数">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="10.html#C_10_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Inflector 辅助函数">
+			<param name="Local" value="10.html#C_10_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="字符串，截断">
+			<param name="Local" value="10.html#C_10_2">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="单元测试类">
+		<param name="Local" value="8.html#C_8_3">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="单元测试">
+		<param name="See Also" value="单元测试">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="8.html#I_unit_testing">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="控制">
+			<param name="Local" value="8.html#C_8_7">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="准则">
+			<param name="Local" value="8.html#C_8_3_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="范例">
+			<param name="Local" value="8.html#C_8_3_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="模拟数据库，测试">
+			<param name="Local" value="8.html#C_8_6">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="时间安排">
+			<param name="Local" value="8.html#C_8_7">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="验证类">
+		<param name="See Also" value="验证类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="5.html#C_5_7">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="控制器，设置">
+			<param name="Local" value="5.html#C_5_7_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="表单，设置">
+			<param name="Local" value="5.html#C_5_7_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="验证，设置">
+			<param name="Local" value="5.html#C_5_7_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="版本更改，CodeIgniter">
+		<param name="See Also" value="版本更改，CodeIgniter">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="类库，初始化">
+			<param name="Local" value="12.html#C_12_3_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="模型，调用">
+			<param name="Local" value="12.html#C_12_3_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="模型，装载">
+			<param name="Local" value="12.html#C_12_3_1">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="更新">
+			<param name="Local" value="12.html#C_12_4">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="视图">
+		<param name="See Also" value="视图">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="设计">
+			<param name="Local" value="3.html#C_3_6">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="嵌套视图">
+			<param name="Local" value="5.html#C_5_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="语法规则">
+			<param name="Local" value="3.html#C_3_3_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="使用">
+			<param name="Local" value="3.html#C_3_2_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="编写">
+			<param name="Local" value="5.html#C_5_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="XMLRPC">
+		<param name="See Also" value="XMLRPC">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="9.html#C_9_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="调试">
+			<param name="Local" value="9.html#C_9_2_3">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="数据交换，格式化">
+			<param name="Local" value="9.html#C_9_2_2">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="问题">
+			<param name="Local" value="9.html#C_9_2_4">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="服务器-客户端通讯">
+			<param name="Local" value="9.html#C_9_2_1">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Zip 类">
+		<param name="See Also" value="Zip 类">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="关于">
+			<param name="Local" value="11.html#C_11_5">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="文件，压缩">
+			<param name="Local" value="11.html#C_11_5">
+			</OBJECT>
+	</UL>
+</UL>
+</BODY></HTML>

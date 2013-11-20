@@ -1,0 +1,72 @@
+/*DELETE FUNCTION: given table name and id number, deletes an entry*/
+   function delete($controller, $idno, $state='no', $test='no')
+          {
+/*first check that the 'yes' flag is set. If not, go through the trydelete function to give them a chance to change their minds*/
+          if(!isset($state) || $state != 'yes')
+                {
+/*test block: are 'yes' flags recognised?*/
+                 if($test == 'yes')
+                        {
+                        $place =  __FILE__.__LINE__;  
+                        $outcome = "exception at $place: sent state value $state to trydelete function ";
+                        return $outcome;  
+                        }
+                 else  
+/*end test block*/
+                   {$this->trydelete($controller, $idno, 'no');}
+                 }
+          else{
+/*'yes' flag is set, so now make sure there is an id number*/
+          if(isset($idno) && $idno > 0 && is_int($idno))
+/*test block: with this id no, am I going to do a delete?*/
+                 {
+                 if($test == 'yes')
+                        {
+                       $place =  __FILE__.__LINE__;  
+                       $outcome = "OK at $place: doing delete on id of $idno ";
+                       return $outcome;  
+                       }
+                 else{
+/*end test block*/ 
+/*if there is an id number, do the delete*/
+
+                       $this->db->where('id', $idno);
+                       $this->db->delete($controller);
+                       $changes = $this->db->affected_rows();
+                       }
+                 
+                 if($changes != 1)
+                 {
+/*test block: did I actually do a delete? */
+                       $place =  __FILE__.__LINE__;
+                       $outcome = "exception at $place: cdnt do delete op on $controller with id no of $idno";
+                       if($test == 'yes')
+                                      {return $outcome;}
+                       else  	
+/*end test block*/
+/*if there was no update, report it*/
+                                     {$this->failure($outcome);}    
+                    }
+                 else{
+/*test block: I did do a delete*/
+                       if($test == 'yes')
+                              {return 'OK';}
+                       else{ 
+/*end test block: report the delete*/   
+                        $this->showall($controller, "Entry no. $idno deleted.");}
+                       } 
+                 }
+          else
+ /*test block: report id number wasn't acceptable'*/ 
+                 {
+                 $place =  __FILE__.__LINE__;
+                 $outcome = "exception at: $place : id no of $idno set for delete op in $controller, expecting integer";
+
+                       if($test == 'yes')
+                              {return $outcome;}
+                       else   
+/*endtest block: if I failed, report me*/
+                              {$this->failure($outcome);}    
+                 }
+           }
+   }

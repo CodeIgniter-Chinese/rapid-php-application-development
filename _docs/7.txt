@@ -1,0 +1,269 @@
+CodeIgniter 和对象
+
+本章是“技术发烧友”的最爱。它讲述的是 CodeIgniter 的工作原理，也就是揭开 CI 头上的“神秘面纱” 。如果你是 CI 新手，你可能想要跳过本章。不过，迟早你会想要了解 CI 的幕后都发生了什么，为什么不真正的玩转它呢？
+
+当我刚开始使用 CodeIgniter 的时候，对象使我迷惑。 我是在使用 PHP 4的时候接触CI的, PHP4并不是真正的面向对象的语言。我在一大堆对象和方法、属性和继承，还有封装等数据结构中转悠，总是被类似的出错信息包围 " 调用非对象的成员函数". 我如此频繁地看到它们，因此我想到要印一件T恤衫，上写: 神秘，无规律可循, 而我仿佛正穿着它站在一个现代艺术展会的会场上。
+
+这一章的内容包含CI使用对象的方法, 和你OO编程的方法。 顺便说一下，术语 '变量/属性', '方法/函数'是等义的，当 CI 和 PHP 经常会混着使用它们。比如，你在你的控制器中写一个 '函数', 纯 OO 程序员会称他们是'方法'。你称之为类的变量而纯OO程序员会叫它们‘属性’。
+
+面向对象编程
+
+我正在假定你和我一样有 OOP 的基本知识, 但如果只是在PHP4中尝试过可能还不太够。 PHP 4 不是一种 OO 语言, 虽然具备了一些 OO 的特征。 PHP 5 会更好一些, 它的引挚已经彻底改写成面向对象的了。
+
+不过基本的OO特征PHP4也能实现，而且 CI 设法让你无论是使用PHP4 还是PHP5，都有一样的行为特征。
+
+重要的是你要记住，当 OO 程序运行时，总会有一个或数个真实的对象存在。对象可能彼此调用，只有当对象处于运行状态的那一刻你才可以读取变量(属性) 和方法 (函数)。因此知道和控制哪个对象当前在运行很重要。当一个类没有实例化时，你不能对它内部的属性和方法操作，静态方法和属性除外。
+
+PHP,作为一个过程式编程和OO编程的混合体, 可以让你混合编写又是过程式又是OO的程序，你可以在一过程式代码中实例化一个类，然后使用它的属性和方法，用完后把它从内存中释放掉。这一些工作，CI都可以为你代劳。
+
+CI '超级-对象'的工作原理
+
+CI 生成一个超级大对象: 它把你的整个项目当作一个大的对象。
+
+当你启用 CI 的时候，一连串复杂的事件开始发生。 如果你设定你的 CI 产生日志，你将会见到类似下列的记录：
+
+1 DEBUG - 2006-10-03 08:56:39 --> Config Class Initialized
+2 DEBUG - 2006-10-03 08:56:39 --> No URI present. Default controller
+                                  set.
+3 DEBUG - 2006-10-03 08:56:39 --> Router Class Initialized
+4 DEBUG - 2006-10-03 08:56:39 --> Output Class Initialized
+5 DEBUG - 2006-10-03 08:56:39 --> Input Class Initialized
+6 DEBUG - 2006-10-03 08:56:39 --> Global POST and COOKIE data
+                                  sanitized
+7 DEBUG - 2006-10-03 08:56:39 --> URI Class Initialized
+8 DEBUG - 2006-10-03 08:56:39 --> Language Class Initialized
+9 DEBUG - 2006-10-03 08:56:39 --> Loader Class Initialized
+10 DEBUG - 2006-10-03 08:56:39 --> Controller Class Initialized
+11 DEBUG - 2006-10-03 08:56:39 --> Helpers loaded: security
+12 DEBUG - 2006-10-03 08:56:40 --> Scripts loaded: errors
+13 DEBUG - 2006-10-03 08:56:40 --> Scripts loaded: boilerplate
+14 DEBUG - 2006-10-03 08:56:40 --> Helpers loaded: url
+15 DEBUG - 2006-10-03 08:56:40 --> Database Driver Class Initialized
+16 DEBUG - 2006-10-03 08:56:40 --> Model Class Initialized
+
+在启动时-每次一页通过英特网发出请求-CI 每次启动都执行相同的程序。你能通过 CI 文件追踪记录:
+
+1. index.php 文件收到一个页请求。 URL可能指出哪一个控制器被调用, 如果不， CI 有一个默认值控制器 (第 2 行).Index.php 开始一些基本检查然后调用 codeigniter.php 文件(\codeigniter\ codeigniter.php).
+
+2. codeigniter.php 文件实例化 Config 、Router、Input，URL(等等)类.(第 1 行, 和 3-9行) 这些被调用的叫做'基础'类: 你很少直接与它们交互，但是CI做的每件事都与它们有关。
+
+3. codeigniter.php 测试了解它正在使用哪一个PHP版本，根据版本决定调用base4 还是base5(/codeigniter/base4.(或base5)php). 这些创建一个 '单一' 实例: 即一个类只能有一个实例。不管哪个都有一个&get_instance() 方法。 注意符号 &:, 这是引用实例的符号。因此如果你调用 &get_instance() 方法, 它产生类的单一实例。换句话说，整个应用中这个实例是唯一的，其中包含许许多多框架中其它类的实例。
+
+4. 在安全检查之后，codeigniter.php 实例化被请求的控制器、或一个默认控制器 (第 10 行) 。 新的类叫做 $CI 。在URL中(或默认值)中被指定的函数被调用，类被实例化之后，相当于活了，实实在在存在于内存中。 CI 然后将会实例化你需要的任何其他的类, 并包含函数库脚本文件。 因此在日志中，model类被实例化。(第16 行)'模板文件' 脚本, 也被装载(第 13 行), 这是我编写的包含标准代码的一个文件。 它是一个.php 文件,保存在scripts目录中，但是它不是一个类: 仅仅是一组函数。 如果你正在写 '纯粹的' PHP代码，你可能会使用 'include ' 或者 'require'把这个文件放进命名空间，CI会使用它自己的 '装载' 函数把它放入“超级对象“中。
+
+'namespace' 的概念或范围在这里是决定性的。当你声明一个变量、数组、对象等等的时候，PHP把变量名称保存在内存中并为它们的内容分配一个内存块。如果你用相同的名字定义二个变量就会出现问题。 (在一个复杂的网站中，容易犯这样的错误。) 因为这个原因，PHP 有几条规则。 举例来说:
+
+。 每个函数有它自己的namespace 或者范围, 而且定义在一个函数中的变量一般是一个局部变量。 在函数外面, 它们是看不到的。
+
+。 你能声明 '全局' 变量, 放在特别的全局 namespace，在整个程序中都可以调用。
+
+。 对象有他们自己的 namespaces:对象内的变量（属性）是与对象同时存在的，可以通过对象来引用。
+
+因此 $variable, global variable, 和 $this->variable是三件不同的事情。
+
+特别地，在 OO 之前，这可能导致各种混乱: 你可能有太多的变量在同一namespace中(以致于许多冲突的变量名互相覆盖)，也可能发现有些变量在某个位置无法存取。CI 为此提供了一个解决办法。
+
+假如现在你已经键入如下URL： www.mysite.com/index.php/welcome/index, 你是希望调用welcome控制器的index函数。
+
+如果你想要了解，哪个类和方法在当前的namespace 中可用, 试着在welcom控制器中插入下列 '检测' 代码:
+
+$fred= get_declared_classes();
+
+foreach ($fred as $value) {
+    $extensions = get_class_methods($value);
+    print "class is $value, methods are: ";
+    print_r($extensions);
+}
+
+试着运行它，它列出了270个已明的类。 大部分是PHP的。 最后的 11 个来自 CI: 10个是 CI 基础类 (config 、router等等。) 而且都是我的控制器调用的类。下面列出这11个类，清单只保留了最后的两个方法，其它的被省略了:
+
+258: class is CI_Benchmark
+259: class is CI_Hooks,
+260: class is CI_Config,
+261: class is CI_Router,
+262: class is CI_Output,
+263: class is CI_Input,
+264: class is CI_URI,
+265: class is CI_Language,
+266: class is CI_Loader,
+267: class is CI_Base,
+268: class is Instance,
+269: class is Controller, methods are: Array ( [0] => Controller [1] => _ci_initialize [2] => _ci_load_model [3] => _ci_assign_to_models [4] => _ci_autoload [5] => _ci_assign_core [6] => _ci_init_scaffolding [7] => _ci_init_database [8] => _ci_is_loaded [9] => _ci_scaffolding [10] => CI_Base )
+270: class is Welcome, methods are: Array ( [0] => Welcome [1] =>
+index [2] => Controller [3] => _ci_initialize [4] => _ci_load_model [5] => _ci_assign_to_models [6] => _ci_autoload [7] => _ci_assign_core [8] => _ci_init_scaffolding [9] => _ci_init_database [10] => _ci_is_loaded [11] => _ci_scaffolding [12] => CI_Base )
+
+注意-看一下Welcome类括号中包含的内容 (270号: 即我正在使用的控制器) ，它列出了Controller类的所有方法 (269 号). 这就是为什么你总是需要从一个控制器类派生子类的原因-因为你需要你的新控制器保留这些函数。 (而且同样地，你的models应该总是从model类继承.) Welcome类有两个额外的方法: welcome()和index()。到现在为止，在 270个类中，我写的只有这二个函数!
+
+你可能还注意到类的实例-即object。 有一个指向它的变量，注意到那个引用符号了吗？表明在整个系统中，CI_Input类只有一个实例，可以用类变量input调用它:
+
+["input"]=>&object(CI_Input)#6(4){[" use_xss_clean"]=> bool(false)[" ip_address"]=> bool(false)[" user_agent"]=> bool(false)[" allow_get_array"]=> bool}(false)
+
+记得我们何时装载了input文件而且创建了最初的输入类? 它包含的属性是:
+
+use_xss_clean is bool(false)
+ip_address is bool(false)
+user_agent is bool(false)
+allow_get_array is bool(false)
+
+你可以看到, 他们现在已经全部被包括在实例中，“设计图纸”变成了房子，不是吗？
+
+所有其它的 CI 的基础类(routers, output等等。) 同样地被包含了。 你不需要调用这些基础类，但是 CI 本身需要他们使你的代码工作。
+
+引用复制
+
+刚才提到，类变量input引用了CI_Input类：(["input"]=>&object(CI_Input)), 加不加引用符号区别在于：加上引用符号，一变俱变，不加引用符号，原始对象的内容不会改变。你可能会对此感到困惑，用一个简单的例子来说明：
+
+$one    =    1;
+$two    =    $one;
+echo $two;
+
+显示 1, 因为 $two是$one的拷贝。 然而，如果你再重新$one赋值:
+
+$one    =    1;
+$two    =    $one;
+$one    =    5;
+echo $two;
+
+仍然显示 1, 因为在对 $one 重新赋值前 $two已经赋为1了，而$one和$two是两个不同的变量，各自分配有一小块内存，分别存放它们的值。
+
+如果在$one改变的时候，$two也要相应地改变，我们就要使用引用了，这个时候，$one和$two实际上是指向了同个内存块，一变俱变：
+
+代码:
+$one    =    1;
+$two    =&    $one;
+$one    =    5;
+echo $two;
+
+现在显示5: 我们改变变量$one,实际上也同时改变了$two。
+
+把符号“=” 改成 “=&” 意味着 '引用'. 针对对象来说，如果你要复制一个对象，与原来的对象没有关联，用“=”，如果要使用两个变量指向同一个对象，就使用“&=", 这时候，一个变量作出的任何改变都会影响到别个变量。
+
+
+在CI'超级对象'中加入你自己的代码
+
+你可以为CI'超级对象'加上你自己的代码。假定你已经写了一个名为Status的model, 它有两个属性：$one和 $two, 构造函数分配两个值给他们：$one = 1 和 $two = 2。 当你装载这model时，让我们来看看会发生什么。
+
+instance类有一个变量叫做load, 用来引用对象CI_Loader。 因此你在你的控制器中写的代码是:
+
+$this->load->model($status);
+
+换句话说，调用当前CI“超级对象”的类变量load的model方法，装载一个model, 这个model的名称存放在变量$status中. 让我们看一下保存在/system/libraries/loader.php)中的model方法:
+
+   function model($model, $name ='') {      
+      if ($model == '') {
+          return;
+      }
+      $obj=& get_instance();
+      $obj->_ci_load_model($model, $name);
+   }
+
+(这个函数里的变量$name是你要装载的model的一个别名。 我不知道为什么要使用一个别名，也许它会用在其他的 namespaces 中。)
+
+就象你看到的，model实例是被类变量引用的。 因为 get_instance()是一个单一实例的方法，你总是针对同一个实例进行操作。
+
+如果你再运行控制器, 把我们的 '检查' 代码来显示类变量, 你现在将会见到这个类实例包含两个新的属性，$one的$two:
+
+["status"]=> object(Status)#12(14){["one"]=> int(1)["two"]=> int(2)... (等等)
+
+换句话说, CI'超级对象' 现在包括一个对象叫做$status, 它包含了我们刚定义的两个变量，并被赋以我们给定的值1和2。
+
+因此我们正在逐渐地创建一个大的 CI'超级对象', 允许你使用它的某些方法和属性，而不担心它们来自哪里，或处于什么 namespace 中。
+
+这是需要 CI 箭符号的理由。 为了要使用一个model中的方法, 你一定先装载model到你的控制器中:
+
+$this->load->model('Model_name');
+
+这使model被装载入当前控制器类的实例中，也就是$this->中。你随后可以调用控制器中的model对象中的方法, 像这样:
+
+$this->Model_name->function();
+
+就行了。
+
+
+CI'超级对象'的问题
+
+当Rick刚开始开发CI时，为了让CI在PHP4和PHP5下行为一致，他必须在Base4文件中使用比较丑陋'的代码，不管丑不丑，我们不用关心，只要CI能够在PHP4环境下工作得和PHP5一样好就行了。
+
+有其他二个话题值得在这里提一下:
+
+。 你可以尝试开发一个不是现成的对象并让它参与工作
+
+。 你必须小心地架构成你的网站, 因为你不能从别一个控制器里调用某个控制器里的方法
+
+让我们一个一个地来分析这二个问题。 你记得我提到的T恤衫那件事吗？在调用一个成员函数时我一直收到“企图调用一个非对象的成员函数”的出错信息，这个出错信息产生的原因一般是因为你调用了一个类方法，但是忘了装载这个类。换句话说，你写了下列语句：
+
+$this->Model_name->function();
+
+但是忘记在它之前调用:
+
+$this->load->model('Model_name');
+
+还有一些其它的情形，比如，你在类的一个方法中装载了model, 然后你企图在另一个方法里调用model的成员方法，虽然在同一个对象中，这样做也不行。所以最好的方法是在类的构造函数中装载model, 然后可以在这个类的所有方法中使用。
+
+问题也可能更严重。 如果你写你自己的类, 举例来说，你可能想要使用这个类存取数据库, 或在你的 config 文件中读取信息, 换句话说，让这个类存取CI超级对象的某些部分。(如何装入你自己的类和libraries会在第 13 章讨论。) 概括起来，除非你的新类是一个控制器，一个模型或视图，它不能在CI 超级对象中被构造。 因此你不能在你的新类中写这样的代码:
+
+$this->config->item(base_url);
+
+这不会工作, 因为对你的新类来说, $this-> 意味着它本身, 而不是 CI 超级对象。取而代之地，你必须通过调用Instance类用另一个变量名(通常是 $obj)把你的新类加入CI超级对象：
+
+$obj =& get_instance();
+
+现在你能象调用CI超级对象一样地调用它:
+
+$obj->config->item('base_url);
+
+而且这次它能够工作。
+
+因此，当你编写你的新类时,记得它有它自己的标识符。 让我们使用一个较简短的例子来把这个问题讲得更清楚一点。
+
+你想要写一个library 类， 用向你的服务器发出页面请求的URL查找它的地理位置。 这个library类有点象netGeo类，你可以在下列网址找到它：
+
+http://www.phpclasses.org/browse/package/514.html
+
+这个类使用一个switch函数，根据URL的地域分派不同的网页，比如来自英国和美国的URL请求，你就返回一个英语网页，德国和奥地利的URL请求就返回一个德语网页等等。现在，完整的URL会分成二个部分：基本URL(www.mysite.com/index.php)和附加的URL部分(mypage/germanversion)。
+
+你需要从 CI 的 config 文件取得基本URL部分。后半段网址通过你的新类的构造函数中的swith语句生成，如果这个客户在德国，调用德国页函数，依次类推。当这个工作在构造函数中做完以后，你需要把结果放到一个类变量中，所以可以在同一个类的其它函数中使用，这意味着：
+
+。 基本URL从CI config文件中取得，这个只能通过CI超级对象的引用获得，换句话说，你可以用$obj->config->item('base_url');获得
+
+。 URL的后半部分由你的新类的构造函数生成，并写到一个类变量中：$base. 这个变量与CI超级对象无关，它属于你的新类, 被引用为$this->base
+
+装载时会用到两个关键词：$this-> 和 $obj->, 在同一段代码中被引用，举例来说:
+
+class my_new_class {
+
+  var $base;
+  My_new_class() {
+      $obj= & get_instance();
+
+      // geolocation code here, returning a value through a
+      // switch statement
+      // this value is assigned to $local_url
+      $this->base =$obj->config->item('base_url');
+
+      $this->base .= $local_url;
+  }
+}
+
+如果你不清楚这些概念，就会成为频繁出现“调用非对象的成员函数"的原因. 举例说，如果你试着调用$obj->base或 $this->config->item()时，这个出错信息就出现了。
+
+转向剩余的问题, 你不能从一个控制器内部调用别一个控制器的成员方法。 你为什么会想要这样做? 这视情况而定。在一个应用中，我在每个控制器内部写了一系列自我测试函数， 如果我调用 $this->selftest(), 它完成了各种不同的有用测试。但是在每个函数中重复代码似乎与OO编程的设计原则不符，因此我想在其中一个控制器中写一个函数，可以进入到其它的控制器中执行自我测试代码。当我这样做了，期望得到想要的结果。结果，当然不能如我所愿，因为在一个控制器内不能调用另一个控制器的成员方法。
+
+作为一个准则，如果你有代码被超过一个控制器调用的话，把它放入一个model或者其它什么分离的代码文件中，这样就可以使用了。
+
+这些都是小问题。 正如Rick告诉我的一样：
+"我想要简化问题，所以我决定创建一个大的控制器对象包含需要的很多对象实例...当一个用户创建他们自己的控制器时，他们能够轻松地访问任何资源，不用担心作用域的问题"。
+
+这样做相当不错，绝大多数情况下，CI超级对象有效率地，完全处在幕后完成工作。因此我不必要去做那件T恤衫了。
+
+摘要
+
+我们已经看到CI创建的'超级对象' 确保所有的方法和变量可以自动地获取而不用担心如何管理以及为“作用域”操心。
+
+CI 用引用实例的方法把一个一个类实例组合成一个超级对象。大多数情况下，你不需要知道CI超级对象是如何工作的，只需要正确使用“->"符号就行了。
+
+我们也学习了如何编写自己的类，并使它与CI很好地协同工作。
+
+下一章我们学习：
+
+使用 CI 测试代码

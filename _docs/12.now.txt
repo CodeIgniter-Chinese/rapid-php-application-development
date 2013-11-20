@@ -1,0 +1,596 @@
+> Production Versions,Updates, and Big Decisions
+> 第 12 章 产品版本，升级和重大决定
+第12章 产品版本、升级和重大决定
+
+> The great day has come. Your development site is running well enough on your local development for you to transfer it to a production site hosted on a remote web server. It should be easy to do this. Copy over all the files, including the whole of the system folder, update the config settings, copy over and link to the database, and away you go. Sometimes, it really is that easy.
+> 有意义的一天来临了。你开发的网站在你的本地开发环境中运行得足够好了，是时候把它上传到远程的WEB服务器上成为一个正式运行的网站了。实现它应该是容易的。上传所有的文件,包括系统文件夹的全部, 更新 config 设置, 复制完毕并连接到数据库, 把它们传送出去。 有时候，它真的是很容易。
+伟大的一天终于到来了！你的网站在本地环境中已经运行得足够好，是时候把它上传到远程服务器上使之成为一个正式运行的网站了。这件事按说很容易：上传所有的文件，包括系统文件夹的全部、更新config设置，复制完成后连接到数据库，以及其他。有时候，这的确很容易。
+
+> But when it isn't, it's always the night before you are giving an all-important presentation to a venture capitalist or a major prospect. So, in case this happens to you, this chapter covers:
+> 但是当它还没有成功的时候，它处在你把重要的一切呈现在一个风险资本家或公众视野面前的前夜。 因此, 为了防止出现意外, 这一章涉及:
+在你把重要的一切呈现在风投或公众视野的前夜，也就是在还没完成时。此时，为了防止出现意外，这一章将告诉你：
+
+> ·What to look for in your config files 
+> 该在你的 config 文件中设置什么
+你该在config文件中设置什么
+
+> ·Some diagnostic tools to use if you get stuck
+> 如果出现问题需要的一些诊断工具
+出现问题需要的一些诊断工具
+
+> ·Some potential differences between servers that may trip you up
+> 本地服务器与可能让你出现差错的服务器上的隐性差异
+可能出现问题的服务器与本地服务器的隐性差异
+
+> ·Some notes on security, now that you're out there in the big world
+> 几点安全提示, 现在你将处身于大千世界
+几点安全提示, 你将身处于大千世界
+
+> Next, this chapter covers upgrading, and looks at some of the ways in which CI has changed in the year it's been available. How stable is it? What decisions should you make if you are committing a critical site to it? And what should you do, once your site is up and running, if Rick Ellis brings out a newer version of CI?
+> 下一步, 这一章包括升级, 以及留意那些CI在年内已经改变的一些方式。它稳定吗? 如果你提交一个重要网站你应该如何决策？你该怎么行动？一旦你的网站开始运作，而CI又推出新版本你又如何应对？
+然后，这一章还包括了升级以及CI在最近几年的一些更新。它稳定吗? 当要提交一个重要网站时你该如何选择？你该如何操作？一旦你的网站开始运作，而CI推出了新版本你又该如何应对？
+
+> Lastly, we briefly discuss making your own alterations to the core of CI. It's all there; it's open-source it's possible. Whether it's sensible or not is another matter.
+> 最后，我们简短地讨论如何针对 CI 的核心作出你自己的修改。它都在那里; 它是开放源代码的，修改是可能的。 是否可行是另一件事情。
+最后，我们简短地讨论如何针对CI的核心做你的自定义修改。它就在那里，它是开放源代码的，是可以修改的——但是否可行是另一码事。
+
+> Connections: Check the Config Files
+> 连接: 检查 Config 文件
+连接：检查Config文件
+
+> Systems usually fail at the interfaces. That's what your config files are there for: to give you a place to put all those interfaces. If you haven't done so, you've missed one of CI's major strengths.
+> 系统通常会在接口处出错。 那是为什么需要 config 文件的原因: 给你一个地方放那些接口。 如果你还没有这么做，你已经错过 CI 的主要优点之一。
+系统错误通常是在接口上的。这就是为什么需要config文件：给你一个地方放那些接口。如果你还没这么做，你已经错过CI最主要的优点之一。
+
+> The major interface problems are likely to be:
+> 主要的接口问题可能是:
+主要的接口问题可能是：
+
+> URLs
+> URL
+URL
+
+> CI works by finding files. Your user connects to index.php, and then a whole process of loading starts. At least, it should do. Make sure you have set the web address and server addresses correctly in your config files. The web address is your web root folder; you may have to ask your ISP for the server address, though usually it is clear from their own 'file manager' programme.
+> CI 通过查找文件工作。 你的用户连接到 index.php, 然后开始运行整个程序。 至少，它应该运行。 确定你在你的 config文件中已经正确地设置好WEB地址和其它服务器地址。 WEB地址是你的网站根目录;你可能需要咨询你的ISP以便得到服务器地址，他们有他们自己的文件管理系统，一查便知。
+CI通过查找文件进行工作。当用户连接到index.php，然后开始运行整个程序。至少，它应该运行。确定你在config文件中已经正确地设置好Web地址和其它服务器地址。Web地址是你的网站根目录。而服务器地址则可能要去问你的ISP，通常在他们提供的“文件管理”菜单中也有。
+
+> I've had particular issues trying to run sub-domains. Many hosts allow them, but map the domains to folders in ways you don't expect.
+> 我曾经尝试运行子域。 许多主机允许这么做, 但是把域映射到你的目录也许不是你希望的。
+我尝试设置子域时曾经遇到过一些特殊的问题。虽然许多主机允许这么做, 但将域直接映射到目录也许并不是你所希望看到的。
+
+> Databases
+> 数据库
+数据库
+
+> Locating and connecting to your database is often a major issue. Look at your config file and your config/database file. You need to make sure that you have the correct site and server addresses, and the correct database name, address, user name, and password. Be careful with prefixes—sometimes these are added automatically. (Your site is called 'fred'. Your database, you think, is called 'mydata' and your user name is 'mylogin'. But the server thinks they are called 'fred_mydata', 'fred_mylogin', etc.)
+> 定位并连接到你的数据库经常是一个主要的话题。 查看你的 config 文件和你的 config/database文件。你需要确定你有正确的网站和服务器地址和正确的数据库名称、地址, 用户名和密码。小心前缀-有时这些自动地被添加的。 (你的网站叫 'fred'。 你的数据库, 叫做 'mydata' 和你的用户名是 'mylogin'. 但是在服务器上他们叫做 'fred_mydata' ，'fred_mylogin', 等等。)
+设置并连接到数据库是一个主要议题。查看你的config文件与config/database文件。你需要确定有正确的网站地址与服务器地址，正确的数据库名、地址、用户名与密码。小心前缀——它有时会自动添加的，比如你的网站叫“fred”，你的数据库名为“mydata”，而你的用户名是“mylogin”，但是在服务器上它们会叫做“fred_mydata”、“fred_mylogin”等等。
+
+> Sometimes, it helps to create a new user on your database, even if you have one already, and set the log-in for this user's name and password. I have no idea why this works, but it does.
+> 有时，它帮助在你的数据库上创建一个新的用户，即使你已经有了一个, 而且设定为以新的用户名和密码登录。 我不知道为什么会这样，但是经常会这样。
+有时，它会在数据库中创建一个新的用户，并设定了登录用的用户名和密码，即使你已经有一个了。我也不知道为什么，但就是会这样。
+
+> In the config file, you can set CI to accept different types of URI protocols, which determine how the server handles the URI string. The default is:
+> 在 config 文件中，你能设定 CI 接受不同的URL协议类型,决定服务器如何处理 URI 字符串。 默认值是:
+在config文件中，你可以设定CI接受不同的URL协议类型，以决定服务器如何处理URI字符串。默认值是：
+
+> $config['uri_protocol']="auto";
+
+
+> but there are four other options that you can try if this doesn't work. If the correct option isn't set, you may find your site partly works, but (for example) forms don't call the target page.
+> 但是如果这不能正常工作，有其他四个选项可以尝试。 如果正确的选项没被设定，你可能发现你的网站只有部分工作正常(举例来说) 表单不能调用目标页。
+如果它不能正常工作，还有其他四个选项可以试试看。如果没有选择合适选项的话，你可能会发现你的网站不能完全正常的运作，（例如）表单不能调用目标页。
+
+> Other config Files
+> 其他的 config 文件
+其他config文件
+
+> The config/routes file sets the default path the application follows, if the user doesn't specify a controller�method through the URL (i.e. if they just log on to www.mysite.com). This should normally be set at the default:
+> config/routes文件设定程序执行的默认路径，如果用户没有指定一个controller/method (也就是如果他们仅仅登录到www.mysite.com). 这通常应该在默认值中被设定:
+如果用户没有指定明确的controller/method（比如他们仅仅登录到www.mysite.com），config/routes文件则会设定程序执行的默认路径。其默认值可能是：
+
+> $route['default_controller']='index';
+
+
+> If you renamed the system folder, then remember that you also need to alter the index.php file in the site's root directory. The default setting is:
+> 如果你重新命名系统文件夹了,必须记得你还需要在网站的根目录中改变 index.php 文件。 默认值设定为:
+如果你重新命名过系统文件夹，就必须记得你还需要在网站的根目录中修改index.php文件。该值默认为：
+
+> $system_folder="system";
+
+
+> Look Out for PHP 4/5 and Operating System Differences
+> 找出PHP 4/5 和操作系统间的差异
+找到PHP 4/5和操作系统间的差异
+
+> CI should be able to live with any version of PHP including and later than 4.3. However, this doesn't mean that any PHP code you write will also be compatible—so if you wrote it on Xampplite using PHP 5, and are moving to an ISP with a PHP 4 server, look out for problems due to language differences.
+> CI 应该能够兼容PHP 4.3及以后的任何版本. 然而，这不意味着你写的任何的 PHP 编码都能正常工作-因此如果你在使用 PHP 5, 并且正在向一个 PHP 4 服务器迁移, 由于版本不同有可能引发问题。
+CI应该能够兼容PHP 4.3及更高版本。但这不意味着你写的任何的PHP程序都能正常工作——如果你在使用PHP 5，但正在向一个PHP 4服务器迁移时，就可能会遇到由于版本不同引发的问题。
+
+> PHP (of whatever version) can be set up in different ways. It's worth running phpinfo() on your local and remote sites, and checking for differences.
+> PHP(无论哪一个版本) 可能以不同的方式被建立。值得一做的是在你本地和远程服务器上运行phpinfo(), 找到它们之间的差异。
+（无论哪一个版本的）PHP环境都可以不同的方式搭建。值得一做的是在你本地和远程服务器上都运行phpinfo()，以找到它们的差异。
+
+> Case sensitivity is different between Microsoft and Linux servers. So if you've developed your site on a PC, and then uploaded it to a Linux-based server, expect the server to report that it can't find some of the models or libraries you want to load. If you've checked and they have been uploaded, then make sure that the capitalization is correct. Because class definitions and constructors in CI have to begin with a capital, it's easy to begin the file name with a capital too. If you load a model, say, inside a controller, and give it a capitalized name ($this->load->Mymodel), then Windows and Linux may have different views about calls to $this->mymodel.
+> 大小写敏感在微软和 Linux 服务器之间是不同的。 因此如果你在一台windows操作系统的PC上开发你的网站, 然后上传到一台 Linux服务器上，可能会收到出错信息，报告它找不到一些你要装载的模型或者类库。如果你检查过确定它们已经被上传, 你也需要确定大小写是正确的。因为在CI 的类定义和构造函数命名是要求以一个大写字母开始的，而且以一个大写字母开始一个文件名实现也很容易。因此在一个控制器内,你装载一个模型,冠以一个大写字母开始，比如：($this->load->Mymodel),但是windows和 Linux 可能会通过$this->Model调用不同的视图。
+微软和Linux服务器上的大小写敏感是不同的。所以当你在一台Windows操作系统的PC上开发你的网站，然后上传到一台Linux服务器上，可能会收到出错信息，报告找不到一些你要装载的模型或者类库。如果你检查了并确定它们已被上传, 你仍需要确定大小写是正确的。因为在CI的类定义和构造函数命名时，是要求以一个大写字母开头的，以一个大写字母开头的文件命名也很容易。因此在控制器内装载一个模型，应冠以一个大写字母开头的名字，如：($this->load->Mymodel)。而Windows和Linux则可能通过$this->mymodel调用不同的视图。
+
+> As an extreme example of server differences, I once began to write a controller, decided to make it a model instead, and so saved it in the model folder without realizing that I had left the first few lines as:
+> 作为不同服务器的一个极端例子, 我有一次开始写一个控制器,并决定修改使它成为一个模型, 我把它保存在moel目录中，却没有意识到我已经写了头几行代码如下：
+作为服务器差异的一个极端例子，我有一次写一个控制器，后决定将其修改为一个模型，我把它保存在model目录中，却没有意识到我在开头已经写了几行代码：
+
+> class Myclass extends Controller {
+>    function Myclass() {
+>        parent::Controller();
+
+
+> instead of changing them to:
+> 而不是把它改成：
+而不是把它改成：
+
+> class Myclass extends Model {
+>     function Myclass() {
+>         parent::Model();
+
+
+> Running locally on Xampplite, this did not throw an exception. Transferred to a remote Linux server, it immediately failed (and you can imagine how long it took to track down…).
+> 在本地的Xampplite上运行，这没有出错。 迁移到一个远程的Linux服务器上, 立刻报错。(而且你能想像调试它花费了多长时间…)
+在本地的Xampplite上运行，没有出错。但迁移到一个远程的Linux服务器上时，立刻报错。（你应该能想像调试它花费了多长时间……）
+
+> Some PHP functions also appear to behave differently on different operating systems: for instance, include_once() is case insensitive on Windows but not on other systems. That's not specifically a CI issue, though.
+> 一些 PHP 函数在不同的操作系统上似乎也有不同的行为表现: 举例来说， include_once()在windows上是大小写敏感的，但在其它系统上不是。虽然这与CI本身无关。
+一些PHP函数在不同的操作系统上也有不同的表现：举例来说，include_once()在windows上是大小写敏感的，但在其它系统上不是。虽然这与CI本身没什么关系。
+
+> Also, your database may be a different version—many ISPs are very traditional, running MySQL 3.23 for instance! This seems to cause some incompatibilities, which means that uploading a database by a SQL query is less easy than it should be. (For instance, it may not accept comments on db tables.)
+> 同时，你的数据库可能是一个不同的版本-许多ISP还在使用MySQL 3.23! 这似乎引起一些不兼容, 这意味着，通过SQL查询上传一个数据库不是很容易实现。(举例来说，它可能不接受数据表的提交。)
+同时，你的数据库也可能不是同一个的版本——许多ISP还在使用MySQL 3.23！这也许引起一些不兼容，这意味着，通过SQL上传一个数据库不是很容易实现的。（例如，它可能不接受数据表的提交。）
+
+> Linux has a different system of file permissions to Windows. Make sure that you have the correct permissions on your files and folders. Certain CI file permissions must be set correctly before the system can work.
+> Linux与windows相比，有一个不同的文件权限管理系统。 确定你有对应的文件和目录的权限。CI有几个目录文件的权限在它能够正常运行前必须正确设置。
+Linux与Windows相比，有一个不同的文件权限管理系统。请确定你有对应的文件和目录的权限。CI有几个目录文件的权限在它能够正常运行前必须正确设置。
+
+> Diagnostic Tools
+> 诊断工具
+诊断工具
+
+> The first line of the index.php file is:
+> index.php文件的第一行是:
+index.php文件的第一行是:
+
+>    error_reporting(E_ALL);
+
+
+> which displays any PHP errors on your screen, like this:
+> 会在你的屏幕上显示所有的 PHP 错误。
+这会在屏幕上显示所有的PHP错误。
+
+> Obviously, error reports like this look bad, and may give hackers too much information, so for the production version you alter this to:
+> 很显然，这种错误报告很糟糕，可能给黑客太多的信息，所以在产品服务器上你应该改成：
+很显然，这种错误报告很糟糕，可能会给黑客太多信息，所以在产品服务器上你应该改成：
+
+> error_reporting;(0)
+
+
+> But then, any problems may simply result in a blank screen, with no helpful diagnostic information. You may have to turn error reporting back on, until you have got the site running. One compromise is to set it to an intermediate level, such as:
+> 但是然后，任何的问题可能只是造成一个空白的屏幕，没有可提供帮助的诊断信息。 你可能必须把错误报告再打开直到你已经使网站正常运行。 一个折中的做法是把它设定为一个中间状态, 像是:
+但是，很多问题都可能只是造成一个白屏，没有可供参考的诊断信息。这时你可能必须把错误报告再打开，直到你已经使网站可以正常运行。一个折中的做法是把它设定为一个中间状态，像是：
+
+> error_reporting(E_ERROR);
+
+
+> This will prevent 'warnings' but will still give you information about serious problems. 'Warnings' are usually conditions that don't stop the programme from executing, but may point to other underlying issues that you hadn't considered.
+> 这将会避免 'warning' 但是仍然会给你关于严重的问题信息。 'warning' 通常不会中止程序的执行, 但是可能转向其它你没有考虑到的问题。
+这将会避免“warnings”，但仍可给你关于严重问题的信息。“warnings”通常不会中止程序的执行，但可能会引发其它你没有考虑到的问题。
+
+> The CI Profiler class—see Chapter 8—is also very useful: it shows you what queries you are doing, and what is in the POST array.
+> CI Profiler 类-见第 8 章-也非常有用: 它显示你正在做什么查询, POST数组的内容是什么。
+CI的Profiler类——详见第8章——也非常有用：它可以显示你正在做什么查询，以及POST数组的内容是什么等。
+
+> Various other tools I have found useful when things don't work:
+> 当这些工具都不起作用时，需要使用其它的工具，下面列出一些我已经发现的其它工具:
+当上述工具都不起作用时，就需要使用其它的工具，下面列出了我找到的一些工具:
+
+>  1. Set CI to print a log file. (Done from the config file—see Chapter 8—you need to set:
+> 1.  设定 CI 开启日志文件。(通过修改 config 文件实现-见第 8 章-你需要设定:
+1. 设定CI开启日志文件。（可通过修改config文件实现，详见第8章）：
+
+
+>     $config['log_threshold']=4;
+
+
+>  4 shows all messages, including just notices and warnings; sometimes theseare pointers to an underlying problem. Then look at the log (printed in/system/logs, filed by date.) This will tell you which parts of the CI system have been called, so you can at least see where the process stopped. (Set thevalue back to 0 to prevent further logging. Remember to do this, and to removethe log files when you've finished: it's amazing how much space they take up.)
+> 4显示所有的信息, 包括notices和warnings; 有时这些会显示潜在的问题。 然后查看日志文件 (保存在/system/logs中.) 这将会告诉你哪一个 CI 部分已经被调用，因此，你能至少能看到程序中止的地方。 (把值设定回 0 会停止日志记录。 记得这样做, 调试完毕后请删除日志文件: 它尺人地占用空间。)
+“4”显示所有的信息，包括notices和warnings，有时这会显示出潜在的问题。然后查看日志文件（保存在/system/logs中，依日期排序），这将会告诉你CI的哪个部分已经被调用，因此，你能至少能看到程序中止的地方。（把值设定回“0”会停止日志记录。请记得要这样做，调试完毕后删除日志文件：它非常占用空间。）
+
+>  2. If you can access them, print out the PHP server and session variables:
+> 2.  如果你能存取他们, 打印出 PHP 服务器和会话变量:
+如果你能取得PHP的服务器和会话变量，请输出它们：
+
+>     print_r($_SERVER)
+
+>     and:
+>     而且:
+以及：
+  
+>     print_r($_SESSION)
+
+
+> and use them to check that the document_root and script_filename values are what you expect. If not, you may need to adjust your config file values for base_url and server You can also see if there is an [HTTP_COOKIE]value set, which will show you if your session class is enabled and working.
+> 而且使用他们检查 document_root 和 script_filename 值是不是你意料之中的。如果不是，你可能需要调整config文件中的base_url，server的值的设置，你还可以看一下是否有 [HTTP_COOKIE]的设置，它会显示是否你的session类能够工作。
+并使用他们检查document_root和script_filename的值是不是你所预期的。如果不是，你可能要调整config文件中的base_url、server的设置，你还可以看一下是否有[HTTP_COOKIE]的设置，它会显示是否你的session类能够工作。
+
+>  3. Check what CI has loaded into its superobject by using PHP's methods:
+> 3.  用PHP的方法检查 CI 把什么装载进它的“超级对象”:
+用PHP的方法检查CI把什么装载进它的“超级对象”：
+
+>     get_declared_classes()；
+
+>  and:
+>     和:
+以及：
+
+>     get_class_methods()；
+
+> 4. CI's own show_error() function is only a means of formatting error reportsthat you generate. So including the following line in your code, say at somebranch that should not be reached:
+> 4.  CI 自己的 show_error() 函数只是格式化生成的错误报告. 因此在你的代码中加入下面的这一行，可以显示出程序运到到哪一个命令分支：
+CI自己的show_error()函数只是格式化生成的错误报告。因此在代码中加入下面的这一行，可以显示出程序没有运行哪一个命令分支：
+
+>     show_error('test of error function');
+
+
+> would result in your screen showing:
+> 会在你的屏幕上显示:
+会在屏幕上显示：
+
+> test of error function
+
+
+> I don't find that very useful. What I want is a system that will give me full, helpful error reports, when and where I want them, but won't show them when I don't want them to appear. I wrote my own function, which reads:
+> 我没有发现这非常有用。 当我想要系统在我需要时给我一个完整的有帮助的错误报告, 在何时以及哪里找到他们, 但是当我不想要他们出现的时候将不显示他们。 我需要编写我自己的函数，如下:
+我并没有发现这多有用。如果希望系统在必要的时间和位置给我一个完整的有帮助的错误报告，且当我不想要的时候就不显示它们，就得编写我自己的函数了，如下：
+
+> function reportme($file, $line, $message)
+> {
+>    $obj =& get_instance();  
+>    if (isset($_POST)) {
+>        $bert = print_r($_POST, TRUE);
+>    } else {
+>        $bert = 'no post array';
+>    }
+>    if (isset($_SESSION)) {
+>        $sid = print_r($_SESSION, TRUE);
+>    } else {
+>        $sid = 'no session array';
+>    }
+>    $time = Gmdate("H:i j-M-Y");
+>    /*full report*/
+>    $errorstring =  "$time - $file - $line: $message: POST array: $bert SESSION array: $sid\n";
+>    /*short report*/
+>    $shortstring =  "$file - $line: $message";
+>    /*set $setting to 'test' if you want to write to the screen*/
+>    $setting = 'test';
+>    if ($setting == 'test') {
+>        echo $errorstring;
+>    }
+>    /*set $action to 'log' if you want to log errors*/
+>    $action = 'log';
+>    if ($action == 'log') {   
+>           $filename = $obj->config->item('errorfile');
+>           $fp = fopen("$filename", "a+")or die("cant open file");
+>           fwrite($fp, $errorstring);
+>           fclose($fp);
+>    }        
+> }                                          
+
+
+> This lives in a library called errors. I have to remember to load the library, and then, whenever I have a section of code that I'm not confident about, I include the function:
+> 把它放在一个叫做errors的library文件中。我需要装载这个library， 然后, 每当我对一段代码没有信心的时候，我include这个函数：
+把它放在一个叫做errors的library文件中。我需要装载这个library， 然后, 每当我对某一段代码不是很确定时，我就会include这个函数：
+
+>     $this->errors->reportme(__FILE__,__LINE__,'if the code has reached here it is becase...');
+
+
+> I can then set the reportme() function to give me a report on the screen, or in my log file.
+> 然后我能设定 reportme() 函数在屏幕上显示, 或保存在日志文件中。
+我还可以设定reportme()函数是否屏幕上显示，或是否保存在日志文件中。
+
+> There are several advantages to a simple method like this. Firstly, I can alter the reportme() function easily, to make it write errors to a file, or to do nothing at all: so I can make all my reports disappear from the screen at once, or come back again, by changing one line of code.
+> 这样一个简单的方法的有几个优点：第一，我能容易地修改 reportme() 函数, 使它写错误信息到一个文件, 或全然什么也不做: 因此我能立刻使我所有的错误信息从屏幕消失, 或再回来, 只要修改一行代码。
+这个简单方法有几个优点：第一，我能容易地修改reportme()函数, 让它将错误信息写到一个文件中，或什么也不做：因此我只要修改一行代码，就可以立刻使所有的错误信息从屏幕上消失，或再显示出来。
+
+> Secondly, let's say I am expecting a variable to have a particular value. (An ID number to be an integer, say.) I make the message as complete and helpful as possible. I try to say what I expected to find (an integer), as well as including the value I actually got. The function call also uses PHP's __FILE__ and __LINE__ 'magic constants' to tell me exactly where it happened.
+> 第二，我生成一个包含特别的值的变量。 (一个ID，类型为整型,比方说。) 我生成一个尽可能完整和有帮助的信息。我试着找到一个整数, 连同我实际上得到的值。 函数也用PHP__FILE__ 和 __LINE__魔术常数完整地告诉我它发生的地方。
+第二，比如我生成了一个包含特定值的变量。（如一个ID，类型为整型。）然后生成一个尽可能完整且有帮助的信息。我预期会找到一个整数，也包含了这个值，而我确实找到了。该函数会用“魔术常数”PHP__FILE__和__LINE__完整地告诉我它发生的地方。
+
+> So, if this particular piece of code becomes a problem when I transfer it to another server, possibly some time after I wrote it, I can immediately find the code, and the text helps me to remember why it is a problem. Six months after you write code, you can't just pick it up straight away, especially if it is late at night and a client is on the phone asking for an explanation! The more helpful the error text, the easier it is to respond sensibly.
+> 因此,如果当我把程序迁移到另外的一个服务器的时候，这块特别的代码在我写了一段时间之后如果出现一个问题，我能立刻找到这段代码，而且文字信息帮助我记起它为什么是一个问题。 在你编程完成之后六个月，你不可能马上弄明白, 尤其如果它发生在深夜，一位客户在电话中要求你给他解释什么的!更有帮助的错误本文,将使你容易地作出反应。
+因此，如果我把程序迁移到另一个服务器后出现了一个问题，我能立刻通过这段代码找到问题所在，且文字信息可以帮助我记起它是一个什么问题。在你编程完成六个月后，你不可能马上弄明白，尤其是当深夜一位客户在电话中要求你给他做情况解释时！更有帮助的错误文本，将帮你更容易地作出反应。
+
+> Thirdly, if the integrity of the site was really critical, I could set the function to email me with error reports. That might result in a very full mailbox during the development phase, but once the site is stable and in use, it might be very useful to have an immediate warning if the site is experiencing problems. You will know about them before your users tell you.
+> 第三，如果网站的完整性真的至关紧要，我可以设定函数用电邮把错误报告发送给我。在开发阶段可能造成邮箱爆满，但是一旦网站运行稳定，如果网站遇到问题，有一个即时的警告邮件发给我会是非常有用的。你将会在你的用户知道之前就发现问题。
+第三，如果网站的完整性真的至关重要，可以设定一个函数以电子邮件形式将错误报告发送给我。在开发阶段这可能会造成邮箱爆满，但一旦网站正式运行后，当遇到问题时，有一个即时的警告邮件发给我是非常有用的。你将会在你的用户知道之前就发现问题。
+
+> Coping with Change in New CI Versions
+> 应对新的CI版本带来的变化
+新版CI带来的变化
+
+> Between 28 February 2006 and 30 October 2006, CI went from its first beta to version 1.5. That's a pretty impressive rate of development.
+> 在2006年2月28日到2006年10月30日之间， CI 从它的第一个Beta版升级到1.5版。 那是相当令人印象深刻的升级。
+在2006年2月28日到2006年10月30日之间，CI从它的第一个Beta版升级到了1.5版。这个升级过程令人印象相当深刻。
+
+> During that time Rick Ellis made several fairly radical changes, particularly to the structure of the site. For the most part, he has been careful to make them backwardly compatible—but not all of them are. If you are new to CI and have downloaded the latest version, you can skip this section. But if you wrote programmes using earlier versions, you may need to check these changes. You may also need to check if you are using CI libraries or plug-ins written by other people.
+> 在那期间，Rick Ellis做了一些非常激进的变化, 特别地在网站的结构上。大致上，他已经小心使他们向后兼容-但是并没有完全做到。如果你刚使用 CI 并下载了最新版本，你能够跳越这一个阶段。但是如果你们写了使用较早的版本的程序。如果你正在使用 CIlibraries或者是其他人写的plug-ins。
+在那期间，Rick Ellis做了一些非常激进的更新，特别地在网站的结构上。大致上，他已经注意到需要向后兼容——但并没有完全做到。如果你刚使用CI并下载了最新版本，你可以跳过这一段。但如果你也使用了较早版本的程序，或在用其他人写的CI libraries或plug-ins，你就需要确认一些变化。
+
+> Rick has grappled with two main problems:
+> 瑞克已经努力解决二个主要的问题:
+瑞克已经努力处理了两个主要问题：
+
+> How to Load Models, and What to Call Them
+> 该如何装载模型、和如何调用他们
+应如何装载模型，以及如何调用他们
+
+> At first, there were no models, just folders for scripts and libraries. There was no provision to initialize them automatically as part of the CI 'super-object'. As a result, you had an MVC system without 'model' files, which seems confusing.
+> 起先，没有模型，只是使用目录来管理脚本和libraries。没有准备要自动地初始化它们作为CI超级对象的一部份。结果是, 你有了一个 MVC 系统没有 'M' 文件,似乎令人困惑。
+起先，没有模型，只是通过目录来管理脚本和libraries。并没准备自动地初始化它们作为CI超级对象的一部分。结果有了一个缺少“模型”的MVC系统，这很让人迷惑。
+
+> As well as this, there are two libraries folders: /system/application/libraries holds any files you write for yourself, while /system/libraries holds the system's own operating files. This may have confused a few people: the two are quite different! You ought to be adding to or altering the former; you probably don't need to alter the latter. (And if you do, you run serious risks of incompatibility if you upgrade to a later CI version: see below.)
+> 不仅这样，还有二个libraries目录: /system/application/libraries保存你为自己编写的一些文件, 而/system/libraries保存系统自己的操作文件。 这可能让一些人感到混乱: 这二者之间存在很大的差异!你应该增加到或改变前一个目录中的文件，但你或许不需要改变后者，当然这很容易搞错。 (而且如果你这样做了，如果你对 CI版本升级，你会面临无法兼容的严重危险: 在下面可以看到。)
+不仅这样，还有两个libraries目录：/system/application/libraries保存你为自己编写的一些文件，而/system/libraries则保存系统自己的操作文件。这可能会让人糊涂：这二者之间完全不同！你应该增加或改变前一目录中的文件，但你也许不用改变后者，这很容易搞错。（而且如果你这样做了，当升级CI版本时，你将会面临不兼容的危险：在下面可以看到。）
+
+> With version 1.3 came a new 'model' class. The User Guide defines models as, "PHP classes that are designed to work with information in your database". When first introduced, CI models connected automatically to the database. However, since Version 1.3.3, you must specifically load the database from inside the model or the controller that calls it.
+> 1.3 版带来了一个新的 'Model'类。 用户手册定义模型为" 被设计用来与你的数据库中的数据合作的PHP类 ". 当第一次使用时, CI 模型自动地与数据库连接。 然而, 从1.3.3 版起, 你一定要在模型或控制器中显式地连接数据库。
+1.3版带来了一个新的“Model”类。用户手册中将模型定义为“设计用来与你的数据库中的数据合作的PHP类”。第一次使用时，CI模型自动地与数据库连接。但从1.3.3版起，你就必须要在模型或控制器中显式地连接数据库。
+
+> Or, when you call the model from the controller, you can do so in this format:
+> 或者, 当你从控制器调用模型的时候，你可以以如下格式实现:
+或者，当你从控制器调用模型时以如下格式实现：
+
+> $this->load->model('Mymodel', '', TRUE);
+
+
+> and then the 'TRUE' loads the model with the default database connection made, as defined in your config file. (The second parameter, left blank here, is an optional alias for the model.)
+> 然后 'TRUE' 指定当与默认的数据库连接时才装载模型,正象你的 config 文件所定义的那样。 (第二个叁数, 在这里的空格,是模型的一个可选择的别名.)
+然后“TRUE”指定当与默认的数据库连接时才装载模型，正象你在config文件中所配置的那样。（第二个空白参数是模型中一个可选择的别名。）
+
+> CI will probably still work if you put the functionality of a 'model' (in the MVC sense) into a 'library' or a (deprecated) 'script', as you had to in the early days when there were no 'models' folders: but you'll have to access the CI resources differently—see the next section!
+> 如果你把'模型 '功能(在 MVC 意义上的) 放到一个 'library' 或者一个 (声明：不赞成这么做)脚本之内,CI 或许还可以工作。 较早的版本并没有'model'目录: 你不得不用其它方式存取CI资源-见到下一个区段!
+如果你把（MVC意义上的）“模型”功能放到一个“library”或者一个 (声明：不赞成这这样做)脚本中，CI或许还可以工作。早期版本没有“model”目录：你必须用其它方式存取CI资源——详见下一段！
+
+> How to Initialize Your Own 'library' Classes
+> 如何初始化你自己的 'library' 类
+如何初始化你自己的“library”类
+
+> Originally, you couldn't make your own classes part of the CI 'super-object'. This was a problem, because it meant that your library code couldn't, for instance, access the database through Active Record, or use other CI libraries, and that became pretty limiting.
+> 本来，你无法使你自己的类成为 CI 超级对象的一部份。这是一个问题，因为它意味着你的library代码不能通过AR读写数据库，或使用其他的 CI library，这样的限制太大了。
+本来，你不能让你自己的类成为CI超级对象的一部分。这里有一个问题，因为它意味着你的library代码不能通过AR读写数据库，或者使用其他的CI library，这样就过于受限了。
+
+> Version 1.2 added the get_instance() function that allows you to access the 'super-object'. (See Chapter 7.) You could include it in your 'library' or 'script' and then use the CI resources. (Unless your new file was a functional script rather than an OO class, of course. However, script files are probably best used for simple low-level functions.)
+> 1.2 版本增加了读对类的 get_instance() 函数，允许你读写CI的超级对象（见第七章），你可以在你的 'library'或者脚本中include它，然后使用 CI 资源。(除非你的新文件是一个函数脚本而不是一个 OO 类。当然，脚本文件可能性用来编写简单的基本函数的选择。)
+1.2版本增加了get_instance()函数，允许你读写CI的超级对象（详见第7章），你可以在“library”或者脚本中include它，然后使用CI资源。（除非你的新文件是一个函数脚本而不是一个OO类。当然，脚本形式可能是用来编写简单的底层函数的最佳选择。)
+
+> Version 1.4 introduced a new system. You had to create two files for each 'library' class. The first was the class itself, say Newclass.php, stored in the application/ libraries folder, and the second, stored in an application/init folder, had to be called init_newclass.php and contained a few standard lines of code that initialized it as part of the 'super-object'. However, you still had to use the get_instance() function to access CI resources.
+> 1.4 版引进了一个新的系统。你必须为每个'library'类创建二个文件。第一个是类本身，比如Newclass.php,保存在 application/libraries目录中，第二个，保存在application/init目录中, 必须叫做init_newclass.php 必须包含几个标准代码行，用来初始化，让它成为CI超级对象的一部分，你仍然需要使用 get_instance()函数存取 CI 资源。
+1.4版引进了一个新的系统。你必须为每个“library”类创建两个文件。第一个是类本身，比如Newclass.php，保存在application/libraries目录中；第二个则保存在application/init目录中，必须叫做init_newclass.php，它必须包含几行标准代码，以进行初始化，使其成为CI超级对象的一部分，但你仍要使用get_instance()函数存取CI资源。
+
+> In version 1.5, the init folder has been deprecated, and initialization happens automatically. You now only need the one file for each 'library' class.
+> 在1.5版中， init 文件夹已经被不鼓励使用了，初始化将自动地进行。 每个'library'只需要一个文件。
+在1.5版中，已经不鼓励使用init文件夹了，初始化将自动地进行。每个“library”只需要一个文件。
+
+> The old scripts folder has also been deprecated. 'Deprecate' in this context, usually means that the thing concerned is till recognized and should still work, but that the developer offers no guarantee that it will do so in all future versions. In other words, don't panic if you still have scripts in a system/application/scripts folder—but don't write any more.
+> 旧的脚本目录也已经不鼓励使用了。'不鼓励使用'通常意味着相关的实现方法能够工作，但是开发者应该尽量不要这么做，因为CI不能保证在未来的版本中还支持它。 如果你仍然有一个system/application/scripts目录，不需要紧张-但是也不要再使用它。
+旧的脚本目录也不鼓励使用了。“不鼓励使用”通常意味着相关的实现方法能够工作，但是请开发者尽量不要这么做，因为CI不能保证在未来的版本中还支持它。如果你还有一个system/application/scripts目录，无需紧张——但是请不要再用它了。
+
+> If you are planning to use libraries or plug-ins written by the CI community, please check first that they are up to date with the latest CI version. There are quite a few around still that were written for 1.4.1 and have separate 'init' files. Updating them isn't difficult, but it does take some care to get it right.
+> 如果你正在计划使用由 CI 社区编写的libraries或者plug-ins，请首先检查这些资源是否是为CI的最新版本开发的。 有相当多的是为1.4.1版本开发的，还有另一个'init'文件。 更新它们不困难，但是需要小心行事，确保它们正常工作。
+如果你正在计划使用由CI社区编写的libraries或者plug-ins，请首先检查这些资源是否是为CI的最新版本开发的。有相当多的是专为1.4.1版本开发的，仍包含独立的“init”文件。更新它们不困难，但需小心行事，以确保它们正常工作。
+
+> So Should I Update If a New CI Version Comes Out?
+> 如果新的 CI 版本出来，我应该更新吗?
+如果有了新版CI，我需要更新吗？
+
+> New versions of CI come out from time to time. They come with comprehensive instructions for updating. Usually, this involves copying a new set of files to your system folder. Sometimes, you need to change config files, or your index.php file, as well, but none of these are major changes and none of them are rocket science. Because the folder structure keeps your application files in their own place, it's usually easy to update the system without touching the applications.
+> CI 的新版本时不时会推出。 它们带有如何更新的指南。 通常，这包括拷贝一组新的文件到你的system目录。 有时，你需要改变 config文件, 或者你的 index.php文件。不会有巨大的改变。因为目录结构把你的应用保存在他们自己的位置，这样可以在升级系统时不用涉及到你的应用系统。
+新版CI会不时推出，它们会带有更新指南。通常，这包括一组新的文件需要拷贝到你的system目录中。有时，你还需要更新config文件，或index.php文件。这不会带来巨大改变，因为目录结构已经将你的应用保存在他们自己的位置，这样在升级系统时并不会涉及到应用程序。
+
+> But, say you've written your killer app in version 1.5. It's uploaded to your production system and working fine. Then, Rick Ellis brings out CI version 1.6 (or 2.8 or whatever…). It has interesting new features, and some bug fixes. Do you upgrade to it?
+> 但是, 假如说你已经在 1.5 版中写了一个你的优秀作品. 它被上传到你的生产系统并且运行得很好。 如果Rick推出了CI 1.6 版.(或 2.8 或任何其它的…) 它有一些有趣的新功能、还有一些Bug修正。你是否需要对它进行升级?
+假如说你已经基于1.5版完成了一个优秀作品，它被上传到产品系统中且运行得很好。此时如果Rick推出了CI 1.6版（或2.8，或其它版本……），它有一些有趣的新功能、还有一些Bug修正。你是否需要对它进行升级呢？
+
+> I would say, 'Yes', if it's a minor upgrade, say between 1.5.2 and 1.5.3. But if it's a major version change, and your existing system is working, leave well alone. You can tell the difference partly from the numbering, but also from the 'change log' published with each upgrade when it comes out. The sort of changes that have been made in CI over the last year fall into three categories:
+> 我会说, '是的', 如果它是一个较小的升级, 比如在 1.5.2 和 1.5.3之间，你应该升级. 但是如果它是一个主要的版本变化,而你的现有系统正在工作, 暂缓升级是个比较明智的选择。 你可能从数字部分分辨出版本升级变化大小的程度, 但是也可以从新版本附带的'变化清单'列表得出结论。从去年开始 CI 划分了三个目录来列出三类不同的变化:
+我会说：“是的。”如果它只是一个较小的升级，比如在1.5.2和1.5.3之间，你应该升级。但如果它是一个主要的版本变化，而你现有的系统正在工作，暂缓升级是个比较明智的选择。你可能从数字部分分辨出版本升级变化大小的程度，也可以从新版本附带的“更新列表”中得出结论。从去年开始，CI划分了三种类型来表示不同的变化：
+
+> Bug fixes: There are surprisingly few of these—CI is excellent code, and most of the base classes have been well tested by hundreds if not thousands of users.
+> Bug修正: 令人惊讶地少，CI有优良的代码, 而且大部份的基础类已经被数以千计的使用者精心地测试了上百遍。
+Bug修正：令人惊讶的少，CI有优良的代码，大多数基础类已经被数以千计的使用者精心地测试了上百遍。
+
+> New features:. These appear regularly, but if you managed to build your application without them, will they really be helpful now?
+> 新的功能:. 这些经常地出现，但是如果你不使用这些新功能来开发你的应用，它们并不会对你有什么帮助。
+新功能：经常出现，但如果你不使用这些新功能来开发你的应用程序，它们并不会对你有什么帮助。
+
+> Subtle changes: As I've described, CI has gone through a process of internal evolution, and it may well continue to do so. As you can see from the following table, some of these might be backwardly compatible, or they might require fairly major re-writes of your code.
+> 敏感的变化: 就象我已经描述过的， CI 已经经过一个内存的升级的过程，而且它理所当然会继续这么做。你能从下面的列表看到，其中的一些向后兼容, 否则它们可能导致你重写你的部分代码。
+敏感更新：就象我说过的，CI经过了一个内部升级的过程，而且它理所应当地会继续这么做。你可以通过下面的列表看出来，其中一些更新会向后兼容，否则它们可导致你将重写部分代码。
+
+> Some changes between versions of CI:
+> 在 CI 的版本之间的一些变化:
+CI版本更新过程中的一些变化：
+
+>  VersionChange Log
+> 版本   变化记录
+版本	变化记录
+
+>  1.2Added a global function named get_instance() allowing the main CodeIgniter object to be accessible throughout your own classes.
+> 1.2   增加一个全局函数，名为get_instance()，允许你自定义的读写CI的主对象。
+1.2	增加了一个名为get_instance()的全局函数，允许你的自定义类很容易地读写CI的主对象。
+
+>  1.3Added support for Models.
+> 1.3   增加对模型的支持。
+1.3	增加了对模型的支持。
+
+>  1.3Added the ability to pass your own initialization parameters to your custom core libraries when using $this->load->library().
+> 1.3   增加传递你自己的初始化参数到客户自定义library能力，你可以这样做：$this->load->library()
+1.3	增加了传递自定义初始化参数到常规核心library的功能，你可以这样做：$this->load->library()
+
+>  1.3Added better class and function name-spacing to avoid collisions with user developed classes. All CodeIgniter classes are now prefixed with CI_ and all controller methods are prefixed with _ci to avoid controller collisions.
+> 1.3   增加较好的类和函数的命名空间-避免冲突。所有的CodeIgniter类开始冠以CI_前缀和所有的控制器方法以_ci为前缀避免控制器命名冲突。
+1.3	增加了较好的类与函数的命名空间——避免冲突。所有的CodeIgniter类开始冠以CI_前缀，所有的控制器方法均以_ci为前缀，从而避免了控制器命名冲突。
+
+>  1.3.3Models do not connect automatically to the database as of this version.
+> 1.3.3 模型不自动连接数据库。
+1.3.3	该版本模型不自动连接数据库。
+
+>  1.4Added the ability to replace core system classes with your own classes.
+> 1.4   增加了用你自定义的类替换核心系统类的能力。
+1.4	增加了用你自定义的类替换核心系统类的功能。
+
+>  1.4Updated the Models loader function to allow multiple loads of the same model.
+> 1.4   升级模型的装载函数，允许对同一模型多次装载。
+1.4	升级了模型的装载函数，允许对同一模型多次装载。
+
+>  1.4.1Updated plugins, helpers, and language classes to allow your application folder to contain its own plugins, helpers, and language folders. Previously, they were always treated as global for your entire installation. If your application folder contains any of these resources they will be used instead the global ones. 
+> 1.4.1 更新了plugins, helpers和language类，允许你的应用程序目录包含你自己的plugins, helpers和language类。先前，在安装时它们总是被当作全局的，如果你的应用目录包含了它们中的任一个，你自定义的将会覆盖系统中的这些资源。
+1.4.1	更新了plugins、helpers和language类，允许你的应用程序目录包含你自己的plugins, helpers和language类。之前它们在安装时总是被当作全局的。而现在你的应用目录如果包含了它们中的任一个，自定义的将会替代系统中的这些资源。
+
+> 1.4.1Deprecated the application/scripts folder. It will continue towork for legacy users, but it is recommended that you create your own libraries or models instead. It was originally added before CI had userlibraries or models, but it's not needed anymore.
+> 1.4.1 声明不鼓励使用application/script目录。 但它将会继续为以前的使用者提供正常使用的可能性，但是建议你改为创建你自己的library或model。在CI支持用户自定义library或者model之前，它本来就存在，但是它不再是必不可少的。
+1.4.1	声明了不鼓励使用application/script目录。但它将会为以前的使用者继续保留，但建议你改为创建你自己的library或model。在CI支持用户自定义library或者model之前，它本来就存在，但是它已不再是必须的了。
+
+> 1.5Added the ability to extend libraries and extend core classes, in additionto being able to replace them.
+> 1.5   增加能力扩展library和核心类的功能，而且也能替换它们。
+1.5	增加了扩展library和扩展核心类的功能，而且也能替换它们。
+
+> 1.5Deprecated init folder. Initialization happens automatically now.
+> 1.5   声明不鼓励使用init 文件夹。初始化现在自动进行。
+1.5	声明了不鼓励使用init文件夹。现在的初始化开始自动进行了。
+
+> Don't misunderstand me. All of these are sensible changes and all of them are improvements. If you are starting a new project, start with the latest CI version. But if you wrote code using version 1.3, say, you will find that your scripts folder is deprecated and your models don't automatically connect to the database any more. Personally, I would leave that code running on version 1.3 of CI, rather than try to upgrade it. Life's too short.
+> 不要误解我。 这些全部是有意义的改变，并且他们全部是对CI的升级。 如果你开始一个新的项目, 请使用最新的 CI 版本。但是如果你使用1.3版开发应用，你会发现你的scripts目录被声明不鼓励使用，而且你的模型也不会自动连接数据库。我个人在使用CI的1.3 版，而不尝试升级它。 生命苦短。
+不要嫌我啰嗦，这些都是重要的更新与改良。如果你启动了一个新项目，请使用最新的CI版本。但是如果你正在使用1.3版开发应用，你会发现scripts目录被声明不鼓励使用，而且模型也不会自动连接数据库。就个人而论，我曾经坚持在CI的1.3版而不去升级它，浪费了很多时间。
+
+> How to Add On to CI's Basic Classes
+> 如何修改CI的基础类
+如何修改CI的基础类
+
+> Normal users are unlikely to need to alter the base CI classes. It's a pretty good framework, it does a lot of things, and after all, the point of a framework is to make thing easy, right? However, if you must ….
+> 一般使用者不可能需要改变基本的CI类。 它是相当好的框架，它做许多事物, 而且毕竟，使用框架会使做事更容易, 对不对? 然而, 如果你一定….
+一般使用者可能无需改变CI基础类。它具备相当好的框架，能做出许多东西来，使用框架不是会让事情更容易吗？当然，如果你一定要做的话……
+
+> CI is open source, and you can see all the code as soon as you download it. This includes the basic libraries that make CI work (stored in system/libraries) as well as the ones you wrote in system/application/libraries.) So it has always been possible to change CI any way you like.
+> CI 是开源产品, 一旦下载你能看到所有的代码。 这包括使 CI 工作 (在system/libraries保存)的基本library以及你一旦编写后保存system/application/libraries的你自己的libraries，因此你可能改变CI让它以你喜欢的方式工作。
+CI是开源产品，下载后你就能看到所有的代码。这包括使CI工作的基本library（保存在system/libraries中）与你自己的libraries（保存在system/application/libraries中），所以你可以改变CI，使其以你喜欢的方式工作。
+
+> Changing system library files has two problems, however:
+> 修改系统libraries文件有二个问题，就是:
+修改系统libraries文件存在两个问题，就是：
+
+> There's no guarantee that your new code will be compatible with the rest of CI, or with updated versions. This may lead to subtle or strange errors that won't be easy to track down. If you later update your CI version, the system folder is likely to be changed.
+> 。 没有保证，你的新密码是否会与 CI 的其余部分兼容，或与更新的版本兼容。这可能导致不容易跟踪敏感或者奇怪的错误。如果你稍后升级你的 CI 版本，系统目录可能被改变。
+谁也不能保证你的新代码与CI的其他部分或更新的版本兼容。这可能会导致不易跟踪的、敏感的或奇怪的错误。如果你稍后升级你的CI版本，系统目录也可能会随之改变。
+
+> ·The library file you altered may well be over-written and updated, so you'd have to go through your changes and transfer them to the updated version.
+> 。  你改变过去的libraries将被新的文件覆盖或升级，    因此你需要维护你自己的修改并把它们迁移到升级的版本。
+你修改过的library将被新的文件覆盖或更新，因此你需要自行修改并将其更新到升级的版本中。
+
+> However, since version 1.5, there are now two sensible 'work-arounds' for tinkering with the CI library classes (except for the underlying 'database' and 'controller' classes, which you touch at your peril.)
+> 不过，从 1.5 版起, 现在针对修改CI类库有二个有意义的机制(除了针对'数据库'和'控制器'类，触及这两个都很危险.)
+不过，对可能有人会胡乱修改CI类库的情况，从1.5版起增加了两个明确的“工作区”。（不包括基本的“数据库”和“控制器”类，这两个都很危险，请不要自行修改。）
+
+> · Firstly, you can create a file with the same name as any of the system baseclasses in your /system/application folder. The system then uses this one,in preference to the standard one in the /system folder. This requires exactnaming conventions—see the online User Guide. It also requires you to copyall the functionality in the existing class as well as your own additionsor changes.
+> 第一，无论在哪个操作系统中，你能在你的 /system/application目录中创建一个与系统基础类同名的文件。系统会优先使用这一个,如果这个文件不存在或不可用则使用/system目录中的那个。这需要有精确的命名限制-详见用户手册。它也需要你复制所有在现有的类中存在的功能，让它们和你自己修改过的那些一起工作。
+第一，当你在/system/application目录中创建一个与系统基础类同名的文件，系统会优先使用这一个；如果该文件不存在或不可用时，则使用/system目录中的那个。该操作有明确的命名限制——详见用户手册。它还需要你复制所有在现有的类中存在的功能，让它们和你改过的那些类一起工作。
+
+> · Secondly, and more conveniently, you can create a new class that extends the system class. (So it's perhaps best referred to as a 'sub-class'.) Again, there arenaming conventions—see the online User Guide. Extending the underlyingsystem class means that your new sub-class inherits all the resources of theunderlying CI class, but adds a few extra methods of your own. This shouldmean that, if you update your CI version, the underlying CI class will bereplaced, but your new sub-class (which you should put in the system/application folder) will be left untouched.
+> 第二, 更方便地，你能从现有系统类派生出一个新类。(因此可能派生一个子类是更好的做法)，当然也有命名限制，详见用户手册。继承一个系统类意味着你的新子类潜在继承了CI类中的所有资源，并增加几个你自己的额外方法。这应该意味着，如果你升级你的 CI版本，祖先类将会被替换，但是你的新子类(你应该把它放在system/application目录)将安然无恙。
+第二，更方便地，你可以从现有系统类中派生出一个新类。（派生一个子类可能是更好的做法。）这当然也有命名限制，详见用户手册。继承一个系统类意味着你的新子类潜在地继承了CI类中的所有资源，并增加了几个你的额外方法。这也许意味着，如果你升级了CI版本，祖先类将会被替换，但是你的新子类（应该将其放在system/application目录中）将安然无恙。
+
+> However, neither of these methods will guarantee that your code is (or remains) compatible with the rest of CI.
+> 然而, 两者都不能保证你的代码与CI的其它部分完全兼容。
+然而，上述两种方式都不能保证你的代码与CI的其它部分完全兼容。
+
+> Looking through the CI online forums, there are various suggestions for extending the Validation, Unit Testing, and Session classes. Unit Testing, for example, only has two functions and a limited number of comparisons. Perhaps you want a function to show up errors in red, so they stand out when the test results are returned?
+> 通过CI在线论坛，有扩充校验类、单元测试和会话类的各种不同的建议。 单元测试, 举例来说，只有二个函数和比较有限的字符数。 也许你想要一个函数，用红色显示错误信息，因此，当测验结果被返回时，他们会显得比较醒目 ?
+去看看CI社区，上面有对各种扩充校验类、单元测试和会话类的不同建议。以单元测试为例，只有二个函数和比较有限的字符数做比较。如果你希望有一个函数，当测试结果返回时，以比较醒目的红色标识错误信息？
+
+> If you wanted to make extensive use of some other testing function, it would be simpler to add it in via a sub-class, extending Unit Testing, than to write it out in the controller each time you called Unit Testing.
+> 如果你想要扩充一些其他的测试函数，通过一个子类把它加入会是比较简单的，每次在控制器中编写代码调用单元测试。
+或者你希望扩充一些其他的测试函数，比较简单的做法是通过一个子类将其加入。扩展到单元测试上，即当你每次调用单元测试时，将其写入控制器中。
+
+> If you wanted to do this, you'd start your new sub-class this way:
+> 如果你想要这样做，你可以这样开始你的新子类:
+如果你想这样做，可以这样开始新子类:
+
+> class MY_Unit_test extends CI_Unit-test {
+>     function My_Unit_test() {
+>         parent::CI_Unit_test();
+>     }
+
+
+>     function newfunction() {
+>         //new code here!
+>     }
+> }
+
+
+> Notice three things here:
+> 在这里注意三件事:
+这里需要注意三件事：
+
+> ·The name of the underlying unit testing class is CI_Unit_test, even though the filename of the class code is system/libraries.unit_test.
+> 。 单元测试类的名称是CI_Unit_test，即使类的代码文件名是system/libraries.unit_test。
+单元测试类的名称是CI_Unit_test，即使类代码的文件名为system/libraries.unit_test。
+
+> ·If you need to use a constructor in your sub-class, make sure you extend the parent constructor first, as here.
+> 。 如果你需要在你的子类中使用一个构造函数，确定你首先在里面调用父类的构造函数。
+如果你需要在你的子类中使用一个构造函数，请先确定在里面调用父类的构造函数。
+
+> ·Your new sub-class name should be prefixed with MY_, and saved as application/libraries/MY_unit_test.php. (Unlike the main classes, where the CI_ prefix is part of the class name but not of the filename, here the MY_ prefix is part of both.)
+> 。 你的新子类名称应该与 MY_ 前缀并保存为application/libraries/MY_unit_test.php。(不像系统中那些主要的类, 它们是以CI_为前缀，但是不是文件名, 在这里MY_前缀是两者的一部份.)
+该新子类名称应该为MY_前缀并保存为application/libraries/MY_unit_test.php。（不像系统中的主要类，是以CI_为前缀，而不是文件名，在这里MY_前缀其实是二者的一部分。）
+
+> Once you've created your sub-class, you load it like this:
+> 一旦你已经创建你的子类，你像这样装载它:
+如果你已经创建了你的子类，你可以这样装载它：
+
+> $this->load->library('unit_test');
+
+
+> In other words, exactly the same as before you wrote the sub-class; and you call a function in the same way too, except that this time you can call not only the existing unit test functions, but also any new ones you've written yourself:
+> 换句话说, 完全地与你以前编写的了类相同; 而且你以同样的方式调用一个函数，但是这次你不但能调用原来的单元测试函数，还能调用你自己编写的新函数:
+换句话说，新子类与你以前编写的子类完全相同，而且会以同样的方式调用函数，不过此时你不但能调用原来的单元测试函数，还能调用你自己编写的新函数：
+
+> $this->unit_test->newfunction();
+
+
+> When you next update your CI installation, the unit test library in the system folder will be overwritten, but the one in the application folder won't, so your code will still be there. Of course, you'll need to check that the updated system library is still compatible with your own code.
+> 当你以后升级你的 CI 的时候，在系统文件夹中的单元测试类库将会覆盖，但是那个在application目录中的将不会，因此你的代码将会仍然在那里。 当然，你将会需要检查被更新的系统类是否仍然与你自己的代码兼容。
+在你以后升级CI时，在系统文件夹中的单元测试类库将会覆盖，但在application目录中的那个不会被覆盖，所以你的代码还会在那里。当然，你还需要检查更新的系统类是否依然与你自己的代码兼容。
+
+> Summary
+> 摘要
+摘要
+
+> In this chapter, we've seen some of things that can go wrong when you try to transfer your system from a local server to a remote one. This may involve:
+> 在这一章里，当你尝试迁移一个本地应用到远程服务器的时候，有些东西可能会出错。 这可能包括:
+在这一章里，当你尝试迁移一个本地应用到远程服务器时，可能会出现一些问题。这包括：
+
+> · A different version of PHP or MySQL
+> 。 PHP 或 MySQL 的版本差异
+PHP或MySQL的版本差异
+
+> · A different operating system
+> 。 不同的操作系统
+操作系统的差异
+
+> In particular, we've looked at case sensitivity, PHP differences, and MySQL issues. We've also looked at diagnostic tools.
+> 特别地，我们分析了大小写敏感问题, PHP 差异、和 MySQL 问题。 我们也谈及几个诊断工具。
+特别地，我们分析了大小写敏感问题、PHP差异与MySQL问题。我们还讨论了几个诊断工具。
+
+> Then we looked at the CI's updates. These have all been major improvements, but my advice is, if you have a system working on the current CI version and a new one comes out, think carefully before you upgrade.
+> 然后我们分析了CI 的升级。 这些都带来了重要的进步, 但是我的忠告是, 如果你在现在的 CI 版本上工作得很好，如果CI有新的版本推出，仔细评估是否需要升级和如何升级。
+然后我们分析了CI的升级。对这些重要的进步，我的建议是，如果你在现在的CI版本上工作得很好，当CI有新的版本推出时，请仔细评估是否需要升级以及如何升级。
+
+> Lastly, we looked at the pros and cons of adding to CI's basic classes. Most users won't need to do this, but if you want to, I strongly suggest that the best way to do it is to sub-class an existing library class.
+> 最后，我们分析修改 CI 基础类的正反两方面。 大多数的使用者将不需要这么做。但是如果你确信需要这么做，我强烈建议：实现它的最好方式是从一个现存的library类中派生一个子类。
+最后，我们分析了修改CI基础类的正反面因素。其实大多数的使用者无需这样做。但如果你确信的确需要这样做，我强烈建议：实现它的最好方式是从一个现存的library类中派生一个子类。

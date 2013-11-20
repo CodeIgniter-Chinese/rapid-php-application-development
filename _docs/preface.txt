@@ -1,0 +1,226 @@
+Preface
+前言
+
+This book sets out to explain some of the main features of CI. It doesn't cover them
+all, or cover any of them in full detail. CI comes with an excellent on-line User Guide
+that explains most things. This is downloaded with the CI files.
+本书详细讲解了 CI 的一些主要特性。本书并不包含 CI 的所有内容和全部细节。CI 有一本出色的在线《用户指南》，它详细讲解了大多数的内容。它可以与 CI 一起下载。
+
+This book doesn't try to duplicate the User Guide. Instead it tries to make it easier for
+you to pick up how the CI framework works, so you can decide whether it is right
+for you, and start using it quickly.
+本书并不想重复《用户指南》中的内容。相反，本书试图让你轻松了解 CI 框架是如何工作的，那么，你可以先决定它是否对你有价值，然后再阅读本书。
+
+In some places, this book goes beyond the User Guide, though, when it tries to
+explain how CI works. (The User Guide is more practically oriented.) This means
+that there are some fairly theoretical chapters in between the "here's how" pages. I've
+found that it helps to understand what CI is doing under the hood; otherwise you
+sometimes get puzzling error messages that aren't easy to resolve.
+在试图解释 CI 是如何工作时，本书的某些内容已经超出了《用户指南》的范围。（《用户指南》更注重实际应用。）这意味着在“实战训练”中有一些非常理论化的章节。我发现这有助于理解 CI 内部的运行机制；否则，当你遇到令人费解的错误消息时就不容易解决。
+
+I've tried to use a 'real-world' example when showing sections of CI code. I want
+to show that CI can be used to develop a serious website with a serious purpose.
+I'm currently running several websites for clients, and I want a program that will
+monitor them, test them in ways I specify, keep a database of what it has done, and
+let me have reports when I want them.
+我尝试在显示 CI 代码段时使用一个“真实世界”的例子。我想展示的是，CI 可以用于开发一个正式的网站。目前，我手头上有几个正在运行的客户网站，我希望依照我指定的方式去对其进行检测控制以及测试，同时记录下程序操作行为，在我需要时我可以得到一份相关的报告。
+
+The examples in this book don't show it in full detail, of course: but they do, I hope,
+demonstrate that you can use CI to make pretty well any common coding simpler,
+and some uncommon stuff as well.
+本书中的范例无法将 CI 的功能一丝不漏的完全展示，但我想这些范例应当还是在一定程度上展现了 CI 在简化处理常用应用（以及一些非常用应用）上的能力。
+
+This book steps you through the main features of CodeIgniter in a systematic way,
+explaining them clearly with illustrative code examples.
+本书系统地讲解了 CodeIgniter 的主要特性，并配合相应的代码范例进行了详尽的解释，使你能够由浅入深地掌握 CodeIgniter。
+
+
+What This Book Covers
+本书内容概述
+
+Chapter 1 explains what CodeIgniter can do, the 'framework', and how CodeIgniter
+fits in. It further talks about the open-source business model and gives some
+disadvantages of CodeIgniter, at the end.
+第一章讲解了 CodeIgniter 能做什么？什么是“框架”？如何安装 CodeIgniter？还对开源商业模式进行了深层次讨论，并在结尾给出了 CodeIgniter 的一些不足。
+
+Chapter 2 explains what happens when you install the site, and which files will be
+created. It gives a detailed overview of the required software, and explains the basic
+configuration of CodeIgniter.
+第二章讲解了安装 CodeIgniter 会发生什么？会自动创建哪些文件？本章给出了安装 CodeIgniter 所需软件的详细说明，并讲解了如何对 CodeIgniter 进行基本的配置。
+
+Chapter 3 explains how MVC helps to organize a dynamic website. It goes further
+to explain the process by which CodeIgniter analyzes an incoming Internet request
+and decodes which part of your code will handle it. Then CodeIgniter syntax rules
+and the different types of files or classes you can find—or write for yourself—on a
+CodeIgniter site are explained. At the end of the chapter, some practical hints on site
+design are given.
+第三章讲解了 MVC 如何帮助组织一个动态网站。本章节更详细的阐述了当 CodeIgniter 收到 Internet 请求后，通过分析该请求并解析相关程序来执行的过程。然后介绍 CodeIgniter 的语法规则，并对 CodeIgniter 网站上你能找到的（或自己编写的）各种不同类型的文件或类进行了详细的解释。在本章的结尾部分，会告诉大家一些在网站设计中极具实用性的技巧和提示。
+
+Chapter 4 looks at how you set up a database to work with CodeIgniter, and then
+how you use the Active Record class to manipulate the database.
+第四章看看如何设置一个数据库来配合 CodeIgniter 的使用，还有如何使用 Active Record 类来操作数据库。
+
+Chapter 5 covers various ways of building views, how to create HTML forms quickly,
+and how to validate your forms using CodeIgniter's validation class.
+第五章包含了创建视图的各种方法，如何快速创建 HTML 表单，如何使用 CodeIgniter 的验证类验证你的表单。
+
+Chapter 6 looks at one of the basic questions affecting any website i.e. session
+management and security; we also explore CodeIgniter's session class.
+第六章看看一个对任何网站都有影响的基础问题，即 Session 管理和安全；同时我们也来探讨一下 CodeIgniter 的 Session 类。
+
+Chapter 7 covers the way in which CodeIgniter uses objects, and the different ways in
+which you can write and use your own objects.
+第七章涵盖了 CodeIgniter 使用对象的方式，以及你能够以各种不同的方式编写和使用你自己的对象。
+
+Chapter 8 covers CodeIgniter classes to help with testing: Unit tests, Benchmarking,
+the 'profiler' and ways in which CodeIgniter helps you to involve your database in
+tests without scrambling live data.
+第八章涵盖了 CodeIgniter 中用于测试的类：单元测试、基准测试和“分析器”，通过这些方法，CodeIgniter 可以帮你在不影响当前数据的情况下测试数据库。
+
+Chapter 9 looks at using CodeIgniter's FTP class and email class to make
+communication easier, and then we venture into Web 2.0 territory using XML-RPC.
+第九章讲述了通过使用 CodeIgniter 的 FTP 类和 Email 类来简化通讯，并使用 XML-RPC 从 Web 2.0 的世界中获取信息。
+
+Chapter 10 talks about CodeIgniter classes that help in overcoming problems arising
+regularly when you are building a website, for example, the date helper, the text and
+inflector helpers, the language class, and the table class.
+第十章讲解了一些能帮你解决建站常见问题的 CodeIgniter 类和类库，例如：日期辅助函数、文本和 Inflector 辅助函数、语言类和表格类。
+
+Chapter 11 looks at several useful CodeIgniter functions and helpers: file helper,
+download helper, file upload class, image manipulation class, and the ZIP class.
+第十一章讲解了一些有用的 CodeIgniter 功能和辅助函数：文件辅助函数、下载辅助函数、文件上传类、图像处理类和 ZIP 类。
+
+Chapter 12 covers exploring your config files, using diagnostic tools, and potential
+differences between servers, along with some notes on security.
+第十二章涵盖了探索你的 config 文件、使用诊断工具、服务器之间的潜在区别和一些与安全相关的提示。
+
+Chapter 13 shows you how to generalize CRUD operations so that you can do them
+with two classes: one for the controller, and one for the CRUD model.
+第十三章告诉你如何使 CRUD 操作一般化，你可以用两个类来实现：一个用于控制器，另一个用于 CRUD 模型。
+
+Chapter 14 looks at some coding examples, bringing together a lot of the functions
+that have been discussed bit by bit in the preceding chapters.
+第十四章讨论了一些代码范例，这些范例综合使用了大量之前章节中逐步讨论的功能。
+
+Chapter 15 looks at some of the resources available to you when you start to code
+with CodeIgniter, such as the libraries for AJAX and JavaScript, authentication,
+charting, and CRUD.
+第十五章介绍了一些在你编写 CodeIgniter 程序时会用到的资源，例如：AJAX 和 JavaScript 类库、身份验证、图表和 CRUD。
+
+
+What You Need for This Book
+阅读本书你需要什么？
+
+Throughout this book, we will assume that you have the following packages
+installed and available:
+本书中，我们假定你已经安装了下列软件包
+
+1. PHP 4.3.2 or above
+1. PHP 4.3.2 或以上版本 
+2. A working web server
+2. 一个运行中的 Web 服务器
+3. One of MySQL, MySQLi, MS SQL, Postgre, Oracle, SQLite, ODBC
+3. MySQL、MySQLi、MS SQL、Postgre、Oracle、SQLite、ODBC 其中之一
+
+
+Conventions
+约定
+
+In this book, you will find a number of styles of text that distinguish between
+different kinds of information. Here are some examples of these styles, and an
+explanation of their meaning.
+在本书中，你会发现许多不同的文本样式以区别不同的信息类型。下面是一些文本样式的范例，以及他们的含义。
+
+There are three styles for code. Code words in text are shown as follows: "We can
+include other contexts through the use of the include directive."
+我们有三种文本样式。
+
+A block of code will be set as follows:
+一个代码块将显示为下列样式：
+    $active_group = "default";
+    $db['default']['hostname'] = "";
+    $db['default']['username'] = "";
+    $db['default']['password'] = "";
+
+When we wish to draw your attention to a particular part of a code block, the
+relevant lines or items will be made bold:
+当我们想请你注意某特定部分的代码块时，相关的行或内容将被加粗：
+</head>
+<body>
+<h1 class="test"><?php echo $mytitle; ?> </h1>
+<p class="test"><?php echo $mytext; ?> </p>
+</body>
+
+
+New terms and important words are introduced in a bold-type font. Words that you
+see on the screen, in menus or dialog boxes for example, appear in our text like this:
+"clicking the Next button moves you to the next screen".
+新名词和重要文字采用粗体字。例如在屏幕上、菜单或对话框中，以我们的文本样式则显示为：“单击下一步按钮以转到下一个屏幕”。
+
+Warnings or important notes appear in a box like this.
+警告或重要提示将显示在这样的方框中。
+
+
+Reader Feedback
+读者反馈
+
+Feedback from our readers is always welcome. Let us know what you think about
+this book, what you liked or may have disliked. Reader feedback is important for us
+to develop titles that you really get the most out of.
+我们非常欢迎读者能够给我们反馈。让我们了解你对本书有什么想法，喜欢（或可能不喜欢）什么。读者反馈对我们今后的改进工作十分重要，你也会从中受益良多。
+
+To send us general feedback, simply drop an email to feedback@packtpub.com,
+making sure to mention the book title in the subject of your message.
+要给我们发送反馈，只需简单的写一封 Email 到 feedback@packtpub.com，不过要在邮件标题中写清书名。
+
+If there is a book that you need and would like to see us publish, please send
+us a note in the SUGGEST A TITLE form on www.packtpub.com or
+email suggest@packtpub.com.
+如果你需要我们出版一本书，请在 www.packtpub.com 网站中的 SUGGEST A TITLE 中给我们发信息，或发 Email 到 suggest@packtpub.com。
+
+If there is a topic that you have expertise in and you are interested in either writing
+or contributing to a book, see our author guide on www.packtpub.com/authors.
+如果有你精通的主题，且你对写作或对本书作出贡献感兴趣的话，请到 www.packtpub.com/authors 查看我们的作者指南。
+
+
+Customer Support
+客户支持
+
+Now that you are the proud owner of a Packt book, we have a number of things to
+help you to get the most from your purchase.
+现在，你是一本 Packt 书的“自豪”持有人，我们有很多事情可以帮助你，以便你从你的购买中得到最大的收获。
+
+
+Downloading the Example Code for the Book
+下载本书的范例代码
+
+Visit http://www.packtpub.com/support, and select this book from the list of titles
+to download any example code or extra resources for this book. The files available
+for download will then be displayed.
+访问 http://www.packtpub.com/support，并从书名列表中选择本书，以便下载本书的范例代码或附加资源。然后将显示可供下载的文件。
+
+The downloadable files contain instructions on how to use them.
+下载的文件中包含如何使用它们的说明。
+
+
+Errata
+勘误表
+
+Although we have taken every care to ensure the accuracy of our contents, mistakes
+do happen. If you find a mistake in one of our books—maybe a mistake in text or
+code—we would be grateful if you would report this to us. By doing this you can
+save other readers from frustration, and help to improve subsequent versions of
+this book. If you find any errata, report them by visiting http://www.packtpub.
+com/support, selecting your book, clicking on the Submit Errata link, and entering
+the details of your errata. Once your errata are verified, your submission will be
+accepted and the errata added to the list of existing errata. The existing errata can be
+viewed by selecting your title from http://www.packtpub.com/support.
+虽然我们尽全力保证内容的准确性，但还是会产生错误。如果你在我们的任何一本书中发现错误—也许是文字或代码错误—如果你报告给我们，我们将不胜感激。这样做可以使其他读者免受该错误的影响，并有助于改善本书的后续版本。如果你发现任何勘误，请通过访问 http://www.packtpub.com/support 来提交他们：选择你的书，单击 Submit Errata（提交勘误）链接，然后输入勘误的详细内容。一旦你的勘误通过审核，你提交的内容将被接受，并添加到已存在的勘误表中。你可以从 http://www.packtpub.com/support 通过选择你的书名来查看已存在的勘误表。
+
+
+Questions
+问题
+
+You can contact us at questions@packtpub.com if you are having a problem with
+some aspect of the book, and we will do our best to address it.
+如果你有任何关于书籍方面的问题，你可以通过 questions@packtpub.com 联系我们，我们会尽最大的努力来解决它。

@@ -1,0 +1,70 @@
+ /*this function lists all the entries in a database table on one page. Note that every db table must have an 'id' field and a 'name' field to display!
+This page is a jumping-off point for the other functions - ie to create, read, update or delete an entry. 
+When you've done any of these, you are returned to this page. It has a 'message' parameter, so you can return with a message - either success or failure.*/
+   
+function showall($controller='', $message = '', $test ='no')
+          {
+          $result = '';
+          $mysess = $this->session->userdata('session_id');
+          $mystat = $this->session->userdata('status');
+          if(!$this->db->table_exists($controller))
+                 {
+                  $place =  __FILE__.__LINE__;
+                  $outcome = "exception:$place:looking for table $controller: it doesn't exist'";
+/*test block: what if there is no controller by that name?*/
+                  if($test =='yes')
+                       {  
+                        return $outcome;
+                       }
+                 else{
+                   $this->failure($outcome, 'sites');
+                       }
+                 } 
+/*end test block*/
+          $this->db->select('id, name');
+          $query = $this->db->get($controller);
+          if ($query->num_rows() > 0)
+                {
+                $result .= "<table class='table'>";
+                $result	.= "<tr><td colspan='3'><h3>$controller</h3></td></tr>";  
+                $result	.= "<tr><td colspan='3' class='message'>$message</td></tr>"; 
+                $result	.= "<tr><td colspan='3'>";
+                $result .= anchor("$controller/insert/0", 'New entry');
+                 $result .= "</td></tr>";
+                 $result      .= "<tr><td colspan='3'>";
+                 $result .= anchor("$controller/read", 'Show all entries in the table');	
+                 $result .= "</td></tr>";
+   	             foreach ($query->result() as $row)
+   	                    {
+   	                    $result .= "<tr><td>";
+                       $result .= $row->id;
+                       $result .= " ";
+                       $result .= $row->name;
+                       $result .= "</td><td>";
+                       $result .= anchor("$controller/insert/$row->id",'Update this entry');
+                       $result .= "</td><td>";
+                       $result .= anchor("$controller/delete/$row->id",'Delete');
+                       $result .= "</td></tr>";
+   	                   }
+          
+                $result .= "</table>";
+
+                $data['text'] = $result;
+                $this->display->mainpage($data, $this->status);
+                }  
+          else
+                {$place =  __FILE__.__LINE__;
+                $outcome = "exception: $place: no results from table $controller";
+/*test block: were there results from this table/ controller?*/
+                 if($test == 'yes')
+                       {$place =  __FILE__.__LINE__;  
+                       return $outcome;
+                       }
+/*end test block*/
+                 else{
+                      $message = "No data in the $controller table";
+/*note: this specific exception must return to another controller which you know does contain data…… otherwise, it causes an infinite loop! */
+                       $this->failure($message, 'sites');
+                       }
+                 }  
+    }

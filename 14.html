@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+<title>第十四章　审视 CI</title>
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+<div id="container"><a name="top"></a>
+  <div id="header">
+    <div class="title"><a href="13.html">上一页</a> | <a href="15.html">下一页</a> | <a href="table_of_contents.html">目录</a> | <a href="#bottom">转到页尾</a></div>
+  </div>
+  <div id="content">
+    <div class="main">
+      <h1>第十四章　审视 CI</h1>
+      <p>这本书以一些特定例子开始，这些例子演示了 CodeIgniter 如何能节约你的时间，让你在用PHP开发网站时更有效率。在开发这个能够定期测试其它网站的网站应用中，CI成为该网站的一些基础部分，我们也花了一些时间来演示CI所能做的那些事情。我希望这些例子已经显示了 CI 如何在宏观上使编码更容易。</p>
+      <p>在这一章中, 我想要稍微往回走一点，来看一下使用CI框架带来的全面影响。 它使写一个完整的应用变得容易吗? 它能产生专业的结果吗?</p>
+      <p>当你写一本像这样的书时，把它分成几部分，并且每次把重心集中在一个新的战术上是很重要的。这意味着把各部分的东西组合在一起有时候是很困难的。我希望在上一章的“实现 CRUD”的代码提供了把AR和单元测试以及表格等不同部分组合起来的一些方法。在这一章里，我想要演示如何把所有的部分组合在一起最终交付一个完成的项目。换句话说，我们的测试网站能够正常工作吗？</p>
+      <p>由上而下地查看一些来自网站的样本代码应该有助于我们拟订一个平衡表：</p>
+      <ul>
+        <li>CI 提供帮助的地方
+          <ol>
+            <li>组织网站</li>
+            <li>使代码变成更简单</li>
+            <li>为你完成一些工作（数据校验等）</li>
+          </ol>
+        </li>
+        <li>CI 不能提供帮助的地方。</li>
+      </ul>
+      <a name="C_14_1"></a>
+      <h2>14.1　一些代码：<span class="songti">“</span>do_test<span class="songti">”</span>模型</h2>
+      <p>我们来仔细查看我们网站上一个模型中的一部分，这个模型与'tests'表和'events'表一起工作。 它的目的是控制我们网站上的中间函数。例如在远程网站上做的测试。 这个模型:</p>
+      <ul>
+        <li>连接到sites表列出的网站数据库表并进行测试</li>
+        <li>更新另外一张表，也就是events表(也就是, 每次一个测试被实施 )</li>
+        <li>提供用户接口， 让他或者她选择一个测试样式并且以各种不同的格式得到数据</li>
+      </ul>
+      <p>因为它是一个模型, 它需要被一个控制器调用，并且返回结果给视图。 如果视图包含超链接, 它们依次调用一个控制器函数, 扮演另一个模型函数的前端的角色。</p>
+      <a name="I_table_information_generating_from_database_query"></a>
+      <p>这是 do_test 模型的主要功能之一：从一个数据库查询直接生成一张数据表的信息。 这样做将列出可用的网站和选择其中一张表进行测试。 如果你还没有从中选择一个, 函数生成一张网站列表让你从中选择一个。代码如下:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #808080; font-style: italic;">/*this function prepares a report on existing tests and allows you to choose which to do. 
+ First, it selects a site and reports on that*/</span>
+   <span style="color: #000000; font-weight: bold;">function</span> report<span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$site</span>=<span style="color: #cc66cc;">0</span>,<span style="color: #0000ff;">$message</span>=<span style="color: #ff0000;">''</span><span style="color: #66cc66;">&#41;</span>
+   <span style="color: #66cc66;">&#123;</span>
+<span style="color: #808080; font-style: italic;">/*have you chosen a site yet?*/</span>
+   <span style="color: #0000ff;">$siteid</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">uri</span>-&gt;<span style="color: #006600;">segment</span><span style="color: #66cc66;">&#40;</span><span style="color: #cc66cc;">3</span>, <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span>!<span style="color: #0000ff;">$siteid</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+          <span style="color: #66cc66;">&#123;</span>
+          <span style="color: #0000ff;">$text</span> = <span style="color: #ff0000;">&quot;&lt;table class='table'&gt;&quot;</span>;
+          <span style="color: #0000ff;">$text</span> .= <span style="color: #ff0000;">&quot;&lt;tr&gt;&lt;td colspan = '2'&gt;Select a site to work on&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&quot;</span>;     
+          <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'name, id'</span><span style="color: #66cc66;">&#41;</span>;
+          <span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'sites'</span><span style="color: #66cc66;">&#41;</span>;
+          <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+                 <span style="color: #66cc66;">&#123;</span>
+                  <span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">result</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$row</span><span style="color: #66cc66;">&#41;</span>
+                      <span style="color: #66cc66;">&#123;</span>
+                       <span style="color: #0000ff;">$text</span> .= <span style="color: #ff0000;">&quot;&lt;tr&gt;&lt;td&gt;&quot;</span>;
+                       <span style="color: #0000ff;">$text</span> .= <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">name</span>;
+                       <span style="color: #0000ff;">$text</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td&gt;&quot;</span>;
+<span style="color: #808080; font-style: italic;">/*note the next line uses the CI anchor function to generate hyperlinks*/</span>
+                       <span style="color: #0000ff;">$text</span> .= anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;tests/report/$row-&gt;id&quot;</span>,<span style="color: #ff0000;">&quot;Select&quot;</span><span style="color: #66cc66;">&#41;</span>; 
+                       <span style="color: #0000ff;">$text</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>;
+                      <span style="color: #66cc66;">&#125;</span>
+                  <span style="color: #66cc66;">&#125;</span> 
+          <span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$text</span>;
+          <span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'message'</span><span style="color: #66cc66;">&#93;</span>= <span style="color: #0000ff;">$message</span>;
+          <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">display</span>-&gt;<span style="color: #006600;">mainpage</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>作为结果，当它通过一个控制器被调用的时候，它会生成一个页面：</p>
+      <p><img src="images/CodeIgniter-31.gif" /></p>
+      <p>它列出了一个供测试的网站清单，并提供一个与每个网站对应的超链接。因此你能选择那个网站。我喜欢使用 HTML<span class="songti">“</span>表格<span class="songti">”</span>类自动地完成它，但是如果我通过这个超链接来选择需要测试的网站，我找不到一个容易的方法来包含结果行的超链接。但是:</p>
+      <ul>
+        <li>CI 的 AR 使数据库查询非常容易编写</li>
+        <li>CI 的 anchor 函数（URL 辅助函数的一部分）使超链接编写起来比较容易</li>
+      </ul>
+      <p>并且, 理所当然地, 当我们把我们的网站迁移到生产服务器时，我们知道这两个 CI 函数会自动更新数据库连接信息和URL的设置。</p>
+      <p>CI 也帮助我们组织代码。当模型从菜单中被调用时，$siteid变量将作为URL的一部分。</p>
+      <p>注意真实的网页是如何通过display模型的 mainpage 函数创建的。 模型do_test要做的一切就是从数据库获取我们需要的特定的信息, 并把它送走。 display模型把它用CSS文件进行格式化，把它放到一个网页上作为一个菜单项。</p>
+      <p>当然, 因为表格式放在dotest模型中，这样做并不是很合适。 那里有太多的尖括号了，理想地，他们应该在一个视图文件中。 因此, 这需要我们为这些数据专门设计一个 '视图' 文件。 这样做似乎比较简单。至少数据没有和CSS文件放在一起。</p>
+      <a name="I_test_loop"></a>
+      <p>现在我们移至这函数的下半部份。 如果你已经选择一个网站，视图现在让我们看到针对那个特别网站所做的测试结果。</p>
+      <p>代码看起来像这一样-是下面这个条件语句的else部分:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span>!<span style="color: #0000ff;">$siteid</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span></pre>
+      </div>
+      <p>换句话说，当一个符合条件的$siteid作为参数传入后会执行下列代码：</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php">    <span style="color: #b1b100;">else</span>
+    <span style="color: #66cc66;">&#123;</span>
+<span style="color: #808080; font-style: italic;">/*ok, you've chosen a site. let's go to town*/</span>
+   <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'sites.name AS sitename, sites.url AS siteurl, 
+tests.name AS testname, tests.lastdone AS lastdone, tests.id AS 
+testid, frequency, sites.id AS siteid, tests.type AS type'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">join</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'sites'</span>, <span style="color: #ff0000;">'sites.id = tests.siteid'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">orderby</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'frequency desc, sitename asc'</span><span style="color: #66cc66;">&#41;</span>; 
+   <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'sites.id'</span>, <span style="color: #0000ff;">$siteid</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'tests'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+   <span style="color: #66cc66;">&#123;</span>
+   <span style="color: #0000ff;">$xrow</span>   = <span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">row</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$report</span> = <span style="color: #ff0000;">&quot;&lt;table class='table'&gt;&lt;tr &gt;&lt;td colspan='4'&gt;Test report on $xrow-&gt;sitename&lt;/td&gt;&lt;/tr&gt;&quot;</span>;
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;tr class='header'&gt;&lt;td width ='25%'&gt;Test&lt;/td&gt;&lt;td 
+width ='15%'&gt;Type&lt;/td&gt;&lt;td width ='10%'&gt;Frequency&lt;/td&gt;&lt;td width 
+='40%'&gt;Result&lt;/td&gt;&lt;/tr&gt;&quot;</span>;
+            <span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">result</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$row</span><span style="color: #66cc66;">&#41;</span>
+            <span style="color: #66cc66;">&#123;</span>
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;tr&gt;&lt;td width ='25%'&gt;&quot;</span>;
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">testname</span>; 
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td width ='15%'&gt;&quot;</span>;
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">type</span>;
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td width ='10%'&gt;&quot;</span>;
+<span style="color: #808080; font-style: italic;">//        $report .= $row-&gt;lastdone;</span>
+          <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'name'</span><span style="color: #66cc66;">&#41;</span>;
+          <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id'</span>, <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">frequency</span><span style="color: #66cc66;">&#41;</span>;
+          <span style="color: #0000ff;">$fquery</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'frequencies'</span><span style="color: #66cc66;">&#41;</span>;
+          <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$fquery</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+                 <span style="color: #66cc66;">&#123;</span>
+                   <span style="color: #0000ff;">$frow</span> = <span style="color: #0000ff;">$fquery</span>-&gt;<span style="color: #006600;">row</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$sid</span> = <span style="color: #0000ff;">$frow</span>-&gt;<span style="color: #006600;">name</span>;
+                 <span style="color: #66cc66;">&#125;</span>
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #0000ff;">$sid</span>;
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td width ='40%'&gt;&quot;</span>;
+          <span style="color: #0000ff;">$alf</span> =  <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">deadline</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">testid</span><span style="color: #66cc66;">&#41;</span>;
+          <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$alf</span>== <span style="color: #000000; font-weight: bold;">FALSE</span><span style="color: #66cc66;">&#41;</span>
+                <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;Overdue: &quot;</span>;
+                 <span style="color: #0000ff;">$report</span> .= anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;tests/runtest/$row-&gt;testid/human&quot;</span>, <span style="color: #ff0000;">'do it now'</span><span style="color: #66cc66;">&#41;</span>;<span style="color: #66cc66;">&#125;</span>
+          <span style="color: #b1b100;">else</span><span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;Last done: $alf&quot;</span>;<span style="color: #66cc66;">&#125;</span>
+          <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>;      
+          <span style="color: #66cc66;">&#125;</span>
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;tr&gt;&lt;td colspan='4'&gt;&quot;</span>;
+   <span style="color: #0000ff;">$report</span> .= anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;tests/runalltests/$row-&gt;siteid&quot;</span>, <span style="color: #ff0000;">'run all outstanding tests now'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/table&gt;&quot;</span>;
+   <span style="color: #66cc66;">&#125;</span>  
+   <span style="color: #b1b100;">else</span>
+   <span style="color: #0000ff;">$report</span> = <span style="color: #ff0000;">&quot;no tests for this site yet.&quot;</span>;<span style="color: #66cc66;">&#125;</span>
+   <span style="color: #0000ff;">$report</span> .=<span style="color: #ff0000;">&quot;&lt;table class='table'&gt;&lt;tr class='header'&gt;&lt;td&gt;Other options&lt;/td&gt;&lt;/tr&gt;&quot;</span>;
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;tr&gt;&lt;td&gt;&quot;</span>;
+   <span style="color: #0000ff;">$report</span> .= anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;tests/getwrittenreport/$row-&gt;siteid/604800&quot;</span>, <span style="color: #ff0000;">'Get a written report for last week'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$report</span> .= anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;tests/getwrittenreport/$row-&gt;siteid/2592000&quot;</span>, <span style="color: #ff0000;">'Get a written report for last month'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&quot;</span>;
+   <span style="color: #0000ff;">$report</span> .= anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;tests/getbaseremotefiles/$row-&gt;siteid&quot;</span>, <span style="color: #ff0000;">'Update remote file list for this site'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;/tr&gt;&lt;table&gt;&quot;</span>;
+   <span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$report</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">display</span>-&gt;<span style="color: #006600;">mainpage</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #66cc66;">&#125;</span>
+<span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <p>这个代码的运行结果是：</p>
+      <p><img src="images/CodeIgniter-32.gif" /></p>
+      <p>你能看到它已经查询了数据库以找出针对我们选择的网站要做哪些测试。 只有一个测试, 一个简单的 'ping',  这个测试被建议需要每 15 分钟做一次。</p>
+      <p>因为在最近的 15 分钟内还没有这样做，因此，它已经显示为过期，而且一个超链接让我们可以做这一个测试。 如果我点击超链接，我调用了tests控制器的runtest函数，提供它我想要的测试的ID值。</p>
+      <p>结果是：</p>
+      <p><img src="images/CodeIgniter-33.gif" /></p>
+      <p>测试完成后，系统会告诉我什么时候进行的测试，有没有问题, 和花了多长时间。</p>
+      <p>如果我现在返回到report函数，你可以重新调用针对我选择的这个网站的上一周，上一月的测试报告。我只是把这个网站作为一个例子，因此，它没有真正的测试历史: 但是如果我执行了连续的一系列的测试，报告中将会增这些测试的结果。</p>
+      <a name="I_report"></a>
+      <p><img src="images/CodeIgniter-34.gif" /></p>
+      <p>正如你看到的一样，我们正在建立一项报告，它能在不同的时间以不同的测试方式得到某位客户的网站正在运行着并且能作出回应的结果。测试的任一次都不会比另外一次来得更有趣, 但是可以帮助我们得到一个比较长的时间段的图表。</p>
+      <a name="I_parameters_switch_statement"></a>
+      <p>实际上进行测试的函数被构造成一个swith语句。 它有两个参数:</p>
+      <ul>
+        <li>测试的ID值, 它给我们提供了我们需要运行的网站的基本数据: URL，域名/地址，测试完成后需要的文字信息</li>
+        <li>用户类型。 (如果用户真正的人，程序会以对人更友好的格式返回更多的信息-换句话说，如果你想要在屏幕上显示结果,调用时把用户参数设置为人。 如果你想要系统处理结果, 将这一个参数设定为其它。)</li>
+      </ul>
+      <a name="I_test_types"></a>
+      <p>在这个代码片段中，我们已经定义了测试的一些类型。 两个例子是:</p>
+      <ul>
+        <li>“ping”测试，只是简单地调用URL。 如果他们得到一个结果，他们或是用一个预设的格式来分析它(在数据库中被称为 '正则表达式') 或是在没有设置正则表达式时作为一个一般性的 HTML 术语。</li>
+        <li>“ete”测试，用一些我们开发的代码来对一个被保护的网页进行一个'全面' 的测试, 登录后查找一个预期的片段。 这段代码不在这一本书中进行解释，因为它属于CI的函数。</li>
+      </ul>
+      <a name="I_benchmarking_class"></a>
+      <a name="I_database_reading_from"></a>
+      <a name="I_database_writing_to"></a>
+      <p>每个测试返回一个$result变量和一个$timetaken变量，这些作为一个记录被保存在数据库的'events'表中，连同一些来自数据库的其它的信息。下面列出代码，这些代码很大程度上依靠CI的AR模型读写数据库，并且使用benchmark类统计每次测试需要的时间。</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #808080; font-style: italic;">/*function to run an individual test*/</span>
+   <span style="color: #000000; font-weight: bold;">function</span> runtest<span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$testid</span>, <span style="color: #0000ff;">$user</span>=<span style="color: #ff0000;">'human'</span><span style="color: #66cc66;">&#41;</span>
+   <span style="color: #66cc66;">&#123;</span>
+<span style="color: #808080; font-style: italic;">/*first, look up the test details */</span>
+   <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id'</span>, <span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'tests'</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+          <span style="color: #66cc66;">&#123;</span>
+   <span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">result</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$row</span><span style="color: #66cc66;">&#41;</span>
+                  <span style="color: #66cc66;">&#123;</span>
+                 <span style="color: #0000ff;">$type</span> = <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">type</span>;
+<span style="color: #808080; font-style: italic;">/*then work out which type it is and forward it accordingly*/</span>
+                 <span style="color: #b1b100;">switch</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$type</span><span style="color: #66cc66;">&#41;</span><span style="color: #66cc66;">&#123;</span> 
+                 <span style="color: #b1b100;">case</span> <span style="color: #ff0000;">'ping'</span>:
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">benchmark</span>-&gt;<span style="color: #006600;">mark</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'code_start'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$result</span> =<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">pingtest</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">benchmark</span>-&gt;<span style="color: #006600;">mark</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'code_end'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$timetaken</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">benchmark</span>-&gt;<span style="color: #006600;">elapsed_time</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'code_start'</span>, <span style="color: #ff0000;">'code_end'</span><span style="color: #66cc66;">&#41;</span>;
+              <span style="color: #b1b100;">break</span>;
+                 <span style="color: #b1b100;">case</span> <span style="color: #ff0000;">'ete'</span> :
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">benchmark</span>-&gt;<span style="color: #006600;">mark</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'code_start'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$result</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">httppost</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">benchmark</span>-&gt;<span style="color: #006600;">mark</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'code_end'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$timetaken</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">benchmark</span>-&gt;<span style="color: #006600;">elapsed_time</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'code_start'</span>, <span style="color: #ff0000;">'code_end'</span><span style="color: #66cc66;">&#41;</span>;    
+                 <span style="color: #b1b100;">break</span>; 
+&nbsp;
+                 <span style="color: #000000; font-weight: bold;">default</span>:
+                 <span style="color: #0000ff;">$result</span> = <span style="color: #ff0000;">'noid'</span>;
+                 <span style="color: #66cc66;">&#125;</span>
+<span style="color: #808080; font-style: italic;">/*work out which site the test belongs to*/</span>
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">select</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'tests.siteid AS id'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id'</span>, <span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'tests'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+                         <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$srow</span> = <span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">row</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+                       <span style="color: #0000ff;">$mysiteid</span> = <span style="color: #0000ff;">$srow</span>-&gt;<span style="color: #006600;">id</span>;
+                       <span style="color: #66cc66;">&#125;</span>
+                 <span style="color: #b1b100;">else</span><span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$mysiteid</span> = <span style="color: #cc66cc;">0</span>;<span style="color: #66cc66;">&#125;</span>
+<span style="color: #808080; font-style: italic;">/*build the rest of the result set and enter it into the database*/</span> 
+                 <span style="color: #0000ff;">$time</span> = now<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$result</span> == <span style="color: #ff0000;">'OK'</span><span style="color: #66cc66;">&#41;</span>
+                       <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$isalert</span> = <span style="color: #ff0000;">'n'</span>;<span style="color: #66cc66;">&#125;</span>
+                 <span style="color: #b1b100;">else</span><span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$isalert</span> = <span style="color: #ff0000;">'y'</span>;<span style="color: #66cc66;">&#125;</span> 
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'name'</span>, <span style="color: #0000ff;">$type</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'type'</span>, <span style="color: #ff0000;">'test'</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'timetaken'</span>, <span style="color: #0000ff;">$timetaken</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$result</span> != <span style="color: #ff0000;">''</span><span style="color: #66cc66;">&#41;</span>
+                 <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'result'</span>, <span style="color: #0000ff;">$result</span><span style="color: #66cc66;">&#41;</span>;<span style="color: #66cc66;">&#125;</span>
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'testid'</span>, <span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'userid'</span>, <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'siteid'</span>, <span style="color: #0000ff;">$mysiteid</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'time'</span>, <span style="color: #0000ff;">$time</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">set</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'isalert'</span>, <span style="color: #0000ff;">$isalert</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">insert</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'events'</span><span style="color: #66cc66;">&#41;</span>;
+               <span style="color: #0000ff;">$mydata</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span>
+               <span style="color: #ff0000;">'lastdone'</span>   =&gt; <span style="color: #0000ff;">$time</span>,
+               <span style="color: #ff0000;">'notes'</span>    =&gt; <span style="color: #0000ff;">$result</span>,
+               <span style="color: #ff0000;">'isalert'</span>  =&gt; <span style="color: #0000ff;">$isalert</span>
+            <span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">where</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'id'</span>, <span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">update</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'tests'</span>, <span style="color: #0000ff;">$mydata</span><span style="color: #66cc66;">&#41;</span>; 
+<span style="color: #808080; font-style: italic;">/*only return this info to screen if user is human. Otherwise, no need 
+to do anything more; you've updated the database.*/</span>
+                 <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$user</span> == <span style="color: #ff0000;">'human'</span><span style="color: #66cc66;">&#41;</span>
+                       <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$mytext</span> = <span style="color: #ff0000;">&quot;&lt;table class='table'&gt;&lt;tr&gt;&quot;</span>;
+                       <span style="color: #0000ff;">$mytext</span> .= <span style="color: #ff0000;">&quot;&lt;td&gt;Test took $timetaken.&lt;/td&gt;&quot;</span>;
+                       <span style="color: #0000ff;">$mytext</span> .= <span style="color: #ff0000;">&quot;&lt;td&gt;Result was &quot;</span>.<span style="color: #0000ff;">$result</span>.<span style="color: #ff0000;">'&lt;/td&lt;/tr&gt;&lt;/table&gt;'</span>;
+                       <span style="color: #0000ff;">$mytext</span> .= <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">testhistory</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$testid</span><span style="color: #66cc66;">&#41;</span>;
+                       <span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#91;</span><span style="color: #ff0000;">'mytext'</span><span style="color: #66cc66;">&#93;</span> = <span style="color: #0000ff;">$mytext</span>;
+                       <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">display</span>-&gt;<span style="color: #006600;">mainpage</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$response</span><span style="color: #66cc66;">&#41;</span>;<span style="color: #66cc66;">&#125;</span>
+                 <span style="color: #b1b100;">else</span><span style="color: #66cc66;">&#123;</span><span style="color: #b1b100;">return</span> <span style="color: #0000ff;">$response</span>;<span style="color: #66cc66;">&#125;</span>
+                        <span style="color: #66cc66;">&#125;</span>
+                 <span style="color: #66cc66;">&#125;</span>
+          <span style="color: #66cc66;">&#125;</span></pre>
+      </div>
+      <a name="I_test_report_printing"></a>
+      <p>我们如何实际上打印出测试报告是一个 CI 能提供较大帮助的有趣例子。你可以有多种的选择。你能用硬编码的方式打印出你的报告，在你的代码中使用 HTML 就像我们早些时候所做的，像这样:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #808080; font-style: italic;">/*do database query here!*/</span>
+<span style="color: #808080; font-style: italic;">/*now format the results the hard way......*/</span>
+     <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;p&gt;Test history:&lt;/p&gt;&quot;</span>;
+     <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;table width='100%'&gt;&lt;tr&gt;&lt;td width ='20%'&gt;Time&lt;/
+td&gt;&lt;td width ='20%'&gt;Name&lt;/td&gt;&lt;td width ='10%'&gt;Time taken&lt;/td&gt;&lt;td 
+width='45%'&gt;Status&lt;/td&gt;&lt;/tr&gt;&quot;</span>;
+          <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+          <span style="color: #66cc66;">&#123;</span>
+            <span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">result</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$row</span><span style="color: #66cc66;">&#41;</span>
+                  <span style="color: #66cc66;">&#123;</span>
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;tr&gt;&lt;td width='20%'&gt;&quot;</span>;
+                 <span style="color: #0000ff;">$report</span> .= <a href="http://www.php.net/gmdate"><span style="color: #000066;">gmDate</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;j:n:Y H:i&quot;</span>, <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">time</span><span style="color: #66cc66;">&#41;</span>;
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td width='20%'&gt;&quot;</span>;
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">name</span>;
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td width=10%&gt;&quot;</span>;
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">timetaken</span>;
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;td width = 45%&gt;&quot;</span>;
+                 <span style="color: #b1b100;">if</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">isalert</span> == <span style="color: #ff0000;">'n'</span><span style="color: #66cc66;">&#41;</span>
+                       <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;OK&quot;</span>;<span style="color: #66cc66;">&#125;</span>
+                 <span style="color: #b1b100;">else</span>
+                       <span style="color: #66cc66;">&#123;</span><span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;problem: $row-&gt;result&quot;</span>;<span style="color: #66cc66;">&#125;</span>         
+                 <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/td&gt;&lt;/tr&gt;&quot;</span>;      
+                  <span style="color: #66cc66;">&#125;</span>
+            <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;&lt;/table&gt;&quot;</span>;</pre>
+      </div>
+      <p>另一方面，你可以使用 HTML 的表格辅助函数来使生活变得更容易:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #808080; font-style: italic;">/*do db query here */</span>
+<span style="color: #808080; font-style: italic;">/*format the results using the CI HTML table library*/</span>
+   <span style="color: #0000ff;">$report</span> .= <span style="color: #ff0000;">&quot;Test history:&quot;</span>;
+<span style="color: #808080; font-style: italic;">/*redefine our CI table layout if we want to, using our css file*/</span>
+   <span style="color: #0000ff;">$tmpl</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a> <span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'table_open'</span>   =&gt; <span style="color: #ff0000;">'&lt;table border=&quot;1&quot;, class=&quot;table&quot;&gt;'</span>,<span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">table</span>-&gt;<span style="color: #006600;">set_template</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$tmpl</span><span style="color: #66cc66;">&#41;</span>;
+   <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">num_rows</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &gt; <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span>
+   <span style="color: #66cc66;">&#123;</span>
+          <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">table</span>-&gt;<span style="color: #006600;">set_heading</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'Time of test'</span>, <span style="color: #ff0000;">'Name ,'</span><a href="http://www.php.net/time"><span style="color: #000066;">Time</span></a> taken<span style="color: #ff0000;">','</span>Result<span style="color: #ff0000;">');
+          $report .= $this-&gt;table-&gt;generate($query3);
+   }
+   $this-&gt;table-&gt;clear();</span></pre>
+      </div>
+      <p>明显地, 更短而且更简单。 结果和使用HTML的格式完全一样。 不过，让我们来看这些代码带来的两个问题。</p>
+      <p>当你看得更仔细一些的时候，有一个与方便俱来的妥协。 前一段代码, 比较长的版本, 格式化日期是可能的:</p>
+      <div class="code">
+        <div class="title">
+          <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" alt="" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
+          <div style="clear:none">PHP 代码</div>
+        </div>
+        <pre class="php"><span style="color: #0000ff;">$report</span> .= <a href="http://www.php.net/gmdate"><span style="color: #000066;">gmDate</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;j:n:Y H:i&quot;</span>, <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">time</span><span style="color: #66cc66;">&#41;</span>;</pre>
+      </div>
+      <p>这提供给我一个对人更友好的日期，而不是我实际保存在数据库中的 Unix 格式日期。 换句话说，在表中如果表示为'24 Apr 2007 09 04' 会比'1177405479'好. 但是, 要用CI的HTML 表格函数做到这一点不容易。(你可能能够在一些数据库系统的数据库查询中做到这一点; 但是 MySQL 的日期函数只能操作和保存 MySQL 的独特的日期格式的数据，我们选择改为使用 Unix 格式.) 我们在早些时候当我们要生成超链接时碰到了相同的麻烦。你不能这样做。</p>
+      <p>这于这点有另外一个大问题。格式应该存放在哪里? 先前写的所有的代码应该出现在一个控制器中或一个模型中。 (我已经把它写在一个模型中, 当用户点击一个链接来生成测试报告时被控制器调用，把它放在模型中的理由是这样在我需要的时候可以从几个控制器中调用它。)</p>
+      <p>MVC 纯粹论者会说你不应该在一个模型中存放格式。 它应该放在视图中，当然, 的确他们有他们的道理。 我可能想要重写代码生成一个文本报表, 而且使用 CI 的下载辅助函数以文本的格式下载它而不是屏幕上显示它。（关于下载辅助函数的内容请参考第十一章。）当我这样做时, 我必须改写所有的代码以生成文本控制符而不是&lt;tr&gt;&lt;/tr&gt;之类的，甚至更糟糕的是，生成.rtf格式或一些类似的富文本格式。</p>
+      <p>另一个选择是可以使用其它可能的 PHP 语法或模板语法分析器类，把变量或占位符号, 放在视图中。 (针对这些内容在第五章有些简要的论述。) 然后，你把真正的，未格式化的数据传递给视图。 这可能使 MVC 纯粹论者满意，我的观点是这种什么是把一个复杂的额外的层加入到代码中。但是这仅是我个人的观点，而且多数人会不同意这一点。</p>
+      <p>重要的一点是 CI 提供多种选择: 它让你自由选择你感到愉快的那一种。没有绝对对或者错的方法: 确实有一些方法比另一些表现更好，适合你本人的方法的是最好的方法。</p>
+      <a name="C_14_2"></a>
+      <h2>14.2　一个平衡表</h2>
+      <p>让我们回顾我们已经在这一本书中涉及的内容。CI 有帮助吗？</p>
+      <a name="C_14_2_1"></a>
+      <h2>14.2.1　CI 能提供帮助的地方：结构</h2>
+      <p>即使只观察我们网站一部分比如说一个模型，很明显发现一些有实用价值的应用正在变得很复杂。CI, 通过建议或者一定程度上的强迫，构建了一个 MVC 结构, 来帮助你使复杂的东西变得更有条理。 虽然你还可能忘记你把一段代码放到哪里去了, 或者会在不同的控制器或模型中重复编写一个相似的函数: 但是它更多的是让你的代码更合乎逻辑。</p>
+      <p>CI 的 URL 机制帮助你快速从一个代码文件连接到别一个。</p>
+      <p>CI“超级对象”没有 namespace 冲突，能够使代码互相调用并互相传递数据。 因为每一个变量都有自己的作用域，因此即使同名也都相安无事，不会引起混乱。同时，你能容易地在从你的代码中上存取所有的 CI 资源。</p>
+      <p>CI 的“config”文件鼓励你们建立针对你网站参数的集中设置。</p>
+      <p>所有的这些好处使你在开发网站时更容易，维护更方便，也更有利于别的程序员看懂代码。</p>
+      <a name="C_14_2_2"></a>
+      <h2>14.2.2　CI 能提供帮助的地方：简化</h2>
+      <p>CI 在许多方面帮助你简化代码。 也许最好的例子来自AR类, 但是还有很多其它的方面。 CI 把复杂的代码隐藏在函数或一些类库中，做得很优秀，允许你使用一个简单的函数来调用它们。</p>
+      <a name="C_14_2_3"></a>
+      <h2>14.2.3　CI 能提供帮助的地方：额外功能</h2>
+      <p>当你使用CI的时候，许多 CI 函数带给你许多额外的好处。像URL类和AR类能够自动读取config文件的设置参数，因此你不需要重复数据，因此，针对网站的修改只需要在一个地方进行就可以在整个程序得到应用。</p>
+      <p>有许多小的例子-容易的方法使你能屏蔽机器人来抓取你的电子邮件住址, 举例来说（见第三章），又或者 AR 类也能为你准备数据。</p>
+      <p>事实上，CI主要的学习曲线 (至少对我来说) 就是去发现可以走什么捷径，并且请记住，使用它们来代替艰苦漫长的PHP编程。 如果这一本书能指导你更方便地找到捷径，它就达到了目的。</p>
+      <a name="C_14_3"></a>
+      <h2>14.3　CI 的问题</h2>
+      <p>CI 并不十全直美。 这意味着它本身是一个平衡体：轻巧便捷，而不是复杂和全面。正如有人曾经说过：'轻量级'意味着&quot;我想要的东西都包含，我不想要的都不包含&quot;。</p>
+      <a name="C_14_3_1"></a>
+      <h2>14.3.1　完整性</h2>
+      <p>CI函数几乎包含了你在开发一般网站时所需要的全部内容。但也有一些CI主要函数库中没有包含的例外，而它们之中的绝大多数被CI社区中的用户提供的类库所覆盖。（详见下一章），或者你可以通过PEAR得到。最明显的省略包括：</p>
+      <ul>
+        <li>AJAX 类</li>
+        <li>编写网络机器人的类</li>
+        <li>一个创建加密网站的类, 处理登入，网页保护，以及其它的基本会话维护</li>
+        <li>一个改进的 '脚手架' 类, 能提供面向外部网络功能，而不仅仅面向开发都。</li>
+      </ul>
+      <p>CI 也从Rails书中摘了一页，制作了一个代码生成器，能够帮助开发者建立客制化类。</p>
+      <a name="C_14_3_2"></a>
+      <h2>14.3.2　易用性</h2>
+      <p>CI 提供你期待的学习效果。 但是, 假如你已经了解一些 PHP知识, 会变得相当容易。 事实上, 我发现CI主要的'学习曲线'是，如果你知道如何用标准 PHP 方法实现某个功能，你就会很容易地用CI实现。只有稍后，当你从用户手册中找到更多的内容时，你才会了解，做同一件事，使用 CI 类和辅助函数会变得多么快捷。</p>
+      <p>私下里讲，我发现有两个 CI 类较难理解和掌握。 一个是XMLRPC 类, 另一个是Validation类。主要是它们都需要不同网页或不同网站之间的接口。为了使它们工作，正确地设置它们有时候会很困难（分别参见第八和第九章）</p>
+      <p>我也发现使用CI的“超级对象”一开始也比较困难—见第七章。可能是最陡峭的 CI 学习曲线, 错误的做法会让你迷惑，有挫败感，直到你掌握它。</p>
+      <p>其余的：都挺容易的。如果有任何疑问，你总是可以去研究源代码。</p>
+      <a name="C_14_4"></a>
+      <h2>14.4　总结</h2>
+      <p>这一章我们看到一些编码的例子，还有许多我们已经在以前各章中一点一点地讨论过的函数。</p>
+      <p>我们还看到 CI 可以：</p>
+      <ul>
+        <li>组织你的网站</li>
+        <li>简化编程</li>
+        <li>增加功能</li>
+      </ul>
+      <p>我希望这一本书已经说服你在使用PHP开发动态网站时选择CI。</p>
+      <p>它还是对开源运动和支持开源的人的贡献，源代码如此丰富，可以容易地，自由地和广泛地得到源代码。谢谢，Rick！</p>
+      <p>更为慷慨的一个主题，在这本书的最后一章，会提供一些让你更好地开发CI应用的资源-CI用户社区提供进一步的帮助，支持和其它的代码资源。 </p>
+    </div>
+  </div>
+  <a name="bottom"></a>
+  <div id="footer">
+    <div class="title"><a href="13.html">上一页</a> | <a href="15.html">下一页</a> | <a href="table_of_contents.html">目录</a> | <a href="#top">转到页首</a></div>
+    <div style="clear:none">第十四章　审视 CI</div>
+  </div>
+</div>
+</body>
+</html>

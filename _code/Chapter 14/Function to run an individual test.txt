@@ -1,0 +1,84 @@
+/*function to run an individual test*/
+   function runtest($testid, $user='human')
+   {
+// echo "run test  $testid";
+/*first, look up the test details */
+   $this->db->where('id', $testid);
+   $query = $this->db->get('tests');
+   if ($query->num_rows() > 0)
+          {
+   foreach ($query->result() as $row)
+   	             {
+                 $type = $row->type;
+/*then work out which type it is and forward it accordingly*/ 
+                 switch ($type){ 
+                 case 'ping':
+                 $this->benchmark->mark('code_start');
+                 $result =$this->pingtest($testid);
+                 $this->benchmark->mark('code_end');
+                 $timetaken = $this->benchmark->elapsed_time('code_start', 'code_end');
+              break;
+
+              
+                 case 'ete' :
+                 $this->benchmark->mark('code_start');
+                 $result = $this->httppost($testid);
+                 $this->benchmark->mark('code_end');
+                 $timetaken = $this->benchmark->elapsed_time('code_start', 'code_end');    
+                 break;	
+                           
+                 default:
+                 $result = 'noid';
+                 }
+
+/*work out which site the test belongs to*/
+                 $this->db->select('tests.siteid AS id');
+                 $this->db->where('id', $testid);
+                 $query = $this->db->get('tests');
+                 if ($query->num_rows() > 0)
+   	                    {$srow = $query->row();
+                       $mysiteid = $srow->id;
+                       }
+                 else{$mysiteid = 0;}
+
+/*build the rest of the result set and enter it into the database*/	
+                 $time = now();
+
+                 if($result == 'OK')
+                       {$isalert = 'n';}
+                 else{$isalert = 'y';}	
+
+                 $this->db->set('name', $type);
+                 $this->db->set('type', 'test');
+                 $this->db->set('timetaken', $timetaken);
+                 if($result != '')
+                 {$this->db->set('result', $result);}
+                 $this->db->set('testid', $testid);
+                 $this->db->set('userid', 0);
+                 $this->db->set('siteid', $mysiteid);
+                 $this->db->set('time', $time);
+
+                 $this->db->set('isalert', $isalert);
+                 $this->db->insert('events');
+                 
+               $mydata = array(
+               'lastdone' 	=> $time,
+               'notes' 		=> $result,
+               'isalert'	=> $isalert
+            );
+                 $this->db->where('id', $testid);
+                 $this->db->update('tests', $mydata); 
+
+/*only return this info to screen if user is human. Otherwise, no need to do anything more; you've updated the database.*/
+                 if($user == 'human')
+                       {$mytext = "<table class='table'><tr>";
+                       $mytext .= "<td>Test took $timetaken.</td>";
+                       $mytext .= "<td>Result was ".$result.'</td</tr></table>';
+                       $mytext .= $this->testhistory($testid);
+                       $response['mytext'] = $mytext;
+                       $this->display->mainpage($response);}
+                 else{return $response;}
+                        }
+                 }
+          }
+         

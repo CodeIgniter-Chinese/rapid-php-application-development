@@ -1,0 +1,62 @@
+   function insert2($controller, $newpost, $test = 'no')
+          {
+          $myform = '';
+
+/*test the incoming parameters*/
+          if(!$this->db->table_exists($controller))
+          {
+//test here!
+          } 
+          
+          $this->load->library('validation');
+
+/*handle the validation. Note that the validation class works from the post array, whereas this function only has a $newpost array: same data, but different name. So we re-created the $_POST array. 
+*/
+          $_POST = $newpost;
+
+/*now build up the validation rules from the entries in our master array*/
+          $errorform = '';
+          $newtemparray = $this->form[$controller];
+          foreach($newtemparray as $key => $value)
+                 {$rules[$key]= $value[2];}
+          $this->validation->set_rules($rules);
+
+/*and the name fields*/	
+          foreach($newtemparray as $key => $value)
+                {$fields[$key]= $value[0];}
+          $this->validation->set_fields($fields);
+
+
+
+    $this->validation->set_fields($fields);
+
+/*now do the validation run*/
+          if ($this->validation->run() == FALSE)
+                 {
+/*if the validation run fails, re-present the entry form by calling the 'insert' function*/
+                $id = $_POST['id'];
+                $this->insert($controller, $id, 'no', $_POST);
+    
+                 }
+          else
+          {
+/*The validation check was OK so we carry on. Check if there is an id number*/
+          if(isset($_POST['id']) && $_POST['id'] > 0)	
+                 {
+/*if yes: this is an update, so you don't want the id number in the post array because it will confuse the autoincrement id field in the database. Remove it, but save it in $tempid to use in the 'where' condition of the update query, then do the update*/
+                 $tempid = $_POST['id'];
+                 unset($_POST['id']);  
+                 $this->db->where('id', $tempid);
+                 $this->db->update($controller, $_POST); 
+                 if($this->db->affected_rows()== 1)
+                       {$this->showall($controller, "Entry number $tempid updated.");}
+                 else{$this->failure("Failed to update $controller for id no $tempid", __FILE__,__LINE__);}  
+                         
+/*if no id number, we assume this is a new entry: no need to unset the post array id as it isn't there! the database will create its own id number. Do the new entry*/
+                 $this->db->insert($controller, $_POST);
+                 if($this->db->affected_rows()== 1)
+                        {$this->showall($controller, "New entry added.");}
+                 else{$this->failure("Failed to make new entry in  $controller ", __FILE__,__LINE__);}    
+                }
+                }               
+            }

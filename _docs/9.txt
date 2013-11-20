@@ -1,0 +1,380 @@
+使用 CI 通信
+
+英特网的主要优点是它的通信能力。 这一章介绍CI在三个方面使通信更容易。
+
+首先，我们将会通过使用CI的FTP类存取远程目录中的文件，来增加测试工具包。
+
+然后, 我们将会使用电子邮件类在某些条件满足时自动地给我们发邮件。
+
+最后，我们将会尝试进入web 2.0 的领域，使用XML-RPC创建一个个人WEB服务，允许我们的远程网站响应并返回来自我们测试网站的信息。
+
+
+使用FTP类测试远程文件
+
+FTP是在英特网上传输文件的方法。 它通常使用一个特别的FTP程序来上传或下载网站的文件。对我们大多数人来讲，它只是在创建一个新的网站时偶尔用到。
+
+不过你能使用CI轻松地实现全部过程。一种用途是检查你远程网站的完整性：文件还在那里吗？作为一个网站拥有者，你必须面对某人针对你的网站文件的一些特别企图。你的ISP或服务器管理员可能误删你的文件。(我本人就遇到过一次, 我的ISP重建服务器时忘记重新安装我的应用文件）。这个文件不经常被用到，但是它与系统有很大的关系。这导致我花了一些时间去追踪这个有趣的错误!)
+
+作为一个体现CI的FTP类威力的例子，让我们建立一个常规测试程序, 用来检查远程网站的文件。 有些代码是我们每个人都需要的:
+
+function getremotefiles($hostname, $username, $password) {
+   $this->load->library('ftp');
+   $config['hostname'] = $hostname;
+   $config['username'] = $username;   
+   $config['password'] = $password;
+   $config['debug']     = TRUE;
+   $this->ftp->connect($config);
+   $filelist = $this->ftp->list_files('/my_directory/');
+   $this->ftp->close();
+   return $list;  
+}
+
+
+首先，如果还没有装载请先装载FTP类。 然后，定义设置叁数: 主机名称（比如, www.mysite.com) 、访问FTP使用的用户名和密码。
+
+一旦连接建立，CI 的FTP类给你一些选项。 在这种情况下，我们使用list_files() 返回在/my_directory/目录下的文件清单。函数返回一个数组。而且你能容易地检查包含文件的数组以发现你要查找的文件。在这之前，我们正在尝试在一个数据库中列出我们所有的测试。 因此这次我们需要列出FTP　URL的清单(或者主机名称) 、用户名和密码,　没有使用正则表达式而是一个用于检出的存放文件的数组。为了确保数组的完整性，如果你要把它保存在数据库中，你需要在保存前对它进行序列化，取出后需要反序列化。
+
+比较由getremotefiles()函数返回的$remotearray和从你的数据库返回的反序列化的 $referencearray:
+
+function comparefiles($remotearray, $referencearray) {
+   $report = "<br />On site, not in reference array: ";
+   $report .= print_r(array_diff($remotearray, $referencearray), TRUE);
+   $report .= "<br />In reference array, not on site: ";
+   $report .= print_r(array_diff($referencearray, $remotearray), TRUE);
+   return $report;
+}
+
+PHP的array_diff函数比较两个数组。因此，它将会列出在第一个数组存在但第二个数组中不存在的文件, 因此, 运行这个函数两次, 颠倒叁数的次序: 那样，你能得到两个清单，一个是不在你网站上的文件清单（但是应该在），一个是在你网站上文件清单（但是不应该在）。你一个目录显示了你的ISP可能误删的那些文件。第二个清单是那些我们应该加入的文件。
+
+CI的FTP类应该允许你上载，移动更名和删除文件。假如你的测试显示你的参考文件数组中的一个文件丢失了(让我们假定它的文件名是 myfile.php)，你可以FTP类来上传它:
+
+$this->ftp->upload('c:/myfile.php','/public_html/myfile.php');
+
+在这个例子中，第一个参数是本地的路径, 第二个参数远程网站的路径。 可选择地，你能在第三个叁数中指定文件应该如何被上传 (作为ASCII或binary) 如果你不选， CI会根据文件的后缀名自己决定。 如果你正在运行PHP5, 你能增加第四个叁数设定文件权限, 这第四个参数用在你正在上传到一个Linux服务器。
+
+要非常小心那个删除选项。 就象用户手册中说的那样, "它将会递归地删除指定路径中的每样东西,包括子目录和所有的文件"，甚至写这一个段落都已经使我紧张。
+
+使用FTP的删除函数和上传函数的一个组合，你能自动地在你的远程网站上更新文件。列出你需要更新的文件, 而且依次访问每个网站,首先划除旧的文件, 然后上传每个新的。
+
+还有一有趣的 'mirror' 函数,让你在另外的一个服务器上建立网站的一个完全副本。
+
+如果你正在运行 PHP5 ，FTP类还有一个让你改变文件权限的函数。
+
+正如你见到的，从测试你的远程网站到实际上维护或更新他们涉及到你的应用的许多方面。 你可以，举例来说，写代码自动地进行更新。
+
+
+机器之间的对话--XML-RPC
+
+WEB 2.0 带来的革命是巨大的，体现在建立电脑对电脑的接口,允许mashup和APIs以及其它的好东西。
+
+这是'网络服务'的基础。 你能提供一个接口给你的网站，允许其它人用它为他们服务。举一个简单的例子, 如果你建立一个'网络服务'对华氏温度进行转换，变成摄氏温度, 客户用一个叁数 (要转换的温度) 送出一个请求，而服务器返回被转换的值。因此, 任何人都能增加一个温度转换功能在他自己的网站上, 但是实际上是调用你的服务。
+
+XML-RPC 让二部电脑直接地对话。接收网站创建一个简单的API(应用程序接口)。任何一个想要与它交互的人需要知道那个API-什么方法是可调用的, 它们需要什么叁数, 语法是什么-为了访问它们。举例来说，许多主要的网站使用这个系统: Google ，让你通过公布的API直接调用它的搜索引擎或Google地球。
+
+建立你自己的个人API相对来说很容易, 对 CI 说声谢谢吧。你需要建立二个网站来测试它,让它成为一件比大多数事情复杂一点的事情吧。一个网站(让我们称它为 '接收'网站) 提供API,侦听请求, 并回答它们。 (在我们的例子中，这是我们正在尝试测试并管理的远程网站之一。) 另一个网站使用API取回答案。(在我们的例子中，这就是测试网站本身。)
+
+在XML-RPC协议，这二个网站通过高度结构化的XML进行对话。 (名字XML-RPC由此而来-它是XML Remote Procedure Call的宿略词) 客户将一个XML包送到 '接收网站'服务器, 告诉它想要使用的函数并传入一些参数。 服务器解码XML, 如果它符合API的要求, 调用函数并返回一个结果，封装成客户可以解码和使用的XML。
+
+你的API由接收网站提供的函数组成，并指导如何使用他们-举例来说, 他们需要什么叁数，这些参数应该是什么数据类型, 等等。
+
+在接收方，我们创建一个XML-RPC 的服务器，确保内部的函数能为外部网站所用。这些'内部方法'实际上是你的控制器里面的正常的函数: 服务器的角色是处理外部的调用和内在的函数之间的接口。
+
+当你建立一个XML-RPC流程的时候 , 有二组问题:
+
+。　获取需要对话的这二个网站
+
+。　确定数据以一个适当的格式被传输
+
+两者都充分利用多维数组, 电脑能够十分容易地理解他们, 虽然人脑反而会对多维数组感到有一点迷惑。 CI 使它变得比较容易-虽然要做得正确还需要相当地睿智。
+
+
+使XML-RPC的服务器与客户交互
+
+首先，你必须在远程网站上建立一个服务器, 和在请求网站上的一个客户机。这些通过几行代码就可以做到。让我们假定我们正在一个叫做mycontroller的控制器（在接收网站上）中建立服务器和在叫做 'xmlrpc_client' 的控制器中建立客户(在请求网站上)。
+
+在每个网站上，通过在构造函数中初始化CI类。分二步; 对于客户端，你只需要装载第一行, 在服务器端你需要装载这两行：
+
+$this->load->library('xmlrpc');
+$this->load->library('xmlrpcs');
+
+现在, 在服务器一方，关闭你的构造函数, 并且在 'mycontroller'控制器的index() 函数里面，定义供处部调用的函数。 你通过建立一个“functions”子数组（在CI的$config主数组中），映射进入的请求名和你实际要使用的函数:
+
+$config['functions']['call']= array('function'=>'mycontroller.myfunction');
+
+$config['functions']['call2']= array('function'=>' mycontroller.myfunction2');
+
+在这个例子中，有二个被命名的函数叫做-'call' 和 'call2'. 这就是request所请求的。(它不需要函数的名称, 而是需要调用名。 如果你愿意，当然，你能使用相同的名字。) 对于每个调用，你定义一个子子数组给控制器里面的函数-例如：分别是'myfunction' 和 'myfunction2'。
+
+你然后通过设定它初值并且实例化完成服务器的设定:
+
+          $this->xmlrpcs->initialize($config);
+
+          $this->xmlrpcs->serve();
+
+而且现在它已准备好侦听请求。
+
+现在你需要去另一个网站-客户网站-并且建立一个XML-RPC的客户来发出请求。 这应该在你的客户网站上的一个单独的控制器。 它相当短:
+
+     $server_url='http://www.mysite.com/index.php/mycontroller';
+     $this->load->library('xmlrpc');
+     $this->xmlrpc->set_debug(true);   
+     $this->xmlrpc->server($server_url, 80);
+     $this->xmlrpc->method('call');
+
+
+你定义接收网站的URL，指定包含你想要的XML-RPC 的服务器的控制器。 你装载XML-RPC 的类,定义服务器, 和你想要调用的方法-这是你定义的调用的名字，不是函数的真实名称， 如果你正在调用的函数需要叁数，你这样传递它们:
+
+          $request = array('optimisation','sites');
+
+就象你见到的, 我们正在传递二个参数。
+
+然后, 如果一个结果已经返回, 处理它:
+
+          if (! $this->xmlrpc->send_request()) {
+
+                 echo $this->xmlrpc->display_error();
+          } else {
+                 print_r($this->xmlrpc->display_response());
+          }
+
+最简单的做法是显示它; 但是在一个真正的应用中你更有可能想要机器分析它,比方说,通过使用正则表达式, 然后计算出结果。 举例来说，如果结果包含一个错误信息，你可能想要在你的数据库中记录错误, 而且采取行动向某个用户报告此事。
+
+格式化XML-RPC数据交换
+
+让我们使用一个真实的, 也比较简单的例子。在这一节中，我们将会创建一个XML-RPC调用/响应，让你远程启动一个数据库的优化操作。
+
+我们在上面写的客户端, 正在申请调用一个方法名为 'call' 并带有两个参数: 'optimisation' 和 'sites'。
+
+接收网站的服务器把这个名为'call'的请求和一个实际的控制器中的函数'myfunction'建立起一个映射。
+
+让我们大致看一下这个函数。 它基本上是在控制器里面的一个平常的函数。 它尝试优化一张 MySQL 数据库的表、并根据优化结果返回 'success' 或 'failure'。
+
+function myfunction($request) {
+   
+    $paramters = $request->output_parameters();
+    $function = $paramters['0'];   
+    $table =$parameters['1'];   
+    if ($this->db->query("OPTIMIZE TABLE $table")) {
+        $content = 'success';
+    } else {
+        $content = 'failure';
+    }
+    $response = array(
+                   array(
+                      'function'=> array($function, 'string'),
+                      'table'   => array($table, 'string'),
+                      'result'  => array($content, 'string')
+                   ),
+                   'struct'
+        );
+    return $this->xmlrpc->send_response($response);
+}
+注意$request,设定作为函数的参数。这包含来自客户的$quest的数组, 它有二个值, 'optimisation' 和 'sites'。 CI 已经把数组转换成一个对象, $request。因此你不能把它当做数组来处理，你必须使用$request对象的$request->output_parameters() 方法。这返回一个原先的数组。
+
+利用这个，我们已经告诉接收网站上的函数我们需要优化的表名, 'sites'表。 我们也已经告诉它该调用函数'optimisation')。它还带有一个叁数叫做'result', 获得所有的值后返回这三个值。
+
+返回到客户网站的结果看起来有点像这:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<methodResponse>
+<params>
+  <param>
+   <value>
+    <struct>
+     <member>
+       <name>function</name>
+        <value>
+         <string>optimisation</string>
+        </value>
+       </member>
+       <member>
+        <name>table</name>
+         <value>
+          <string>sites</string>
+         </value>
+       </member>
+       <member>
+        <name>result</name>
+        <value>
+         <string>Success</string>
+        </value>
+       </member>
+       </struct>
+      </value>
+    </param>
+  </params>
+</methodResponse>
+
+(实际上没有缩进: 我这样做是为了使结构变得更清楚。)
+
+正如你看到的，我们的简单的三个词的结果(optimisation、exercises,success) 已经被装进如此复杂的分层标签中,在一定程度反应出XML可悲之处, 精确地地告诉一部机器收到了什么。有三个<member></member> 标签对。 每个有一个 <name></name>对.　('function','table','results') 而且每个都有 <value></value>对, 包含了我们实际需要的信息（连同数据类型）-也就是 'optimisation','sites', 'success'。
+
+不必介意我是否喜欢它。 计算机因这种东西而有收获: 一部机器需要精确、不含糊、和容易的数据特性。 这一个章节是讲解计算机之间如何交谈的事的, 不是有关如何方便真正的人类的。
+
+现在，在你的客户网站上的XML-RPC客户函数能够解析出收到的数据。 它可以方便地使用正则表达式来做到这一点，因为每个答案都清楚地被XML标签标示着。
+
+注意 CI 如何让你免写许许多多的尖括号。
+
+调试
+
+一旦你开始测试你的客户/服务器组合, 你或许会得到这样的信息：
+
+The XML data received was either invalid or not in the correct form for XML-RPC. Turn on debugging to examine the XML data further.
+
+加入下列代码打开调试功能:
+
+$this->xmlrpc->set_debug(true);
+
+在你的客户端。 这让你完整地看到你接收的信息。被警告,这是调试功能获取失败原因的地方。
+
+有几个地方容易出错:
+
+。　远程网站没有正确回应。 (你可能暂时设定它显示错误，目的是为了要找出它为什么没有回应的原因。如果它是一个活动的网站，这是令人感到懊恼的。另外的，如果捕获 22 是它将会显示 HTML格式的错误信息, 返回不是你的客户端网站期望的XML格式信息，因此，你们将会收到由第一组所引起的第二组错误信息… ) 对这个情况除错这可能涉及许多FTP来回传输，直到你达成正确的结果。
+
+。 客户端代码可能工作不正常。
+
+。 你把网址弄错了。(XML_RPC 服务器上要求以CI的方式来定位控制器-也就是 http://www.mysite.com/index.php/mycontroller。 如果你把所有的服务器代码放入控制器的构造函数而非在index()函数中，它会正常运行, 但是你需要给出你要调用的函数的名称-比如：
+http://www.mysite.com/index.php/mycontroller/myfunction)
+
+。 XML信息交换可能不完全正确。 set_debug 函数让你了解什么正在被返回 , 但是你能需要花好长时间盯着屏幕试着找出哪里出了问题。 (相信我…)
+
+然而，一旦调试正确了, 你就会很有成就感。 你已经在远程网站上创建了一个函数，可以让你远程调用它。
+
+换句话说，你已经建立一个能维护和操作远程网站的应用程序。 如果你有一些元程网站需要维护，你能容易地复制这些去访问它们, 允许你 (举例来说) 每天一次在本地网站上优化你的数据库中的表。
+
+XML-RPC 带来的问题?
+
+安全当然是一个问题。 你应该密码保护你的函数调用, 所以客户在收到网站响应前必须发送一个密码作为一个叁数。 这能通过发送密码作为请求的一个另外的叁数来做到, 并且让被调用的函数在响应之前检查它是否正确。
+
+如果你正在暴露重要的函数，你可能想要所有的事情在 SSL 层后面发生。 我们的例子看起来无害处-如果一个电脑黑客反复地闯入到你的网站，你可能不介意, 每次他所能做的就是让你的数据库表变得更“整洁”。 另一方面, 它会为“拒绝服务攻击”创造条件。
+
+必须承认即使有CI的帮助，XML-RPC容易出错，不易设置和调试。 你需要一次性针对两个网站编程和调试，而且在它们之间传输数据的XML格式要求非常苛刻。 甚至最小的错误不都不可以犯。
+
+有人主张XML-RPC 是一种必须被替代的技术, 可以使用其它高级语言编写的更新的接口或者APIs，像是SOAP(创建更费时)。
+
+然而，以我们的观点，XML-RPC 是理想的。它让我们没有细节烦恼地运行远程网站中复杂的内部函数。
+
+
+与人交流的工具: 电子邮件类
+
+我们已经在我们的测试网站中放入了许多代码。我们有一个测试的数据库，并且我们已经构建了许多函数进行不同类型的测试。我们能存取我们的网站和检查我们浏览的网页; 我们能检查所有的文件是不是如我们所希望的正常地存放在远程服务器上。我们能自动地在网站上运行函数并让它优化自身。写使用这些工具进行测试的代码非常简单，如果我们需要, 我们可以登入或可以使用一些定期执行软件，以适当的时间间隔运行我们的程序。
+
+但是只是充分地进行测试并且仅仅在一个数据库中的保存结果是不够的。 如果发生了故障，我们需要尽快地知道。
+
+这就需要CI的电子邮件类上场了，每当特定的条件满足，它允许我们编制程序，把电子邮件寄给我们。 你可能想要为每个失败的测试寄一封电子邮件, 或者你可能想要进行一系列的测试,收集结果, 然后再寄一封电子邮件报告。
+
+使用电子邮件类, 首先(一如往常)你必须装载它。
+
+$this->load->library('email');
+
+然后我们必须设定一些config参数。因为这个类仰赖它运行的服务器能够提供电子邮件的收发功能，所以我们可能在这里陷入麻烦。再一次，我们需要检查 ISP是否提供这个功能。(因为 Xampplite ，举例来说，可能不能够提供你一个邮件服务器，也因此在本地测试也会很困难。)
+
+然而，如果我们已经确认ISP提供相应的电子邮件服务，我们能容易地配置电子邮件类。 有许多选项,在用户手册有详细的列表。 主要是:
+
+。　协议: 你的系统使用mail, sendmail还是SMTP发送电子邮件?
+
+。　mailpath: 你系统的邮件程序保存在哪里?
+
+你应该这样设定他们:
+
+$config['protocol'] = 'sendmail';
+
+$config['mailpath']='/usr/sbin/sendmail';
+
+$this->email->initialize($config);
+
+其他的选项, 全部都有有意义的默认值, 包括像字自动换行，字符集，个性组, text/HTML,等等。设定可选项并使用它们正常工作是使用这个类唯一有点困难的部分。
+
+一旦你已经装载类并且进行了初始化，使用它简单得不可思议：
+
+$this->email->from('david@mysite.com');
+$this->email->to('someone@myownsite.com');
+$this->email->bcc('fred@somewhere.com');
+$this->email->subject('Test message');
+$this->email->message('Hello world');
+$this->email->send();
+
+将发送一封电子邮件寄给我,并抄送给我的客户,报告我想要的信息。
+
+如果你需要发送超过一封电子邮件, 在开始新的电邮前:
+
+$this->email->clear();
+
+只是确定你每次从一个干净的版式开始。
+
+你也能使用电子邮件类发送附件。 记住：附件一定要已经保存在发送电子邮件的服务器中, 而且你必须指定路径，而且是绝对路径
+.
+给出路径和文件名，如同下列：
+
+    $path = $this->config->item('server_root');
+    $file = $path.'/my_subdirectory/myfile.htm';
+
+然后仅仅增加这一行:
+
+    $this->email->attach($file);
+   
+放在这一行的前面
+
+$this->email->send();
+
+这简单的 CI 函数比直接用PHP编写容易得多，它处理所有牵涉到的协议, 你甚至不需要知道他们的存在。
+
+如果你包含这行:
+
+$result = $this->email->print_debugger();
+
+在你的代码中，打印出$result, 你将会得到一个有用的屏幕信息，如:
+
+protocol: mail
+User-Agent: Code Igniter
+Date: Wed, 18 Apr 2007 13:50:41 +0100
+From:
+Return-Path:
+Bcc: fred@somewhere.com
+Reply-To: "david@mysite.com"
+X-Sender: david@mysie.com
+X-Mailer: Code Igniter
+X-Priority: 3 (Normal)
+Message-ID: <462614219c1a6@upton.cc>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="B_ATC_462614219d14d"
+This is a multi-part message in MIME format.
+Your email application may not support this format.
+--B_ATC_462614219d14d
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+test message
+hello world
+--B_ATC_462614219d14d
+Content-type: text/html; name="myfile.html"
+Content-Disposition: attachment;
+Content-Transfer-Encoding: base64
+(等等)
+
+如果哪里出了问题，那么侦错数据也将会返回任何的服务器错误信息。 举例来说，如果在使用SMTP发送方式没有设定适当的主机或权限:
+
+    $config['protocol']='smtp';   
+
+它不能发送信息，并且它会告诉我:
+
+You did not specify a SMTP hostname
+Unable to send email using PHP SMTP. Your server might not be configured to send mail using this method.
+
+不过请记住, 'sendmail'可能正在产生误导-如果它已经发送邮件到服务器上并返回一个成功信息, 但是这并不表示邮件实际上被发送。 (因为如果你设定错误的 'mailpath' 选项, 'sendmail' 可能报告它已经发出电子邮件, 但它实际上没有.) CI 依赖邮件改善程序返回的信息，因此，它可能被愚弄。 对电子邮件来说, 检查它们已发出的唯一的方法是确定他们已经到达-这就不是这里讨论的主题了。
+
+CI 的电子邮件类中还包括一些有用的选项,全部在用户手册中有说明。 举例来说，你能设定它发送本文或者 HTML 格式邮件-如果你选择HTML格式，这个函数还允许你设定一个备用的文本信息给那些不接受 HTML 电子邮件的人。
+
+你也能设定它使用不同的字符集, 而且处理单词回绕。 你能设定批处理的尺寸，如果你想要群发电子邮件到一个长长的电子邮件清单中, 你的服务器将不能接受。 (或者你的ISP会认为你是个垃圾邮件制造者.)
+
+
+摘要
+
+我们现在已经用 CI 为我们的网站提供丰富功能建立了一些非常复杂的工具。
+
+首先，我们用 CI 的FTP类简化了文件传输。 最初, 我们用这个类检查指定的文件是不是正常存放在指定的网站上,　或者意外地增加了文件，这是很有价值的检查, 因为网站可能因为文件的变更而遇到问题, 有时候是因为网站管理员造成的，有时候是由黑客造成的。这函数将定期地执行检查。CI的FTP类也提供远程维护并且更新网站信息的可能性。
+
+然后我们用 CI 的XML-RPC 类开发我们自己的'web services'。这样允许我们调用一个远程网站上的函数, 如有需要就传以参数, 并且把结果返回给我们-就好像我们登录到远程网站而不是我们的测试网站。我们把它用在了优化远程网站的数据库上并返回报告给我们。再一次，我们已经超越我们最初只是要监控远程网站的目标。现在我们能够教他们检查和优化他们自己。
+
+最后，我们使用了 CI 的电子邮件类，这让我们的测试网站能生成电子邮件。 CI的代码极其简单明了容易使用, 如果它认为出现了问题，我们的网站就会发电子邮件通知我们。 CI 使得建立并且发送电子邮件很简单, 包括发送附件。
+
+下一章我们将学习　CI 如何帮助提供动态数据

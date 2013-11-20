@@ -1,0 +1,7 @@
+3.7.1
+    $data['mytext'] = "Hello, $name, now we're getting dynamic!";
+    此句改为$data['mytext'] = "Hello&nbsp;".$name."&nbsp;now we're getting dynamic!";
+
+5.6
+    去掉function Display()中的$this->load->library('errors');
+    1.7.0版本中已经没有errors这个包了，变成了Exceptions包

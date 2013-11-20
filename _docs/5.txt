@@ -1,0 +1,538 @@
+简化 HTML 页面和表格设计
+
+这一章介绍了又一个节约你的时间而且使你的代码更具安全性和逻辑性的领域。
+
+第一，我们将会介绍创建视图的各种不同方法-与你的控制器和模型协同并用来显示结果的页面。
+
+然后，你将会学到如何很快地创建 HTML 表格, 与实现内建的保护; 而且你也将会看到该如何校验你的表格。
+
+我假定这本书的读者熟悉 HTML 和 CSS 。 下列的例子非常简单，因此，我们能把重点放在 CI 代码上。 而且我已经假定我们已经写一个 CSS 文件并已把它保存在网站的某个目录中。
+
+编写视图
+
+视图是用户用户能看到你的网站的所有。 他们使用一个统一的接口, 而且可以根据需要进行修改。 MVC 的好处之一是你分开了表示层和逻辑层, 一切都显得很干净。
+
+到现在为止, 我们已经完成了那非常简单的 'welcome' 页面，(记得第 3 章吗？) 现在让我们看看该如何使它变得更精细。
+
+视图实际上是一组包含有你的内容的HTML结构。结构中有各种元素，如颜色，字体，文字布局等; 不过视图不关心这些，它要做的只是取来内容，显示出来。
+
+创建视图, 首先你需要创建一个HTML 网页的骨架，并保存为.php后缀。 让我们称它为 basic_view.php 。保存在application/views目录中。 (CI的loader会在这个目录寻找视图文件。)
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;p&gt;Hello World!&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+然后当你想要从一个控制器装载它时, 使用在某个函数中调用$this-&gt;load-&gt;view():
+
+function index() {
+    $this-&gt;load-&gt;view('basic_view');
+}
+
+注意，如果这是一个model或者一个helper，你将会首先装载它, 然后根据需要使用它。 通过视图，调用它只需要一行代码。
+
+当然，那是一个空的视图。 为了要使它有用，我们需要内容。因此我们要增加名称和一些文本。 首先我们在控制器中定义他们:
+
+function() {
+   $data['mytitle']    = "A website monitoring tool";
+   $data['mytext']    = "This website helps you to keep track of the other websites you control";   
+}
+
+注意我们并没有把它们定义为单独的变量, 而是作为数组$data的元素。 对于第一个元素， 键名是 'mytitle'，值是 "A website monitoring tool".
+
+然后，我们调用装载函数:
+
+function index() {
+   $data['mytitle']    = "A website monitoring tool";
+   $data['mytext']    = "This website helps you to keep track of the other websites you control.";
+   
+   $this-&gt;load-&gt;view('basic_view',$data);
+}
+
+我们把$data数组作为$this-&gt;load-&gt;view()的第二个叁数，在视图名称之后。视图接收到$data数组后，使用PHP函数extract()把数组中的每个元素转换成内存变量，数组的键名即为变量名，值为变量内所包含的值。这些变量的值能直接被视图引用：
+
+&lt;html&gt;
+&lt;head&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1 class='test'&gt;&lt;?php echo $mytitle; ?&gt;&lt;/h1&gt;
+  &lt;p class='test'&gt;&lt;?php echo $mytext; ?&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+虽然你只能传送一个变量到视图, 但是通过建立数组，你能把大量变量整洁地传入视图。它似乎复杂, 但是实际上是一种紧凑和优秀的信息传输方式。
+
+PHP标记的长格式和短格式
+
+在我们继续之前, 先了解一下PHP标记的两种不同格式。
+
+常用的方式是：
+
+&lt;?php echo $somevariable?&gt;
+
+然而，如果你不喜欢这种， CI 也支持一个较短的版本:
+
+&lt;?=$somevariable?&gt;
+
+&lt;?php ?&gt;被&lt;??&gt;取代，而且echo由“=”代替，你也能用短格式来使用if, for, foreach, 和while循环。完整的介绍请参考在线用户手册。
+
+我个人偏好标准格式，因为我已习惯使用它。如果你使用短格式,注意有些服务器不能正确地解释短格式。 如果你仍然想要使用短标签, 可以打开 config 文件, 改变下列设置:
+
+$config['rewrite_short_tags']= FALSE;
+
+如设置为TRUE，CI在把它们送到服务器之前，将把短格式改成标准格式。 不过这样做会对调试造成困难。因此，建议使用标准格式。
+
+CI 也有一个 '模板语法分析器' 类，允许你把变量放入HTML代码而不需要任何的PHP代码。本文不涉及这个内容。如果在与可能被 PHP 代码弄糊涂的 HTML 设计者合作，它相当有用，细节请参见用户手册。
+
+嵌套视图
+
+为了最大程度地重用代码，我们可以提取HTML页面的公共部分，例如，header和footer，然后在显示实际视图时把它们组合起来。
+
+让我们创建一个视图的header部分, 这是一个符合W3C标准的header、包含HTML声明和 meta 数据。
+
+首先, 我们列出header部分的代码:
+
+&lt;!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 strict//EN'http://www.w3.org/TR/xhtml1/DTD/xhtml-strict.dtd'&gt;&lt; html xmlns=' [url]http://www.w3.org/1999/xhtml'&gt;[/url];
+&lt;title&gt;&lt;?php echo $mywebtitle?&gt;&lt;/title&gt;
+&lt;base href=&lt;?php echo "$base"; ?&gt;&gt;
+&lt;?php echo $myrobots?&gt;
+&lt;link=" stylesheet" type="text/css" href="&lt;?php echo "$base/$css;?&gt;"&gt;
+
+把这保存为views/header_view. 下面介绍它包含的变量:
+
+。$mywebtitle, 是标题 (meta标签; 这将不在屏幕上出现，但是搜索引擎将会读取,每个页面的meta有可能有变化，因此，我把它设为一个变量。)
+
+。$myrobots, 这个变量用来告诉机器人当前页面不需要被编入索引。
+
+。$base和 $css, 描述基本网址的字符串。$css包含css文件的路径信息, 这些信息会从CI的config 文件读取(也可以用 CI config 变量 site_url代替。)
+
+现在我们需要知道:
+
+。我们如何调用嵌套视图?
+
+。我们如何获取变量的值?
+
+有二个方法可选择。 第一，在主调用视图中读入其它视图，因此我们的主视图，也就是basic_view，应该加上一行：
+
+&lt;html&gt;&lt;head&gt;
+&lt;?php $this-&gt;load-&gt;view ('header_view'); ?&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;?php echo $mytitle; ?&gt;
+&lt;?php echo $mytext; ?&gt;
+&lt;/&gt;
+&lt;/html&gt;
+
+变量可以在控制器中加上两行:
+
+    function index() {
+          $data['mytitle']    = "A website monitoring tool";
+          $data['mytext']     = "This website helps you to keep  
+                            track of the other websites you control.";   
+          $data['myrobots']   = '&lt;meta name="robots" content
+                             ="noindex,nofollow"&gt;';
+          $data['mywebtitle'] = 'Web monitoring tool';   
+          $data['base']       = $这-&gt;config-&gt;item('base_url');
+          $data['css']        = $this-&gt;config-&gt;item('css');
+
+          $this-&gt;load-&gt;view('basic_view',$data);  
+    }
+
+在这里新的变量 $myrobots，$css, $base, $mywebtitle被创建为数组$data的新元素,当header_view被basic_view调用时，CI使用extract()解开他们, 在视图中显示出来（在两个视图中不要出现同名的变量，否则会引起冲突）。
+
+第二个方法将把视图加入控制器里面, 给它分配一个变量:
+
+    function index() {
+          $data['mytitle']    = "A website monitoring tool";
+          $data['mytext']     = "This website helps you to keep  
+                            track of the other websites you control.";   
+          $data['myrobots']   = '&lt;meta name="robots" content
+                             ="noindex,nofollow"&gt;';
+          $data['mywebtitle'] = 'Web monitoring tool';   
+          $data['base']       = $这-&gt;config-&gt;item('base_url');
+          $data['css']        = $this-&gt;config-&gt;item('css');
+      $data['header']     = $this-&gt;load-&gt;view('header_view', '', TRUE);
+
+          $this-&gt;load-&gt;view('basic_view',$data);  
+    }
+从严格的 MVC 设计原则来看，这样做似乎更正确。
+
+实际上有三个叁数可传给load-&gt;view函数。
+
+。 第一个, header_view, 是要装载的视图的名字。 这是必选。
+
+。 第二个，是可选项, 是装入视图的数据。
+
+。 第三个是布尔值。如果你不指定它，默认是FALSE, 将视图送到浏览器。 然而，在嵌套视图这种情况下，你需要将header_view送到主视图basic_view中，因此需要将第三项参数设置为TRUE。
+
+现在我们已经建立了与 stylesheet 的关联, 我们能够用定义好的css中的类来更新视图中的显示部分:
+
+&lt;html&gt;&lt;head&gt;
+&lt;?php $this-&gt;load-&gt;view('header_view'); ?&gt;
+&lt;/head&gt;&lt;body&gt;
+  &lt;h1 class='test'&gt;&lt;?php echo $mytitle; ?&gt;&lt;/h1&gt;
+  &lt;p class='test'&gt;&lt;?php echo $mytext; ?&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+请注意CI的 MVC 系统能让你分离显示的内容。 视图只为内容提供结构, 结构的风格则由css stylesheet控制。
+
+视图不关心什么 $mytext的内容是什么，它只是按照正确的格式在正确的位置上显示它。 定义 $mytext 的控制器甚至不知道 (也不关心) 它产生的数据如何被显示。
+
+因此, 如果我们需要改变我们网页的外观, 或在一个不同的系统 (如WAP）上显示他们，那么我们只需要改变视图和CSS stylesheet。 我们不需要修改控制器。
+
+而且如果我们想要改变在网页上的信息，我们不需要去改动视图, 而是只需要改变控制器里的变量值。
+
+记得 '松藕合' 原则吗? 这里再一次体会到了这个原则，这使设计,升级, 和维持你的网站比较容易。
+
+网站结构的现实问题
+
+请稍等片刻，我们在header_view动态地生成了 CSS stylesheet地址:
+
+&lt;link="stylesheet" type="text/css" href="&lt;?php echo "$base/$css";?&gt;"&gt;
+
+这意味着控制器必须生成变量的值,这些值与数据如何被显示有关, 但是我们在上面说过控制器不应该知道或者关心它们具体的值是什么。这样不就符合了我们刚才提及的所谓'松藕合'原则? 动态地产生这些数据需要这样一些操作: 首先，控制器必须在 config 文件中读取它们，然后控制器必须在$data数组中装入它们而且传送它们到视图，然后视图必须解开成为内存变量$base和$css, 真正使用这两个变量的是HTML协议。
+
+似乎这样做太绕圈子了，为什么不直接在视图中静止地插入数据?
+
+&lt;link="stylesheet" type="text/css" href="http://www.mysite.com/mystylesheet.css";"&gt;
+
+用变量方式做这件事情的好处是：如果你迁移网站, 或移动你的 CSS 文件，你只需要在 config 文件中改变设置，而且每个控制器和视图将会立刻反映变化。而如果把CSS位置硬编码到每个视图的后果是一旦需要变化，你必须到每个视图中去修改它们，明白这样做的好处了吧？
+
+CI 的表格助手: 录入数据
+
+让我们把目光转向你如何使用你的 HTML 页。任何动态的网站最重要部份之一是和用户互动，而且这通常意味着使用 HTML 表格。 编写表格是重复和无聊的。
+
+CI 的表单辅助函数是非常有用的代码片断。 它有一个稍稍不同的定义, 使表格创建起来比较容易。 让我们建立一个表格，这个表格允许我们在浏览器中录入数据。 在websites数据库的sites表中，我们想要录入网站的名字、类型和网址, 和更新的日期。
+
+你能用简单的 HTML代码 建立表格, 或你能在一个控制器内建立它,把它赋给一个变量, 然后调用视图, 而且传送该变量到视图。 我正在按第二种方式做。
+
+第一，我们必须装载表格助手到我们需要使用它的控制器内。 然后, 我们把下列的代码放入控制器的构造函数:
+
+$this-&gt;load-&gt;helper('form');
+
+然后，我们必须开始编写表格。
+
+现在, 为了生成表格的输入项, 我们不用这样写:
+
+$variable .= &lt;input type='text' name='name' value=''&gt;
+
+CI 让你这样做:
+
+$variable .= form_input('name','');
+
+(记得'name'是输入项的名称, 'value'是你想输入的内容。 在这里可以设定value的初始值，或你能动态地从表格中获取.)
+
+可以看到，使用CI的表格助手列方便。
+
+使用表格助手的好处之一: 清楚
+
+使用 CI 表格助手的第一个利益是你的代码绝对的清楚。 如果你想要一个比较精细的输入框, 如果用HTML是这样的:
+
+$variable = 'input type="text" name=" url" id="url" value=" www.mysite.com" maxlength="100" size="50" style="yellow"/&gt;';
+
+name是将在$_POST数组中取得的变量名称。
+
+id是在网页上定位这个输入框的标识符，如果你使用JavaScript的话。
+
+value是输入框里显示的值，它一开始是一个默认值，用户也可以在输入一个新的值。
+
+maxlength 和size是明显的; style一组 HTML 格式或者在css stylesheet 中定义。)
+
+CI 用一个数组代替上述的HTML代码:
+
+$data = array(
+               'name'     =&gt; 'url',
+               'id'       =&gt; 'url',
+               'value'    =&gt; 'www.mysite.com',
+               'maxlength'=&gt; '100',
+               'size'     =&gt; '50',
+               'style'    =&gt; 'yellow',
+              );
+
+$variable = form_input($data);
+
+它看上去蛮长的, 实际上并不比HTML代码长，而且，它非常清楚, 容易理解和维护。而且是动态的。
+
+隐藏的表格输入框非常简单。如果我们想要自动地记录我们的数据库被更新的日期。 我们把日期放入一个$date变量, 然后:
+
+form_hidden('updated', $date);
+
+如果你想要一个'文本'输入框, 给你的使用者提供一个可以输入超过一行的地方，可以使用CI的form_textarea()函数，下面的代码使用默认的长度，在网页上显示一个文件输入框：
+
+$data = array(
+              'name'       =&gt; 'url',
+              'id'         =&gt; 'url',
+              'value'      =&gt; 'www.mysite.com',
+              );
+
+$variable = form_textarea($data);
+
+CI的表格助手在你编写下拉框，多选框和单选框时特别有用，如果我们要改变我们的URL输入框为一个下拉框，允许用户从下拉列表中选取一个URL。首先，把下拉列表的选项存入一个数组，然后调用form_dropdown()函数：
+
+$urlarray= array(
+                 '1' =&gt; 'www.this.com',
+                 '2' =&gt; 'www.that.com',
+                 '3' =&gt; 'www.theother.com',
+                 );
+
+$variable = form_dropdown('url' 、 $urlarray, '1');
+
+被传给表格中url下拉框的第一个参数是输入框的名字; 第二个是包含下拉列表的数组，第三个默认选项。 换句话说，如果使用者接受默认值, 你的 $_POST数组将会包含值 'url=&gt;1' ，但是你的用户将会见到选项 'www.this.com'.
+
+如果使用HTML代码编写:
+
+&lt;select name="type"&gt;
+&lt;option value="1" selected&gt;www.this.com&lt;/option&gt;
+&lt;option value="2"&gt;www.that.com&lt;/option&gt;
+&lt;option value="3"&gt;www.theother.com&lt;/option&gt;
+&lt;/select&gt;
+
+CI实现的代码实际上比较短, 很容易学会。
+
+如果你在一个数据库表('urls')中储存你的可能选择的网址的目录，那么生成一个动态下拉框很容易。 首先把数据从表中读出放到一个数组中:
+
+          $urlarray = array();
+
+          $this-&gt;db-&gt;select('id,url');
+
+          $query = $this-&gt;db-&gt;get('urls');
+          if ($query-&gt;num_rows()&gt;0) {
+            foreach($query-&gt;result() as $row) {
+                 $urlarray[$row-&gt;id] = $row-&gt;url;
+            }
+          }
+
+然后重复我们以前用过的 CI form_dropdown() 功能:
+
+   echo form_dropdown('type', $urlarray,'1');
+
+只有$urlarray 的内容会发生变化; 代码总是一样的。
+
+如果你正在更新一个表中的记录而不是插入, 你不想为你的用户显示默认值。你想要为那一个记录显示已经存在的值。你应该已经知道你想要的修改的记录的id值，因此，你需要先读取数据库中'site' 表中相关记录。确定把查询结果赋给一个变量，使用第二个变量取出第一个变量的中的相关记录，再调用CI的form_dropdown函数，把第二个变量和对应的列名作为参数传入:
+
+   $this-&gt;db-&gt;select('id, url, name');
+   $this-&gt;db-&gt;where('id','$id');
+   $sitequery = $this-&gt;db-&gt;get('sites');
+   $siterow = $sitequery-&gt;row();
+
+然后你的 CI 下拉框函数会从中读取相关信息:
+   echo form_dropdown('url' 、 $urlarray, $siterow-&gt;url);
+
+本书没有太多的篇幅讨论所有的表格助手。 它还能编写单选框，隐藏文件框，多选框和一些其它的输入框，完整的资料请参考CI用户手册。
+
+使用表单辅助函数的好处之二: 自动化
+
+使用表格助手的第二个好处是可以自动化实现一些功能，不然的话，你只能自己编写相关的脚本了。
+
+首先, 它拦截HTML的一些字符，比如用户输入的引号，并且转义它们以免破坏表格。
+
+其次，它自动链接。当你打开一个表单时，你必须声明目标页，它将会接受表单的数据并且处理它。(在CI中，这是一个控制器里面的一个功能而不是一个静态页。 比如它指向控制器的更新函数.) 因此，如果你用纯 HTML 代码，你将会这样写:
+
+&lt;form method="post" action="http:/ www.mysite.com/index.php/websites/update"/&gt;
+
+如果你用 CI 打开你的表格，你只需要这样做:
+
+form_open(websites/update);
+
+CI 自动地在你的 config 文件中取出基本URL并定位到对应的控制器函数。 再次强调，如果你迁移你的网站，你只需要修改config文件，而不是去一个一个地修改代码文件。
+
+顺便提一下, CI 假定你的表格将会总是以POST的方式提交数据而不是GET方式。CI普遍使用URL本身，因此，不要搞错。
+
+我的 '显示' 模型
+
+作为示范(稍微简化了一下)，这里是我的显示模型:
+
+&lt;?php
+class Display extends Model {
+
+/*create the array to pass to the views*/
+    var $data = array();
+/*two other class variables*/
+    var $base;
+    var $status = '';
+/*
+the constructor function: this calls the 'model' parent class, loads other CI libraries and helpers it requires, and dynamically sets variables
+*/
+    function Display()
+    {
+        parent::Model();
+        $this-&gt;load-&gt;helper('form');
+        $this-&gt;load-&gt;library('user_agent');
+        $this-&gt;load-&gt;library('errors');   
+        $this-&gt;load-&gt;library('menu');
+        $this-&gt;load-&gt;library('session');
+/*now set the standard parts of the array*/
+        $this-&gt;data['css']  = $this-&gt;config-&gt;item('css');   
+        $this-&gt;data['base'] = $this-&gt;config-&gt;item('base_url');
+        $this-&gt;base         = $this-&gt;config-&gt;item('base_url');
+        $this-&gt;data['myrobots'] = '&lt;meta name="robots"
+                                    c&gt;';  
+/*
+note that CI's session stuff doesn't automatically recall the extra variables you have added, so you have to look up the user's status in the ci_sessions table
+*/
+        $sessionid = $this-&gt;session-&gt;userdata('session_id');
+        $this-&gt;db-&gt;select('status');
+        $this-&gt;db-&gt;where('session_id', $sessionid);
+        $query = $this-&gt;db-&gt;get('ci_sessions');
+          if ($query-&gt;num_rows() &gt; 0)
+                 {
+                    $row = $query-&gt;row();
+                $this-&gt;status = $row-&gt;status;
+                 }
+    }
+
+/*
+function to assemble a standard page. Any controller can call this. Just supply as $mydata an array, of key/value pairs for the contents you want the view to display. Available variables in this view are:
+mytitle. menu, mytext, diagnostic
+*/
+    function mainpage($mydata)
+          {
+          $this-&gt;data['mytitle'] = 'Monitoring website';  
+          $this-&gt;data['diagnostic'] = $diagnostic;
+          foreach($mydata as $key =&gt; $variable)
+          {$this-&gt;data[$key] = $variable;}  
+/*here's the menu class we looked at in Chapter 3*/
+          $fred = new menu;
+          $this-&gt;load-&gt;library('session');
+          $mysess = $this-&gt;session-&gt;userdata('session_id');
+          if(isset($this-&gt;status) && $this-&gt;status &gt; 0)
+                 {$this-&gt;data['menu']=
+                                     $fred-&gt;show_menu($this-&gt;status);}
+          $this-&gt;load-&gt;view('basic_view', $this-&gt;data);
+            
+          }
+}
+?&gt;
+
+我能用下面的代码在任何的控制器中调用这个主页:
+
+$this-&gt;load-&gt;model('display');
+$this-&gt;display-&gt;mainpage($data);
+
+并且我也知道我的视图正在被动态地装配，完全符合我的需要。
+
+CI 的校验类: 方便地检验数据
+
+在你编写HTML表格时一个重要的工作是检查输入。我们都知道我们应该这样做，但是…直到现在为止，我们已经编写过一种简单的表格, 将会信任地接受任何用户输入的任何数据。 你应该意识到可能有一些用户是不怀好意的，而且所有的其余都是不负责任的。(别直接告诉他们.) 如果他们有可能犯一个简单的错误，他们就会犯。确保你始终检查用户输入的数据，并使它们符合你的要求。
+
+你能在客户端用javascript做到这一点, 但是这样做作用有限,使用者能容易地绕过它。 而在服务器端的校验需要一个额外的信息来回，这点额外的开销是值得的。
+
+编写校验代码也相当复杂, 但是-你一定猜到了-CI 提供了一个校验类可以使这项工作变得非常容易。
+
+让我们改变我们自己的表格处理过程来实现校验。 你需要在表格里作一些调整, 还要在它指向的函数里作一些调整。
+
+如果你的表格由 form_open('sites/update') 开始, 你需要修改的函数是'sites控制器里的'update'函数。 如果你没有使用 CI 的表格助手, HTML等价代码是:
+
+&lt;form method="post" action="http://www.mysite.com/index.php/sites/update"/&gt;
+
+你需要做三件事情:
+
+1. 设置校验
+2. 设置控制器
+3. 设置表格
+
+设置校验
+
+在你的表格指定的那个函数中装载校验类并声明你的校验规则:
+
+   $this-&gt;load-&gt;library('validation');
+
+   $rules['url']   = "required";
+   $rules['name']  = "required";
+         
+   $this-&gt;validation-&gt;set_rules($rules);
+
+'url'和 'name'输入框一定要有输入内容。 CI提供了各种操作，确保一些操作一定要进行，用户手册全面地解释了这些内容。他们的含义非常明了: min_length[6] 显然意味着输入的信息长度一定要大于等于六个字符。numeric意味着只能输入数字，等等。你还能组合规则，用“|”把它们连接起来：
+
+   $rules['name'] = "required |alpha| max_length[12]";
+
+意味着不能为空，字母，长度至少12个字符。你甚至能编写你自己的规则。
+
+设置控制器
+
+仍然在相同的函数中，创建一个 'if/else'语句：
+
+   if ($this-&gt;validation-&gt;run() == FALSE) {
+       $this-&gt;load-&gt;view('myform');
+   } else {
+       $this-&gt;load-&gt;view('success');
+   }
+
+你进行确认测试，而且如果输入内容不能通过测试的话，就再返回到输入页面。(如果你在一个控制器内的一个函数中生成你的视图, 则使用$this-&gt;myfunction 代替$this-&gt;load-&gt;view('myform')。
+
+如果校验成功,就生成view("success"),告诉用户输入的信息已被接受, 然后给出一个链接让他进到下一步。
+
+设置表单
+
+录入信息的表格也要做相应的调整。 每次校验没有通过的话，你不但要让系统返回到录入界面，而且必须说明哪一项出错, 以及为什么出错。 因此你必须在表格的某处给出一个附加信息:
+
+$this-&gt;validation-&gt;error_string;
+
+这行代码显示适当的信息, 避免用户在那里犯嘀咕。
+
+你也需要自动地填写用户已正确输入的那些内容，否则，用户必须再次录入上一次他们已经正确录入的信息。
+
+首先，你需要在控制器里增加更多的代码。而且是立刻加在校验规则之后，加入一个数组来存放给用户的提示信息。 数组的键名是你表格中的输入框名，值是给出的错误提示信息：
+
+$fields['url'] = '你的网址';
+
+然后，增加一行代码:
+
+$this-&gt;validation-&gt;set_fields($fields);
+
+现在你已经在控制器里声明了一个存有信息的数组，你只需要在表格内加入显示它们的代码。 对于HTML代码，这会是:
+
+&lt;input type="text" name="url" value="&lt;?php echo $this-&gt;validation-&gt;url; ?&gt;"/&gt;
+
+或, 如果你正在使用 CI 的表格助手:
+
+$variable .= form_input('url', "$this-&gt;valication-&gt;url");
+
+如果使用这个表格插入一个新的记录到数据库的表中，上面的代码已经够用了。如果你正在使用表格更新一个已经输入过的记录，当表格第一次显示时，应该在输入框中显示数据库表中的实际信息，这个时候，它的值应该是从数据库里读回来的（记得前面的例子吗？我们把代码再显示在这里：
+
+   $this-&gt;db-&gt;select('id, url, name');
+   $this-&gt;db-&gt;where('id','$id');
+   $sitequery = $this-&gt;db-&gt;get('sites');
+   $siterow = $sitequery-&gt;row();
+
+   echo form_dropdown('url' 、 $urlarray, $siterow-&gt;url);
+
+如果你在更新一个现有的记录时，上一次的录入内容由于一个输入框内容没有录入而无法通过校验，在重新回到表格之前，你需要在通过校验的输入框中填写用户刚录入的信息，而在校验出错的输入框里再次放入从数据库表中读入的信息，否则，你就需要再次录入已经校验通过的信息了。
+
+还好，这可以通过一个简单的“if/else”语句来实现：
+
+if (isset($_post['url'])) {   
+   $myvalue=$this-&gt;validation-&gt;url;
+} else  {
+   $myvalue=$siterow-&gt;url;
+}
+
+第一次表格显示的时候，在$_POST数组中将会没有内容; 因此你从数据库的相关表中读取信息。但当你提交一次以后，$_POST 数组中有数据存在，所以你选择validation函数中返回的值。
+
+查阅CI用户手册，了解表格校验的其它内容，你还可以做到:
+
+。自动地准备你的数据, 举例来说, 通过它消除可能产生的跨站脚本攻击
+
+。编写你自己的复杂校验标准,举例来说, 用户录入的值不能已经存在于数据库中
+
+。编写你自己的错误信息
+
+CI的校验类非常有用而又功能强大，值得花时间好好研读并掌握。
+
+摘要
+
+我们已经学习了CI中生成视图的方法, 以及它如何让你创建'迷你-视图', 你能把视图嵌套到其它视图中去。这意谓你能建立共用的HTML header,HTML footer, 实现视图的重用。
+
+我们也已经见到 CI 如何帮助你编写 HTML 录入表格,通过表格助手函数简化HTML form的编写工作。
+
+
+最后，我们学习了 CI 的校验类，这是检查用户录入信息的有用工具。没有什么是完美的，但是这个工具的确能阻击你的用户录入垃圾，或企图进行攻击。它也使你的网站看起来更加专业，能够有效地捕捉用户造成的各种输入错误，而不是一味地接受无意义的输入。
+
+在整个学习过程中，我们也再次玩味了MVC的原则, 而且有时稍稍地做一些变通会让生活变得更容易。 CI 有一种非常有柔性的哲学: 如果要有效率地解决问题，就要学会灵活地使用工具。
+
+下一章我们学习：
+
+简化session和安全
