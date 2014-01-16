@@ -7,7 +7,7 @@
 
 ![image](images/CodeIgniter_cover.jpg)
 
-我们要特别感谢 李嵩波(原新浪CTO) 先生在百忙之中为本书作序，也要感谢 chenz1117 对于翻译工作所作出的巨大贡献，还包括沧蓝等朋友对翻译技术上的问题所给予的巨大帮助，还包括许多为本书做过贡献的朋友，在这里就不一一列举了，书中有详细的制作者名单，让我们再次对他们表示衷心的感谢！
+我们要特别感谢 [李嵩波](http://weibo.com/songboli)(原新浪CTO) 先生在百忙之中为本书作序，也要感谢 PHPChina 社区的 chenz1117 对于翻译工作所作出的巨大贡献，还包括 [沧蓝](http://fredwu.me/) 等朋友对翻译技术上的问题所给予的巨大帮助，还包括许多为本书做过贡献的朋友，在这里就不一一列举了，书中有详细的制作者名单，让我们再次对他们表示衷心的感谢！
 
 本书是第一本详细介绍 CodeIgniter 框架的著作（目前已经有了另外几本介绍 CI 的著作了），下面是本书的一个简短介绍：
 
@@ -34,4 +34,4 @@
 需要用到的工具：
 * HTML Help Workshop 下载: http://www.microsoft.com/en-us/download/details.aspx?id=21138
 
-把 hhc.exe 加入到 PATH 环境变量中，然后执行 build.bat，即可生成 CodeIgniter.chm 文件
+把 hhc.exe 加入到 PATH 环境变量中，然后执行 build.bat，即可生成 CodeIgniter.chm 文件。
