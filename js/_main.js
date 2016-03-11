@@ -17,7 +17,9 @@ function CopyCode(key)
   if (obj)
   {
     if (navigator.appName.indexOf('Microsoft') != -1)
-	  copyToClipboard(obj[0].innerText);
+    {
+      copyToClipboard(obj[0].innerText);
+    }
     else
     {
 	  copyToClipboard(obj[0].textContent);
@@ -67,9 +69,9 @@ function copyToClipboard(txt)
     var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
     if (!trans) return;
     trans.addDataFlavor('text/unicode');
-    var str = new Object();
-    var len = new Object();
-    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var str = {};
+    var len = {};
+    str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
     var copytext = txt;
     str.data = copytext;
     trans.setTransferData("text/unicode",str,copytext.length*2);
@@ -78,3 +80,5 @@ function copyToClipboard(txt)
     clip.setData(trans,null,clipid.kGlobalClipboard);
   }
 }
+
+hljs.initHighlightingOnLoad();
