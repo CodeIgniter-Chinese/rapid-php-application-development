@@ -5,7 +5,7 @@
 ---------------------------------
 **中文名**：《PHP 框架 CodeIgniter 3 - 快速 Web 应用开发详解》
 
-![image](images/CodeIgniter_cover.jpg)
+![image](images/CodeIgniter_cover.png)
 
 我们要特别感谢 [李嵩波](http://weibo.com/songboli)(原新浪CTO) 先生在百忙之中为本书作序，也要感谢 PHPChina 社区的 chenz1117 对于翻译工作所作出的巨大贡献，还包括 [沧蓝](http://fredwu.me/) 等朋友对翻译技术上的问题所给予的巨大帮助，还包括许多为本书做过贡献的朋友，在这里就不一一列举了，书中有详细的制作者名单，让我们再次对他们表示衷心的感谢！
 
