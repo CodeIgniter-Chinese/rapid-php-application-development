@@ -80,5 +80,3 @@ function copyToClipboard(txt)
     clip.setData(trans,null,clipid.kGlobalClipboard);
   }
 }
-
-hljs.initHighlightingOnLoad();

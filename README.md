@@ -1,9 +1,9 @@
-《CodeIgniter for Rapid PHP Application Development》中文版
+《CodeIgniter for Rapid PHP Application Development》中文翻译项目
 =================================
 
 简介
 ---------------------------------
-**中文名**：《PHP 敏捷开发框架 CodeIgniter - 快速 Web 应用开发详解》
+**中文名**：《PHP 框架 CodeIgniter 3 - 快速 Web 应用开发详解》
 
 ![image](images/CodeIgniter_cover.jpg)
 

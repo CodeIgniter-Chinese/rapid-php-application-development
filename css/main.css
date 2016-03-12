@@ -51,7 +51,7 @@ code {
 
 #header {
 	background-color: #f0f0f0;
-	background-image: url(../images/header.gif);
+	background-image: url(../images/header.png);
 	background-repeat: no-repeat;
 	background-position: 10px 2px;
 	height: 30px;
@@ -108,7 +108,7 @@ div.code {
 }
 
 div.code div.title {
-  background: #F0F0F0;
+  background: #efeff7;
   border-bottom-color: #c8cdde;
   border-bottom-style: solid;
   border-bottom-width: 1px;
@@ -125,14 +125,14 @@ div.code div.title {
 }
 
 div.code pre {
-  background: #F0F0F0;
+  background: #f7f7ff;
   border-top-color: #ffffff;
   border-top-style: solid;
   border-top-width: 1px;
   padding-left: 6px;
   padding-right: 6px;
-  padding-top: 2px;
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 20px;
   margin: 0;
   font-size: 12px;
   overflow: auto;

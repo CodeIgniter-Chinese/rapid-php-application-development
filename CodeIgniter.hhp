@@ -13,10 +13,10 @@ Error log file=_errorlog.txt
 Full-text search=Yes
 Index file=CodeIgniter.hhk
 Language=0x804 中文(简体，中国)
-Title=PHP 敏捷开发框架 CodeIgniter - 快速 Web 应用开发详解 【更新日期: 2009.1.19】
+Title=PHP 框架 CodeIgniter 3 - 快速 Web 应用开发详解 【更新日期: 2016.3.12】
 
 [WINDOWS]
-Main="PHP 敏捷开发框架 CodeIgniter - 快速 Web 应用开发详解 【更新日期: 2009.1.19】","CodeIgniter.hhc","CodeIgniter.hhk","index.html","table_of_contents.html",,,,,0x71520,180,0x70387e,[0,0,708,727],0xb0000,,,,,,0
+Main="PHP 框架 CodeIgniter 3 - 快速 Web 应用开发详解 【更新日期: 2016.3.12】","CodeIgniter.hhc","CodeIgniter.hhk","index.html","table_of_contents.html",,,,,0x71520,180,0x70387e,[0,0,708,727],0xb0000,,,,,,0
 
 
 [FILES]
@@ -45,4 +45,3 @@ preface_cn.html
 table_of_contents.html
 
 [INFOTYPES]
-

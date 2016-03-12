@@ -44,7 +44,7 @@
 		<param name="Local" value="preface.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
-		<param name="Name" value="第一章　对 CodeIgniter 的介绍">
+		<param name="Name" value="第一章　CodeIgniter 简介">
 		<param name="Local" value="1.html">
 		</OBJECT>
 	<UL>

@@ -2,11 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gbk" />
-<title>第一章　对 CodeIgniter 的介绍</title>
-<link href="css/highlight.css" rel="stylesheet" type="text/css" />
+<title>第一章　CodeIgniter 简介</title>
 <link href="css/main.css" rel="stylesheet" type="text/css" />
-<script src="js/highlight.js"></script>
-<script src="js/main.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
 <div id="container"><a name="top"></a>
@@ -15,7 +13,7 @@
   </div>
   <div id="content">
     <div class="main">
-      <h1>第一章　对 CodeIgniter 的介绍</h1>
+      <h1>第一章　CodeIgniter 简介</h1>
       <p>大多数PHPer都想写出运行状态良好的应用程序，而且希望尽可能做得简单且不费事。这篇文章是有关 CodeIgniter 的（以下简称 CI），CI 是一个达成以上目标的框架。</p>
       <p>如果你只是要达成一个最终的结果，而把中间所有的编码细节和复杂统统丢给一个框架，CI 是你最好的朋友。</p>
       <p>CI 有很多优点：免费，轻量级，容易安装，它能使你的编程生涯变得很轻松。 这一章我们会告诉你：</p>
@@ -47,14 +45,14 @@
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">$connection = mysql_connect("localhost","fred","12345");
-mysql_select_db("websites", $connection);
-$result = mysql_query ("SELECT * FROM sites", $connection);
-while ($row = mysql_fetch_array($result, MYSQL_NUM))
-{
-    foreach ($row as $attribute)
-        print "{$attribute[1]} ";
-}</code></pre>
+        <pre class="php"><span style="color: #0000ff;">$connection</span> = <a href="http://www.php.net/mysql_connect"><span style="color: #000066;">mysql_connect</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;localhost&quot;</span>,<span style="color: #ff0000;">&quot;fred&quot;</span>,<span style="color: #ff0000;">&quot;12345&quot;</span><span style="color: #66cc66;">&#41;</span>;
+<a href="http://www.php.net/mysql_select_db"><span style="color: #000066;">mysql_select_db</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;websites&quot;</span>, <span style="color: #0000ff;">$connection</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$result</span> = <a href="http://www.php.net/mysql_query"><span style="color: #000066;">mysql_query</span></a> <span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;SELECT * FROM sites&quot;</span>, <span style="color: #0000ff;">$connection</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #b1b100;">while</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$row</span> = <a href="http://www.php.net/mysql_fetch_array"><span style="color: #000066;">mysql_fetch_array</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$result</span>, MYSQL_NUM<span style="color: #66cc66;">&#41;</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$row</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$attribute</span><span style="color: #66cc66;">&#41;</span>
+        <a href="http://www.php.net/print"><span style="color: #000066;">print</span></a> <span style="color: #ff0000;">&quot;{$attribute[1]} &quot;</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
       </div>
       <p>现在看看 CI 如何处理同一个问题：</p>
       <div class="code">
@@ -62,12 +60,12 @@ while ($row = mysql_fetch_array($result, MYSQL_NUM))
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">$this->load->database('websites');
-$query = $this->db->get('sites');
-foreach ($query->result() as $row)
-{
-    print $row->url;
-}</code></pre>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">database</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'websites'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$query</span> = <span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">db</span>-&gt;<span style="color: #006600;">get</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'sites'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #b1b100;">foreach</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$query</span>-&gt;<span style="color: #006600;">result</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">as</span> <span style="color: #0000ff;">$row</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <a href="http://www.php.net/print"><span style="color: #000066;">print</span></a> <span style="color: #0000ff;">$row</span>-&gt;<span style="color: #006600;">url</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
       </div>
       <p>比较字符数：前者 336，后者 112。</p>
       <p>第二个例子，现在让我们想象你正在用 HTML 写一个数据输入窗口，你想要一个下拉输入框。下拉框中有三个选项。代码如下：</p>
@@ -76,11 +74,11 @@ foreach ($query->result() as $row)
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">HTML 代码</div>
         </div>
-        <pre><code class="html">&lt;select name=&quot;type&quot;&gt;
-&lt;option value=&quot;1&quot;&gt;www.this.com&lt;/option&gt;
-&lt;option value=&quot;2&quot;&gt;www.that.com&lt;/option&gt;
-&lt;option value=&quot;3&quot; selected&gt;www.theother.com&lt;/option&gt;
-&lt;/select&gt;</code></pre>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/select.html"><span style="color: #000099;">&lt;select</span></a> <span style="color: #000066;">name</span>=<span style="color: #ff0000;">&quot;type&quot;</span><span style="color: #000099;">&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/option.html"><span style="color: #000099;">&lt;option</span></a> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;1&quot;</span><span style="color: #000099;">&gt;</span></span>www.this.com<span style="color: #009900;"><span style="color: #000099;">&lt;/option&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/option.html"><span style="color: #000099;">&lt;option</span></a> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;2&quot;</span><span style="color: #000099;">&gt;</span></span>www.that.com<span style="color: #009900;"><span style="color: #000099;">&lt;/option&gt;</span></span>
+<span style="color: #009900;"><a href="http://december.com/html/4/element/option.html"><span style="color: #000099;">&lt;option</span></a> <span style="color: #000066;">value</span>=<span style="color: #ff0000;">&quot;3&quot;</span> selected&gt;</span>www.theother.com<span style="color: #009900;"><span style="color: #000099;">&lt;/option&gt;</span></span>
+<span style="color: #009900;"><span style="color: #000099;">&lt;/select&gt;</span></span></pre>
       </div>
       <p>CI 的写法和前例一样，因为它把相关内容放入一个数组，更容易由 PHP 进行处理：</p>
       <div class="code">
@@ -88,13 +86,13 @@ foreach ($query->result() as $row)
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">$urlarray = array(
-              '1'      => 'www.this.com',
-              '2'      => 'www.that.com',
-              '3'      => 'www.theother.com',
-           );
-
-$variable .= form_dropdown('url', $urlarray, '3');</code></pre>
+        <pre class="php"><span style="color: #0000ff;">$urlarray</span> = <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span>
+              <span style="color: #ff0000;">'1'</span>      =&gt; <span style="color: #ff0000;">'www.this.com'</span>,
+              <span style="color: #ff0000;">'2'</span>      =&gt; <span style="color: #ff0000;">'www.that.com'</span>,
+              <span style="color: #ff0000;">'3'</span>      =&gt; <span style="color: #ff0000;">'www.theother.com'</span>,
+           <span style="color: #66cc66;">&#41;</span>;
+&nbsp;
+<span style="color: #0000ff;">$variable</span> .= form_dropdown<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'url'</span>, <span style="color: #0000ff;">$urlarray</span>, <span style="color: #ff0000;">'3'</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <p>在 HTML 中，你需要输入 154 个字符；在 CI 中，只需要 128 个字符。</p>
       <a name="C_1_1_2"></a>
@@ -108,7 +106,7 @@ $variable .= form_dropdown('url', $urlarray, '3');</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">HTML 代码</div>
         </div>
-        <pre><code class="html">&lt;a href=&quot;http://www.mysite.com/index.php/start/hello/fred&quot;&gt;say hello to Fred&lt;/a&gt;</code></pre>
+        <pre class="html4strict"><span style="color: #009900;"><a href="http://december.com/html/4/element/a.html"><span style="color: #000099;">&lt;a</span></a> <span style="color: #000066;">href</span>=<span style="color: #ff0000;">&quot;http://www.mysite.com/index.php/start/hello/fred&quot;</span><span style="color: #000099;">&gt;</span></span>say hello to Fred<span style="color: #009900;"><span style="color: #000099;">&lt;/a&gt;</span></span></pre>
       </div>
       <p>后来，你决定转移网站到其他 URL。这意谓你必须仔细地去查找并修改代码中的每一处 URL，否则它们将无法正常工作。</p>
       <p>CI 给你一个简单的函数，可以这样编写超链接：</p>
@@ -117,7 +115,7 @@ $variable .= form_dropdown('url', $urlarray, '3');</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">echo anchor('start/hello/fred', 'Say hello to Fred');</code></pre>
+        <pre class="php"><a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> anchor<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'start/hello/fred'</span>, <span style="color: #ff0000;">'Say hello to Fred'</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <p>CI 推荐你把你的 URL 放入一个配置文件中供你的脚本读取。CI 的 anchor 函数会自动从配置文件中提取相关 URL。因此，当你修改一个 URL 时，你只需要修改配置文件中的对应链接，然后所有超链接将自动更新。</p>
       <a name="C_1_1_2_2"></a>
@@ -130,7 +128,7 @@ $variable .= form_dropdown('url', $urlarray, '3');</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">echo form_input('username', 'johndoe');</code></pre>
+        <pre class="php"><a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> form_input<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'username'</span>, <span style="color: #ff0000;">'johndoe'</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <p>CI 也隐式地执行下列校验函数：</p>
       <div class="code">
@@ -138,31 +136,31 @@ $variable .= form_dropdown('url', $urlarray, '3');</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">function form_prep($str = '')
-{
-    if ($str === '')
-    {
-        return '';
-    }
-
-    $temp = '__TEMP_AMPERSANDS__';
-
-    // Replace entities to temporary markers so that
-    // htmlspecialchars won't mess them up
-    $str = preg_replace("/&#(\d+);/", "$temp\\1;", $str);
-    $str = preg_replace("/&(\w+);/", "$temp\\1;", $str);
-
-    $str = htmlspecialchars($str);
-
-    // In case htmlspecialchars misses these.
-    $str = str_replace(array("'", '"'), array("&#39;", "&quot;"), $str);
-
-    // Decode the temp markers back to entities
-    $str = preg_replace("/$temp(\d+);/","&#\\1;",$str);
-    $str = preg_replace("/$temp(\w+);/","&\\1;",$str);
-
-    return $str;
-}</code></pre>
+        <pre class="php"><span style="color: #000000; font-weight: bold;">function</span> form_prep<span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$str</span> = <span style="color: #ff0000;">''</span><span style="color: #66cc66;">&#41;</span>
+<span style="color: #66cc66;">&#123;</span>
+    <span style="color: #b1b100;">if</span> <span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$str</span> === <span style="color: #ff0000;">''</span><span style="color: #66cc66;">&#41;</span>
+    <span style="color: #66cc66;">&#123;</span>
+        <span style="color: #b1b100;">return</span> <span style="color: #ff0000;">''</span>;
+    <span style="color: #66cc66;">&#125;</span>
+&nbsp;
+    <span style="color: #0000ff;">$temp</span> = <span style="color: #ff0000;">'__TEMP_AMPERSANDS__'</span>;
+&nbsp;
+    <span style="color: #808080; font-style: italic;">// Replace entities to temporary markers so that</span>
+    <span style="color: #808080; font-style: italic;">// htmlspecialchars won't mess them up</span>
+    <span style="color: #0000ff;">$str</span> = <a href="http://www.php.net/preg_replace"><span style="color: #000066;">preg_replace</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;/&amp;#(<span style="color: #000099; font-weight: bold;">\d</span>+);/&quot;</span>, <span style="color: #ff0000;">&quot;$temp<span style="color: #000099; font-weight: bold;">\\</span>1;&quot;</span>, <span style="color: #0000ff;">$str</span><span style="color: #66cc66;">&#41;</span>;
+    <span style="color: #0000ff;">$str</span> = <a href="http://www.php.net/preg_replace"><span style="color: #000066;">preg_replace</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;/&amp;(<span style="color: #000099; font-weight: bold;">\w</span>+);/&quot;</span>, <span style="color: #ff0000;">&quot;$temp<span style="color: #000099; font-weight: bold;">\\</span>1;&quot;</span>, <span style="color: #0000ff;">$str</span><span style="color: #66cc66;">&#41;</span>;
+&nbsp;
+    <span style="color: #0000ff;">$str</span> = <a href="http://www.php.net/htmlspecialchars"><span style="color: #000066;">htmlspecialchars</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$str</span><span style="color: #66cc66;">&#41;</span>;
+&nbsp;
+    <span style="color: #808080; font-style: italic;">// In case htmlspecialchars misses these.</span>
+    <span style="color: #0000ff;">$str</span> = <a href="http://www.php.net/str_replace"><span style="color: #000066;">str_replace</span></a><span style="color: #66cc66;">&#40;</span><a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;'&quot;</span>, <span style="color: #ff0000;">'&quot;'</span><span style="color: #66cc66;">&#41;</span>, <a href="http://www.php.net/array"><span style="color: #000066;">array</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;&amp;#39;&quot;</span>, <span style="color: #ff0000;">&quot;&amp;quot;&quot;</span><span style="color: #66cc66;">&#41;</span>, <span style="color: #0000ff;">$str</span><span style="color: #66cc66;">&#41;</span>;
+&nbsp;
+    <span style="color: #808080; font-style: italic;">// Decode the temp markers back to entities</span>
+    <span style="color: #0000ff;">$str</span> = <a href="http://www.php.net/preg_replace"><span style="color: #000066;">preg_replace</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;/$temp(<span style="color: #000099; font-weight: bold;">\d</span>+);/&quot;</span>,<span style="color: #ff0000;">&quot;&amp;#<span style="color: #000099; font-weight: bold;">\\</span>1;&quot;</span>,<span style="color: #0000ff;">$str</span><span style="color: #66cc66;">&#41;</span>;
+    <span style="color: #0000ff;">$str</span> = <a href="http://www.php.net/preg_replace"><span style="color: #000066;">preg_replace</span></a><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;/$temp(<span style="color: #000099; font-weight: bold;">\w</span>+);/&quot;</span>,<span style="color: #ff0000;">&quot;&amp;<span style="color: #000099; font-weight: bold;">\\</span>1;&quot;</span>,<span style="color: #0000ff;">$str</span><span style="color: #66cc66;">&#41;</span>;
+&nbsp;
+    <span style="color: #b1b100;">return</span> <span style="color: #0000ff;">$str</span>;
+<span style="color: #66cc66;">&#125;</span></pre>
       </div>
       <p>上述函数捕获像“&amp;”这样的特殊字符，以便在你的页面提交时不会造成混乱。你应该知道，有些字符会引起问题。</p>
       <p>并不是所有的用户都会中规中矩的输入符合要求的信息，你也不可能知道使用浏览器输入信息的是什么人，他们在想什么，做什么。你可以使用 CI 来防止输入不符合要求的信息。当然，你大可不必知道 CI 是如何在幕后为你做到这一切的，你只需要简单地输入如下代码：</p>
@@ -171,7 +169,7 @@ $variable .= form_dropdown('url', $urlarray, '3');</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">echo form_input('username', 'johndoe');</code></pre>
+        <pre class="php"><a href="http://www.php.net/echo"><span style="color: #000066;">echo</span></a> form_input<span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'username'</span>, <span style="color: #ff0000;">'johndoe'</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <a name="C_1_1_3"></a>
       <h2>1.1.3　增强你的代码</h2>
@@ -185,11 +183,11 @@ $variable .= form_dropdown('url', $urlarray, '3');</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">$this->load->library('email');
-$this->email->from('your@your-site.com', 'Your Name');
-$this->email->subject('Email Test');
-$this->email->message('Testing the email class.');
-$this->email->send();</code></pre>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">load</span>-&gt;<span style="color: #006600;">library</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'email'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">email</span>-&gt;<span style="color: #006600;">from</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'your@your-site.com'</span>, <span style="color: #ff0000;">'Your Name'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">email</span>-&gt;<span style="color: #006600;">subject</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'Email Test'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">email</span>-&gt;<span style="color: #006600;">message</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'Testing the email class.'</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">email</span>-&gt;<span style="color: #006600;">send</span><span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <p>实现发送 Email 的功能中有一些不容易解决的技术问题：比如设置文本自动换行（取消设置的话则可以保持长 URL 地址不被换行或截断）或发送附件。标准的 PHP 实现起来比较复杂，CI 简化了这些工作，它的 Email 类使得发送附件很简单：</p>
       <div class="code">
@@ -197,7 +195,7 @@ $this->email->send();</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">$this->email->attach('/path/to/photo1.jpg');</code></pre>
+        <pre class="php"><span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">email</span>-&gt;<span style="color: #006600;">attach</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'/path/to/photo1.jpg'</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <p>CI 把内部的复杂部分悄悄地完成了，举例来说，实现了列举近百种不同附件的 MIME 类型的功能。所以它知道你的相片 photo1.jpg 是一个“image/jpeg”MIME 类型。因此它在你附件的适当位置填写必要的限制符号，它处理文本的换行，让你轻松标记出不希望出现换行的文本块。</p>
       <a name="C_1_1_3_2"></a>
@@ -208,10 +206,10 @@ $this->email->send();</code></pre>
           <div style="float:right"><img class="copyCodeImage" src="images/copycode.gif" /><a href="javascript:void(0)" onclick="CopyCode(this)">复制代码到剪贴板</a></div>
           <div style="clear:none">PHP 代码</div>
         </div>
-        <pre><code class="php">$name = 'mydata1.txt';
-$data = 'the contents of my file..........';
-$this->zip->add_data($name, $data);
-$this->zip->archive('c:/my_backup.zip');</code></pre>
+        <pre class="php"><span style="color: #0000ff;">$name</span> = <span style="color: #ff0000;">'mydata1.txt'</span>;
+<span style="color: #0000ff;">$data</span> = <span style="color: #ff0000;">'the contents of my file..........'</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">zip</span>-&gt;<span style="color: #006600;">add_data</span><span style="color: #66cc66;">&#40;</span><span style="color: #0000ff;">$name</span>, <span style="color: #0000ff;">$data</span><span style="color: #66cc66;">&#41;</span>;
+<span style="color: #0000ff;">$this</span>-&gt;<span style="color: #006600;">zip</span>-&gt;<span style="color: #006600;">archive</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">'c:/my_backup.zip'</span><span style="color: #66cc66;">&#41;</span>;</pre>
       </div>
       <p>运行这些代码，你会在你的 C 盘根目录下找到一个压缩文件，解压后即为原始文件。</p>
       <p>你网站的用户并不清楚你是如何简便实现这个功能的，但他们能体会到你的网站的下载速度很快，而你只用了数分种（而不是数小时）就实现了这个功能。</p>
@@ -298,7 +296,7 @@ $this->zip->archive('c:/my_backup.zip');</code></pre>
   <a name="bottom"></a>
   <div id="footer">
     <div class="title"><a href="preface.html">上一页</a> | <a href="2.html">下一页</a> | <a href="table_of_contents.html">目录</a> | <a href="#top">转到页首</a></div>
-    <div style="clear:none">第一章　对 CodeIgniter 的介绍</div>
+    <div style="clear:none">第一章　CodeIgniter 简介</div>
   </div>
 </div>
 </body>
