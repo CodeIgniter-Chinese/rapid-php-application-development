@@ -1,11 +1,11 @@
 <?php
 /*constructor function to initialize controller and load the file upload class, plus the two other helpers it needs */
 
-class Upload extends Controller {
+class Upload extends CI_Controller {
 
-   function Upload()
+   function __construct()
     {
-          parent::Controller();
+          parent::__construct();
           $this->load->helper(array('form', 'url'));
           $this->load->library('upload');
     }
